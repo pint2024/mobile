@@ -77,7 +77,7 @@ class _HomePageState extends State<HomePage> {
             label: 'ChatRoom',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.login),
+            icon: Icon(Icons.settings),
             label: 'Definições',
           ),
         ],
