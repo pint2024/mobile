@@ -13,20 +13,33 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  int _selectedIndex = 0;
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(100), // Altura personalizada da barra de navegação
+        preferredSize: Size.fromHeight(60), 
         child: AppBar(
-          backgroundColor: const Color.fromARGB(255, 228, 61, 61), // Cor de fundo preta
+          backgroundColor: const Color.fromRGBO(57, 99, 156, 1.0), 
           title: Row(
             children: [
               Padding(
-                padding: EdgeInsets.only(left: 16), // Espaçamento à esquerda
+                padding: EdgeInsets.only(left: 16), 
                 child: Image.asset(
-                  '../Images/logo.png', 
+                  'assets/Images/logo.png', 
                   width: 40,
                   height: 40,
                 ),
@@ -35,9 +48,9 @@ class HomePage extends StatelessWidget {
                 child: Align(
                   alignment: Alignment.centerRight,
                   child: IconButton(
-                    icon: Icon(Icons.account_circle, color: Colors.white), // Ícone do perfil
+                    icon: Icon(Icons.account_circle, color: Colors.white), 
                     onPressed: () {
-                      // Adicione ação ao ícone do perfil
+                      
                     },
                   ),
                 ),
@@ -47,7 +60,31 @@ class HomePage extends StatelessWidget {
         ),
       ),
       body: Center(
-        child: Text('Conteúdo da página'),
+        child: Text('Conteúdo da página $_selectedIndex'),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.calendar_month),
+            label: 'Calendario',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.notification_add),
+            label: 'Notificações',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.chat),
+            label: 'ChatRoom',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.login),
+            label: 'Definições',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.blue,
+        unselectedItemColor: Colors.grey,        
+        onTap: _onItemTapped,
       ),
     );
   }
