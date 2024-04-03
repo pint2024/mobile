@@ -134,15 +134,18 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       bottomNavigationBar: Column(
-  mainAxisSize: MainAxisSize.min,
-  children: [
-    Container(
-      margin: EdgeInsets.only(bottom: 30), // Define a margem inferior desejada
-      child: Divider(
-        color: const Color.fromARGB(255, 255, 255, 255),
-        thickness: 3,
-      ),
-    ),
+      mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                padding: EdgeInsets.all(20), 
+                child: const Text(
+                  'eSCREVO aqui informação do site + os botoes das atividades',
+                  style: TextStyle(
+                    color: Color.fromARGB(255, 255, 0, 0), 
+                    fontSize: 20, 
+                  ),
+                ),
+              ),
           BottomNavigationBar(
             items: const <BottomNavigationBarItem>[
               BottomNavigationBarItem(
