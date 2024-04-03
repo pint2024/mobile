@@ -1,12 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/material.dart';
+
 void main() {
-  runApp(MaterialApp(
-    home: UserProfilePage(),
-  ));
+  runApp(UserProfileApp());
 }
 
-class UserProfilePage extends StatelessWidget {
+class UserProfileApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: UserProfilePage(),
+    );
+  }
+}
+
+class UserProfilePage extends StatefulWidget {
+  @override
+  _UserProfilePageState createState() => _UserProfilePageState();
+}
+
+class _UserProfilePageState extends State<UserProfilePage> {
+  int _selectedIndex = 0;
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,9 +42,26 @@ class UserProfilePage extends StatelessWidget {
               backgroundImage: NetworkImage('URL_DA_NOVA_IMAGEM_DO_AVATAR'), // Altere para a URL da nova imagem do avatar
             ),
             SizedBox(height: 10),
-            Text('Novo Nome', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)), // Altere para o novo nome do usuário
-            Text('novo.email@exemplo.com', style: TextStyle(fontSize: 16)), // Altere para o novo email do usuário
-            Text('PT +356 123456789', style: TextStyle(fontSize: 16)), // Altere para o novo número de telefone do usuário
+            TextField(
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Nome: Novo Nome',
+              ),
+            ),
+            SizedBox(height: 10),
+            TextField(
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Email: novo.email@exemplo.com',
+              ),
+            ),
+            SizedBox(height: 10),
+            TextField(
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Telefone: PT +356 123456789',
+              ),
+            ),
             SizedBox(height: 10),
             TextField(
               decoration: InputDecoration(
@@ -44,7 +81,30 @@ class UserProfilePage extends StatelessWidget {
           ],
         ),
       ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.calendar_month),
+            label: 'Calendario',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.notification_add),
+            label: 'Notificações',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.chat),
+            label: 'ChatRoom',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'Definições',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.blue,
+        unselectedItemColor: Colors.grey,        
+        onTap: _onItemTapped,
+      ),
     );
   }
 }
-
