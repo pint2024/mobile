@@ -135,17 +135,45 @@ class _HomePageState extends State<HomePage> {
       ),
       bottomNavigationBar: Column(
       mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                padding: EdgeInsets.all(20), 
-                child: const Text(
-                  'eSCREVO aqui informação do site + os botoes das atividades',
-                  style: TextStyle(
-                    color: Color.fromARGB(255, 255, 0, 0), 
-                    fontSize: 20, 
+                  children: [
+                  Card(
+
+            elevation: 3,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const ListTile(
+                  leading: CircleAvatar(
+                    backgroundImage: NetworkImage('assets/Images/logo2.png'),
                   ),
+                  title: Text('Título da Atividade'),
+                  subtitle: Text('Nome do usuário • Data'),
                 ),
-              ),
+                const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text('Um pouco do texto da atividade'),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        IconButton(
+                          icon: Icon(Icons.favorite),
+                          onPressed: () {},
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.comment),
+                          onPressed: () {},
+                        ),
+                      ],
+                    ),  
+                  ],
+                ),
+              ],
+            ),
+          ),
+
           BottomNavigationBar(
             items: const <BottomNavigationBarItem>[
               BottomNavigationBarItem(
@@ -161,8 +189,8 @@ class _HomePageState extends State<HomePage> {
                 label: 'ChatRoom',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.settings),
-                label: 'Definições',
+                icon: Icon(Icons.attractions_rounded),
+                label: 'Atividades',
               ),
             ],
             currentIndex: _selectedIndex,
