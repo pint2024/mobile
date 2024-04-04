@@ -139,9 +139,6 @@ class _HomePageState extends State<HomePage> {
         mainAxisSize: MainAxisSize.min,
         children: [
           MyCard(),
-          MyCard(),
-          MyCard(),
-          MyCard(),
           CustomBottomNavigationBar(
             selectedIndex: _selectedIndex,
             onItemTapped: _onItemTapped,
