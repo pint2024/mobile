@@ -30,24 +30,40 @@ class _UserProfilePageState extends State<UserProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Nome do Utilizador'), // Altere para o nome do usuário desejado
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(60),
+        child: AppBar(
+          backgroundColor: const Color.fromRGBO(57, 99, 156, 1.0),
+          title: Row(
+            children: [
+              Padding(
+                padding: EdgeInsets.only(left: 16),
+                child: Image.asset(
+                  'assets/Images/logo.png',
+                  width: 40,
+                  height: 40,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
       body: Padding(
         padding: EdgeInsets.all(10),
         child: Column(
-          children: <Widget>[
-            CircleAvatar(
-              radius: 50,
-              backgroundImage: NetworkImage('URL_DA_NOVA_IMAGEM_DO_AVATAR'), // Altere para a URL da nova imagem do avatar
-            ),
-            SizedBox(height: 10),
-            TextField(
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Nome: Novo Nome',
-              ),
-            ),
+  children: <Widget>[
+    CircleAvatar(
+      radius: 50,
+      backgroundImage: NetworkImage('https://img.freepik.com/vetores-premium/ilustracao-de-avatar-de-estudante-icone-de-perfil-de-usuario-avatar-de-jovem_118339-4402.jpg?w=740'), // Altere para a URL da nova imagem do avatar
+    ),
+    SizedBox(height: 10),
+    Text(
+      'Nome do Utilizador', // Substitua pelo nome do usuário
+      style: TextStyle(
+        fontSize: 24,
+        fontWeight: FontWeight.bold,
+      ),
+    ),
             SizedBox(height: 10),
             TextField(
               decoration: InputDecoration(
@@ -70,13 +86,28 @@ class _UserProfilePageState extends State<UserProfilePage> {
               ),
             ),
             SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () {},
-              child: Text('Modificar'),
-            ),
-            ElevatedButton(
-              onPressed: () {},
-              child: Text('Terminar sessão'),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.all(5.0),
+                    child: ElevatedButton(
+                      onPressed: () {},
+                      child: Text('Modificar'),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.all(5.0),
+                    child: ElevatedButton(
+                      onPressed: () {},
+                      child: Text('Terminar sessão'),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -108,3 +139,4 @@ class _UserProfilePageState extends State<UserProfilePage> {
     );
   }
 }
+
