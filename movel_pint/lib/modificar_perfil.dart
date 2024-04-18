@@ -84,6 +84,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 border: OutlineInputBorder(),
                 labelText: 'Descrição (Opcional)',
               ),
+              maxLines: 10, // Increase the maximum number of lines
+              minLines: 5, // Increase the minimum number of lines
             ),
             SizedBox(height: 10),
             Row(
@@ -94,7 +96,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     padding: EdgeInsets.all(5.0),
                     child: ElevatedButton(
                       onPressed: () {},
-                      child: Text('Modificar'),
+                      child: Text('Confrmar'),
                     ),
                   ),
                 ),
@@ -103,7 +105,12 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     padding: EdgeInsets.all(5.0),
                     child: ElevatedButton(
                       onPressed: () {},
-                      child: Text('Terminar sessão'),
+                      child: Text('Eliminar conta'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                        foregroundColor: Colors.white,
+                       // Define a cor de fundo para vermelho
+                      ),
                     ),
                   ),
                 ),
