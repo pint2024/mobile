@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
 
 void main() {
   runApp(MyApp());
@@ -88,6 +89,18 @@ class _MyRegistrationFormState extends State<MyRegistrationForm> {
           ],
         ),
       ),
+<<<<<<< HEAD
+=======
+       bottomNavigationBar: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CustomBottomNavigationBar(
+            selectedIndex: _selectedIndex,
+            onItemTapped: _onItemTapped,
+          ),
+        ],
+      ),
+>>>>>>> eb754009382853329691717b54593552a7192ce6
     );
   }
 }
