@@ -1,5 +1,4 @@
 import 'package:movel_pint/widgets/card.dart';
-import 'package:flutter/modificarPerfil.dart';
 
 void main() {
   runApp(MyApp());
