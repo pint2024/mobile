@@ -38,17 +38,23 @@ class MyCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.photo_library_outlined),
-                    SizedBox(width: 2), // Espaçamento entre o ícone e o número
-                    Text(
-                      '5', // Número de imagens (estático por enquanto)
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
+Row(
+  mainAxisSize: MainAxisSize.min,
+  children: [
+    Row(
+      children: [
+        Icon(Icons.photo_library_outlined),
+        SizedBox(width: 3), // Espaçamento entre o ícone e o número
+        Text(
+          '5', // Número de imagens (estático por enquanto)
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+      ],
+    ),
+  ],
+),
+
+
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
