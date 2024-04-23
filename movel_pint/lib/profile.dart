@@ -1,6 +1,4 @@
-
 import 'package:flutter/material.dart';
-import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
 
 void main() {
   runApp(MyApp());
@@ -17,6 +15,22 @@ class MyApp extends StatelessWidget {
         body: Material( 
           child: MyRegistrationForm(),
         ),
+        bottomNavigationBar: BottomNavigationBar(
+          items: [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.search),
+              label: 'Search',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person),
+              label: 'Profile',
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -26,11 +40,12 @@ class MyRegistrationForm extends StatefulWidget {
   @override
   _MyRegistrationFormState createState() => _MyRegistrationFormState();
 }
+
 class _MyRegistrationFormState extends State<MyRegistrationForm> {
   final _formKey = GlobalKey<FormState>();
   late String _email;
   late String _password;
-  late String _confirmPassword; // Keeping the _confirmPassword variable
+  late String _confirmPassword;
 
   @override
   Widget build(BuildContext context) {
@@ -70,18 +85,15 @@ class _MyRegistrationFormState extends State<MyRegistrationForm> {
                 }
                 return null;
               },
-              onSaved: (value) => _confirmPassword = value!, // Saving the value to _confirmPassword
+              onSaved: (value) => _confirmPassword = value!,
             ),
             ElevatedButton(
               onPressed: () {
                 if (_formKey.currentState!.validate()) {
                   _formKey.currentState!.save();
-                  // Here you can add your registration logic
-                  // For example, you can print or use these variables
                   print('Email: $_email');
                   print('Password: $_password');
-                  print('Confirm Password: $_confirmPassword'); // Utilizing _confirmPassword variable
-                  // Add more logic here
+                  print('Confirm Password: $_confirmPassword');
                 }
               },
               child: Text('Register'),
@@ -89,18 +101,6 @@ class _MyRegistrationFormState extends State<MyRegistrationForm> {
           ],
         ),
       ),
-<<<<<<< HEAD
-=======
-       bottomNavigationBar: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          CustomBottomNavigationBar(
-            selectedIndex: _selectedIndex,
-            onItemTapped: _onItemTapped,
-          ),
-        ],
-      ),
->>>>>>> eb754009382853329691717b54593552a7192ce6
     );
   }
 }

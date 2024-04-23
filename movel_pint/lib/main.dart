@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
 import 'package:movel_pint/widgets/card.dart';
 
 void main() {
