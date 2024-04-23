@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
 import 'package:movel_pint/widgets/card.dart';
+import 'package:movel_pint/widgets/customAppBar.dart';
 
 void main() {
   runApp(MyApp());
@@ -51,33 +52,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(60),
-        child: AppBar(
-          backgroundColor: const Color.fromRGBO(57, 99, 156, 1.0),
-          title: Row(
-            children: [
-              Padding(
-                padding: EdgeInsets.only(left: 16),
-                child: Image.asset(
-                  'assets/Images/logo.png',
-                  width: 40,
-                  height: 40,
-                ),
-              ),
-              Expanded(
-                child: Align(
-                  alignment: Alignment.centerRight,
-                  child: IconButton(
-                    icon: Icon(Icons.account_circle, color: Colors.white),
-                    onPressed: () {},
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+      appBar: CustomAppBar(),
       body: SingleChildScrollView(
         child: Center(
           child: Container(
