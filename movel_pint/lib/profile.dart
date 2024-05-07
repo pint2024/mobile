@@ -1,105 +1,140 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(UserProfileApp());
 }
 
-class MyApp extends StatelessWidget {
+class UserProfileApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('SOFTINSA Registration'),
-        ),
-        body: Material( 
-          child: MyRegistrationForm(),
-        ),
-        bottomNavigationBar: BottomNavigationBar(
-          items: [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.search),
-              label: 'Search',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person),
-              label: 'Profile',
-            ),
-          ],
-        ),
-      ),
+      home: UserProfilePage(),
     );
   }
 }
 
-class MyRegistrationForm extends StatefulWidget {
+class UserProfilePage extends StatefulWidget {
   @override
-  _MyRegistrationFormState createState() => _MyRegistrationFormState();
+  _UserProfilePageState createState() => _UserProfilePageState();
 }
 
-class _MyRegistrationFormState extends State<MyRegistrationForm> {
-  final _formKey = GlobalKey<FormState>();
-  late String _email;
-  late String _password;
-  late String _confirmPassword;
+class _UserProfilePageState extends State<UserProfilePage> {
+  int _selectedIndex = 0;
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
+    return Scaffold(
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(60),
+        child: AppBar(
+          backgroundColor: const Color.fromRGBO(57, 99, 156, 1.0),
+          title: Row(
+            children: [
+              Padding(
+                padding: EdgeInsets.only(left: 16),
+                child: Image.asset(
+                  'assets/Images/logo.png',
+                  width: 40,
+                  height: 40,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(10),
         child: Column(
-          children: [
-            TextFormField(
-              decoration: InputDecoration(labelText: 'Email'),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter some text';
-                }
-                return null;
-              },
-              onSaved: (value) => _email = value!,
+          children: <Widget>[
+            CircleAvatar(
+              radius: 50,
+              backgroundImage: NetworkImage('https://img.freepik.com/vetores-premium/ilustracao-de-avatar-de-estudante-icone-de-perfil-de-usuario-avatar-de-jovem_118339-4402.jpg?w=740'), // Altere para a URL da nova imagem do avatar
             ),
-            TextFormField(
-              decoration: InputDecoration(labelText: 'Password'),
-              obscureText: true,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter some text';
-                }
-                return null;
-              },
-              onSaved: (value) => _password = value!,
+            SizedBox(height: 10),
+            Text(
+              'Nome do Utilizador', // Substitua pelo nome do usuário
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            TextFormField(
-              decoration: InputDecoration(labelText: 'Confirm Password'),
-              obscureText: true,
-              validator: (value) {
-                if (value == null || value.isEmpty || value != _password) {
-                  return 'Passwords do not match';
-                }
-                return null;
-              },
-              onSaved: (value) => _confirmPassword = value!,
+            SizedBox(height: 10),
+            TextField(
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Email: novo.email@exemplo.com',
+              ),
             ),
-            ElevatedButton(
-              onPressed: () {
-                if (_formKey.currentState!.validate()) {
-                  _formKey.currentState!.save();
-                  print('Email: $_email');
-                  print('Password: $_password');
-                  print('Confirm Password: $_confirmPassword');
-                }
-              },
-              child: Text('Register'),
+            SizedBox(height: 10),
+            TextField(
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Telefone: PT +356 123456789',
+              ),
+            ),
+            SizedBox(height: 10),
+            TextField(
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Descrição (Opcional)',
+              ),
+            ),
+            SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.all(5.0),
+                    child: ElevatedButton(
+                      onPressed: () {},
+                      child: Text('Modificar'),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.all(5.0),
+                    child: ElevatedButton(
+                      onPressed: () {},
+                      child: Text('Terminar sessão'),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.calendar_month),
+            label: 'Calendario',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.notification_add),
+            label: 'Notificações',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.chat),
+            label: 'ChatRoom',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'Definições',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.blue,
+        unselectedItemColor: Colors.grey,
+        onTap: _onItemTapped,
       ),
     );
   }
