@@ -41,7 +41,7 @@ class LoginPage extends StatelessWidget {
         color: const Color.fromRGBO(57, 99, 156, 1.0), // Isso faz com que o fundo atrás da caixa seja azul
         child: Center(
           child: Transform.scale(
-            scale: 0.9/1, // Isso diminui o tamanho do widget por um fator de 3
+            scale: 0.9, // Isso diminui o tamanho do widget por um fator de 3
             child: Container(
               padding: EdgeInsets.all(10),
               decoration: BoxDecoration(
@@ -51,17 +51,22 @@ class LoginPage extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Text(
-                    'Welcome Back',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
+                  Padding(
+                    padding: EdgeInsets.only(bottom: 20.0, right: 10.0), // Adicione esta linha
+                    child: Text(
+                      'Login in to your Account',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                   SizedBox(height: 10),
                   TextField(
                     decoration: InputDecoration(
-                      border: OutlineInputBorder(),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0), // Adicione esta linha
+                      ),
                       labelText: 'Email',
                     ),
                   ),
@@ -69,7 +74,9 @@ class LoginPage extends StatelessWidget {
                   TextField(
                     obscureText: true,
                     decoration: InputDecoration(
-                      border: OutlineInputBorder(),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0), // Adicione esta linha
+                      ),
                       labelText: 'Password',
                     ),
                   ),

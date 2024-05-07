@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(UserProfileApp());
+  runApp(UserProfileApp1());
 }
 
-class UserProfileApp extends StatelessWidget {
+class UserProfileApp1 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: UserProfilePage(),
+      home: UserProfilePage1(),
     );
   }
 }
 
-class UserProfilePage extends StatefulWidget {
+class UserProfilePage1 extends StatefulWidget {
   @override
-  _UserProfilePageState createState() => _UserProfilePageState();
+  _UserProfilePageState1 createState() => _UserProfilePageState1();
 }
 
-class _UserProfilePageState extends State<UserProfilePage> {
+class _UserProfilePageState1 extends State<UserProfilePage1> {
   int _selectedIndex = 0;
 
   void _onItemTapped(int index) {

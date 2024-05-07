@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'modificar_perfil.dart';
 
 void main() {
   runApp(UserProfileApp());
@@ -11,6 +12,13 @@ class UserProfileApp extends StatelessWidget {
       home: UserProfilePage(),
     );
   }
+}
+
+void _navigateToModificarPerfil(BuildContext context) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(builder: (context) => UserProfilePage1()), // Corrected to ModificarPerfilPage
+  );
 }
 
 class UserProfilePage extends StatefulWidget {
@@ -93,7 +101,9 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   child: Padding(
                     padding: EdgeInsets.all(5.0),
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        _navigateToModificarPerfil(context); // Navigate to Modificar Perfil screen
+                      },
                       child: Text('Modificar'),
                     ),
                   ),
