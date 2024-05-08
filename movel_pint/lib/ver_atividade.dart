@@ -1,68 +1,46 @@
 import 'package:flutter/material.dart';
-import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
-import 'package:movel_pint/widgets/card.dart';
-import 'package:movel_pint/widgets/customAppBar.dart';
 
 void main() {
-  runApp(Atividade());
+  runApp(MaterialApp(
+    home: MyApp(),
+  ));
 }
 
-class Atividade extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: VerAtividade(),
-    );
-  }
-}
-
-class VerAtividade extends StatelessWidget {
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(),
-      body: SingleChildScrollView(
-        child: Center(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
+      appBar: AppBar(
+        title: Text('Clínicas'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15.0),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Column(
+              children: <Widget>[
+                Text('A', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                TextField(decoration: InputDecoration(labelText: 'Nome')),
+                TextField(decoration: InputDecoration(labelText: 'Assunto')),
+                TextField(decoration: InputDecoration(labelText: 'Tópicos (ex: esportes/acomodação)')),
+                TextField(decoration: InputDecoration(labelText: 'Email da pessoa que criou')),
+                Text('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor'),
+                Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Título da Atividade',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.filter_list),
-                      onPressed: () {
-                        // 
-                      },
-                    ),
+                  children: <Widget>[
+                    IconButton(icon: Icon(Icons.arrow_back), onPressed: () {}),
+                    Text('1'),
+                    IconButton(icon: Icon(Icons.arrow_forward), onPressed: () {}),
                   ],
                 ),
-              ),
-              MyCard(), 
-              MyCard(),
-              MyCard(),
-            ],
+              ],
+            ),
           ),
         ),
-      ),
-      bottomNavigationBar: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          CustomBottomNavigationBar(
-            selectedIndex: 0,
-            onItemTapped: (index) {
-              // 
-            },
-          ),
-        ],
       ),
     );
   }
