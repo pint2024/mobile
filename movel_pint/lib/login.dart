@@ -80,14 +80,30 @@ class LoginPage extends StatelessWidget {
                       labelText: 'Password',
                     ),
                   ),
-                  SizedBox(height: 20),
+                  SizedBox(height: 10),
+                  SwitchListTile(
+                    title: Text('Lembrar-se do login'),
+                    value: false, // Você pode substituir isso por uma variável que mantém o estado do switch
+                    onChanged: (bool value) {
+                      // Adicione aqui a lógica para lidar com a alteração do estado do switch
+                    },
+                  ),
+                  SizedBox(height: 10),
                   Container(
                     width: double.infinity, // Isso faz com que o botão tenha a largura máxima disponível
                     child: ElevatedButton(
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all<Color>(Color.fromRGBO(57, 99, 156, 1.0)),
+                      ),
                       onPressed: () {
                         // Adicione aqui a lógica para autenticar o usuário
                       },
-                      child: Text('Login'),
+                      child: Text(
+                        'Login',
+                        style: TextStyle(
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
                   ),
                   SizedBox(height: 20),
@@ -97,7 +113,7 @@ class LoginPage extends StatelessWidget {
                     },
                     child: Text('Login com Google'),
                   ),
-                  SizedBox(height: 20),
+                  Spacer(), // Adiciona um espaço flexível
                   // Botão para ir para a página de registro
                   TextButton(
                     onPressed: () {
@@ -106,8 +122,9 @@ class LoginPage extends StatelessWidget {
                         MaterialPageRoute(builder: (context) => MyRegistrationForm()), // Página de registro
                       );
                     },
-                    child: Text('Registrar'),
+                    child: Text(' Não tens uma conta? Registar'),
                   ),
+                  SizedBox(height: 20), // Adiciona um espaço fixo no final
                 ],
               ),
             ),
