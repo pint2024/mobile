@@ -7,16 +7,56 @@ void main() {
   runApp(Atividade());
 }
 
-class Atividade extends StatelessWidget {
+class Atividade extends StatefulWidget {
+  @override
+  _AtividadeState createState() => _AtividadeState();
+}
+
+class _AtividadeState extends State<Atividade> {
+  int _selectedIndex = 0;
+  PageController _pageController = PageController(initialPage: 0);
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  void _nextPage() {
+    if (_pageController.page! < 2) {
+      _pageController.nextPage(
+        duration: Duration(milliseconds: 300),
+        curve: Curves.ease,
+      );
+    }
+  }
+
+  void _previousPage() {
+    if (_pageController.page! > 0) {
+      _pageController.previousPage(
+        duration: Duration(milliseconds: 300),
+        curve: Curves.ease,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: VerAtividade(),
+      home: VerAtividade(_selectedIndex, _onItemTapped, _pageController, _nextPage, _previousPage),
     );
   }
 }
 
 class VerAtividade extends StatelessWidget {
+  final int selectedIndex;
+  final Function(int) onItemTapped;
+  final PageController pageController;
+  final Function() nextPage;
+  final Function() previousPage;
+
+  VerAtividade(this.selectedIndex, this.onItemTapped, this.pageController, this.nextPage, this.previousPage);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,6 +89,11 @@ class VerAtividade extends StatelessWidget {
               MyCard(), 
               MyCard(),
               MyCard(),
+              MyCard(),
+              MyCard(),
+              MyCard(),
+              MyCard(),
+              MyCard(),
             ],
           ),
         ),
@@ -57,10 +102,8 @@ class VerAtividade extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           CustomBottomNavigationBar(
-            selectedIndex: 0,
-            onItemTapped: (index) {
-              // 
-            },
+            selectedIndex: selectedIndex,
+            onItemTapped: onItemTapped,
           ),
         ],
       ),
