@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
 import 'package:movel_pint/widgets/card.dart';
 import 'package:movel_pint/widgets/customAppBar.dart';
+import 'calendario.dart'; // Importe o arquivo de calendario.dart
 
 void main() {
   runApp(MyApp());
@@ -29,6 +30,14 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _selectedIndex = index;
     });
+
+    // Navegar para a página de calendário quando o índice do calendário for selecionado
+    if (index == 0) { // Supondo que o índice 1 é o índice do calendário
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => CalendarScreen()),
+      );
+    }
   }
 
   void _nextPage() {

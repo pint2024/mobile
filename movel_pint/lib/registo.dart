@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
 
 void main() {
   runApp(MyApp());
@@ -15,22 +16,17 @@ class MyApp extends StatelessWidget {
         body: Material( 
           child: MyRegistrationForm(),
         ),
-        bottomNavigationBar: BottomNavigationBar(
-          items: [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.search),
-              label: 'Search',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person),
-              label: 'Profile',
-            ),
-          ],
-        ),
+        bottomNavigationBar: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CustomBottomNavigationBar(
+            selectedIndex: 0,
+            onItemTapped: (index) {
+              // 
+            },
+          ),
+        ],
+      ),
       ),
     );
   }

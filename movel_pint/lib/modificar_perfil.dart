@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
 
 void main() {
   runApp(UserProfileApp1());
@@ -119,29 +120,16 @@ class _UserProfilePageState1 extends State<UserProfilePage1> {
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_month),
-            label: 'Calendario',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.notification_add),
-            label: 'Notificações',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.chat),
-            label: 'ChatRoom',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Definições',
+      bottomNavigationBar: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CustomBottomNavigationBar(
+            selectedIndex: 0,
+            onItemTapped: (index) {
+              // 
+            },
           ),
         ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.blue,
-        unselectedItemColor: Colors.grey,
-        onTap: _onItemTapped,
       ),
     );
   }
