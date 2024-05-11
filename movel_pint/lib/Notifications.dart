@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movel_pint/widgets/NotificationCard.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
-import 'package:movel_pint/widgets/card.dart';
 import 'package:movel_pint/widgets/customAppBar.dart';
 
 void main() {
