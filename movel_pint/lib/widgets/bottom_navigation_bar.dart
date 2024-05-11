@@ -34,6 +34,11 @@ class CustomBottomNavigationBar extends StatelessWidget {
           label: 'Chat Room',
           selectedIconTheme: IconThemeData(),
         ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.settings),
+          label: 'Definições',
+          selectedIconTheme: IconThemeData(),
+        ),
       ],
       currentIndex: selectedIndex,
       selectedItemColor: Colors.blue,
