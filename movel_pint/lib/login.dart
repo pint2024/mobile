@@ -54,7 +54,7 @@ class LoginPage extends StatelessWidget {
                   Padding(
                     padding: EdgeInsets.only(bottom: 20.0, right: 10.0), // Adicione esta linha
                     child: Text(
-                      'Login in to your Account',
+                      'Faça login na sua conta',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -95,7 +95,7 @@ class LoginPage extends StatelessWidget {
                     onPressed: () {
                       _handleSignInWithGoogle(context);
                     },
-                    child: Text('Login com Google'),
+                    child: Text('Login com o Google'),
                   ),
                   SizedBox(height: 20),
                   // Botão para ir para a página de registro
