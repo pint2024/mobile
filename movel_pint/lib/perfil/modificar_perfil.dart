@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:movel_pint/perfil/asMinhasAtividades.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
 
 void main() {
@@ -28,6 +29,13 @@ class _UserProfilePageState1 extends State<UserProfilePage1> {
     });
   }
 
+  void _goToMyAtividadesPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => MyAtividade()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,11 +63,11 @@ class _UserProfilePageState1 extends State<UserProfilePage1> {
           children: <Widget>[
             CircleAvatar(
               radius: 50,
-              backgroundImage: NetworkImage('https://img.freepik.com/vetores-premium/ilustracao-de-avatar-de-estudante-icone-de-perfil-de-usuario-avatar-de-jovem_118339-4402.jpg?w=740'), // Altere para a URL da nova imagem do avatar
+              backgroundImage: NetworkImage('https://img.freepik.com/vetores-premium/ilustracao-de-avatar-de-estudante-icone-de-perfil-de-usuario-avatar-de-jovem_118339-4402.jpg?w=740'),
             ),
             SizedBox(height: 10),
             Text(
-              'Nome do Utilizador', // Substitua pelo nome do usuário
+              'Nome do Utilizador',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -88,6 +96,12 @@ class _UserProfilePageState1 extends State<UserProfilePage1> {
               maxLines: 10, // Increase the maximum number of lines
               minLines: 5, // Increase the minimum number of lines
             ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              child: Text('Ver Minhas Atividades'),
+              onPressed: _goToMyAtividadesPage,
+
+            ),
             SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -97,21 +111,7 @@ class _UserProfilePageState1 extends State<UserProfilePage1> {
                     padding: EdgeInsets.all(5.0),
                     child: ElevatedButton(
                       onPressed: () {},
-                      child: Text('Confrmar'),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.all(5.0),
-                    child: ElevatedButton(
-                      onPressed: () {},
-                      child: Text('Eliminar conta'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
-                        foregroundColor: Colors.white,
-                       // Define a cor de fundo para vermelho
-                      ),
+                      child: Text('Confirmar'),
                     ),
                   ),
                 ),

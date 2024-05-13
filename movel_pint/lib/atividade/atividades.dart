@@ -13,12 +13,12 @@ class Atividade extends StatefulWidget {
 }
 
 class _AtividadeState extends State<Atividade> {
-  int _selectedIndex = 0;
+  int _selectedFilterIndex = 0;
   PageController _pageController = PageController(initialPage: 0);
 
   void _onItemTapped(int index) {
     setState(() {
-      _selectedIndex = index;
+      _selectedFilterIndex = index;
     });
   }
 
@@ -43,19 +43,26 @@ class _AtividadeState extends State<Atividade> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: VerAtividade(_selectedIndex, _onItemTapped, _pageController, _nextPage, _previousPage),
+      home: VerAtividade(_selectedFilterIndex, _onItemTapped, _pageController, _nextPage, _previousPage),
     );
   }
 }
 
-class VerAtividade extends StatelessWidget {
-  final int selectedIndex;
+class VerAtividade extends StatefulWidget {
+  final int initialFilterIndex;
   final Function(int) onItemTapped;
   final PageController pageController;
   final Function() nextPage;
   final Function() previousPage;
 
-  VerAtividade(this.selectedIndex, this.onItemTapped, this.pageController, this.nextPage, this.previousPage);
+  VerAtividade(this.initialFilterIndex, this.onItemTapped, this.pageController, this.nextPage, this.previousPage);
+
+  @override
+  _VerAtividadeState createState() => _VerAtividadeState();
+}
+
+class _VerAtividadeState extends State<VerAtividade> {
+  int _selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +78,7 @@ class VerAtividade extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Título da Atividade',
+                      'Atividades',
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -80,20 +87,15 @@ class VerAtividade extends StatelessWidget {
                     IconButton(
                       icon: Icon(Icons.filter_list),
                       onPressed: () {
-                        // 
+                        _showFilterOptions(context);
                       },
                     ),
                   ],
                 ),
               ),
-              MyCard(), 
-              MyCard(),
-              MyCard(),
-              MyCard(),
-              MyCard(),
-              MyCard(),
-              MyCard(),
-              MyCard(),
+              for (int i = 0; i < 8; i++)
+                if (_selectedIndex == 0 || _selectedIndex == i)
+                  MyCard(),
             ],
           ),
         ),
@@ -102,11 +104,43 @@ class VerAtividade extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           CustomBottomNavigationBar(
-            selectedIndex: selectedIndex,
-            onItemTapped: onItemTapped,
+            selectedIndex: _selectedIndex,
+            onItemTapped: (index) {
+              setState(() {
+                _selectedIndex = index;
+                widget.onItemTapped(index);
+              });
+            },
           ),
         ],
       ),
     );
+  }
+
+  void _showFilterOptions(BuildContext context) {
+    showMenu(
+      context: context,
+      position: RelativeRect.fromSize(
+        Rect.fromPoints(
+          Offset(MediaQuery.of(context).size.width - 100, 60),
+          Offset(MediaQuery.of(context).size.width - 20, 80),
+        ),
+        Size(MediaQuery.of(context).size.width, 40),
+      ),
+      items: [
+        for (int i = 0; i < 8; i++)
+          PopupMenuItem(
+            value: i,
+            child: Text('Filtro ${i + 1}'),
+          ),
+      ],
+    ).then((value) {
+      if (value != null) {
+        setState(() {
+          _selectedIndex = value;
+          widget.onItemTapped(value);
+        });
+      }
+    });
   }
 }

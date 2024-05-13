@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:movel_pint/criarEvento.dart';
+import 'package:movel_pint/atividade/atividades.dart';
+import 'package:movel_pint/evento/criarEvento.dart';
+import 'package:movel_pint/perfil/login.dart';
+import 'package:movel_pint/perfil/registo.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
 import 'package:movel_pint/widgets/card.dart';
 import 'package:movel_pint/widgets/customAppBar.dart';
-import 'package:movel_pint/calendario.dart'; // Importe o arquivo de calendario.dart
+import 'package:movel_pint/calendario/calendario.dart'; // Importe o arquivo de calendario.dart
+import 'perfil/modificar_perfil.dart'; // Importe a página de modificar perfil
 
 void main() {
   runApp(MyApp());
@@ -68,6 +72,36 @@ class _HomePageState extends State<HomePage> {
       MaterialPageRoute(builder: (context) => EventFormPage()),
     );
   }
+
+  void _goToModificarPerfilPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => UserProfilePage1()),
+    );
+  }
+
+  void _goToLoginPerfilPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => LoginPage()),
+    );
+  }
+
+  void _goToRegisterPerfilPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => RegisterPage()),
+    );
+  }
+
+  void _goToAtividadesPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => Atividade()),
+    );
+  }
+
+  
 
   @override
   Widget build(BuildContext context) {
@@ -142,6 +176,22 @@ class _HomePageState extends State<HomePage> {
             onPressed: _goToEventFormPage,
             child: Text('Criar Novo Evento'),
           ),
+           ElevatedButton(
+                onPressed: _goToModificarPerfilPage,
+                child: Text('Modificar Perfil'),
+              ),
+              ElevatedButton(
+                onPressed: _goToLoginPerfilPage,
+                child: Text('Login'),
+              ),
+              ElevatedButton(
+                onPressed: _goToRegisterPerfilPage,
+                child: Text('Registar'),
+              ),
+              ElevatedButton(
+                onPressed: _goToAtividadesPage,
+                child: Text('Atividades'),
+              ),
           CustomBottomNavigationBar(
             selectedIndex: _selectedIndex,
             onItemTapped: _onItemTapped,
