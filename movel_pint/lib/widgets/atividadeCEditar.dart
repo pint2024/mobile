@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class MyCard extends StatelessWidget {
+class MyCard2 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -11,19 +11,26 @@ class MyCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const ListTile(
+            ListTile(
               leading: CircleAvatar(
                 backgroundImage: NetworkImage('assets/Images/logo2.png'),
               ),
               title: Text('Título da Atividade'),
               subtitle: Text('Nome do usuário • Data'),
+              trailing: IconButton(
+                icon: Icon(Icons.edit),
+                onPressed: () {
+                  // Lógica para editar a atividade
+                  // Este onPressed será chamado ao pressionar o ícone de edição
+                },
+              ),
             ),
-            const SizedBox(height: 8), // Espaçamento entre o título e a imagem
+            SizedBox(height: 8), // Espaçamento entre o título e a imagem
             Center(
               child: Container(
                 width: 400, // Largura desejada para a imagem
                 height: 150, // Altura desejada para a imagem
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   image: DecorationImage(
                     image: AssetImage('assets/Images/logo2.png'),
                     fit: BoxFit.cover,
@@ -31,7 +38,7 @@ class MyCard extends StatelessWidget {
                 ),
               ),
             ),
-            const Padding(
+            Padding(
               padding: EdgeInsets.symmetric(vertical: 8.0),
               child: Text('Um pouco do texto da atividade'),
             ),
@@ -39,7 +46,7 @@ class MyCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.end, // Alinhamento à direita
               children: [
                 _buildIconWithCount(Icons.photo_library_outlined, '5'),
-                const SizedBox(width: 20), // Espaçamento entre os ícones
+                SizedBox(width: 20), // Espaçamento entre os ícones
                 _buildIconWithCount(Icons.comment_outlined, '5'),
               ],
             ),
@@ -54,7 +61,7 @@ class MyCard extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Icon(iconData),
-        const SizedBox(width: 3), // Espaçamento entre o ícone e o número
+        SizedBox(width: 3), // Espaçamento entre o ícone e o número
         Text(
           count,
           style: TextStyle(fontWeight: FontWeight.bold),

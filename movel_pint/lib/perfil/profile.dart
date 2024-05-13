@@ -1,24 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
+import 'modificar_perfil.dart';
 
 void main() {
-  runApp(UserProfileApp1());
+  runApp(UserProfileApp());
 }
 
-class UserProfileApp1 extends StatelessWidget {
+class UserProfileApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: UserProfilePage1(),
+      home: UserProfilePage(),
     );
   }
 }
 
-class UserProfilePage1 extends StatefulWidget {
-  @override
-  _UserProfilePageState1 createState() => _UserProfilePageState1();
+void _navigateToModificarPerfil(BuildContext context) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(builder: (context) => UserProfilePage1()), // Corrected to ModificarPerfilPage
+  );
 }
 
-class _UserProfilePageState1 extends State<UserProfilePage1> {
+class UserProfilePage extends StatefulWidget {
+  @override
+  _UserProfilePageState createState() => _UserProfilePageState();
+}
+
+class _UserProfilePageState extends State<UserProfilePage> {
   int _selectedIndex = 0;
 
   void _onItemTapped(int index) {
@@ -84,8 +93,6 @@ class _UserProfilePageState1 extends State<UserProfilePage1> {
                 border: OutlineInputBorder(),
                 labelText: 'Descrição (Opcional)',
               ),
-              maxLines: 10, // Increase the maximum number of lines
-              minLines: 5, // Increase the minimum number of lines
             ),
             SizedBox(height: 10),
             Row(
@@ -95,8 +102,10 @@ class _UserProfilePageState1 extends State<UserProfilePage1> {
                   child: Padding(
                     padding: EdgeInsets.all(5.0),
                     child: ElevatedButton(
-                      onPressed: () {},
-                      child: Text('Confrmar'),
+                      onPressed: () {
+                        _navigateToModificarPerfil(context); // Navigate to Modificar Perfil screen
+                      },
+                      child: Text('Modificar'),
                     ),
                   ),
                 ),
@@ -105,12 +114,7 @@ class _UserProfilePageState1 extends State<UserProfilePage1> {
                     padding: EdgeInsets.all(5.0),
                     child: ElevatedButton(
                       onPressed: () {},
-                      child: Text('Eliminar conta'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
-                        foregroundColor: Colors.white,
-                       // Define a cor de fundo para vermelho
-                      ),
+                      child: Text('Terminar sessão'),
                     ),
                   ),
                 ),
@@ -119,29 +123,16 @@ class _UserProfilePageState1 extends State<UserProfilePage1> {
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_month),
-            label: 'Calendario',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.notification_add),
-            label: 'Notificações',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.chat),
-            label: 'ChatRoom',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Definições',
+      bottomNavigationBar: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CustomBottomNavigationBar(
+            selectedIndex: 0,
+            onItemTapped: (index) {
+              // 
+            },
           ),
         ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.blue,
-        unselectedItemColor: Colors.grey,
-        onTap: _onItemTapped,
       ),
     );
   }

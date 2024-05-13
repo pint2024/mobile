@@ -5,34 +5,39 @@ class CustomBottomNavigationBar extends StatelessWidget {
   final Function(int) onItemTapped;
 
   const CustomBottomNavigationBar({
-    Key? key,
+    super.key,
     required this.selectedIndex,
     required this.onItemTapped,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
       items: const <BottomNavigationBarItem>[
         BottomNavigationBarItem(
+          icon: Icon(Icons.home),
+          label: 'Home',
+          selectedIconTheme: IconThemeData(),
+        ),
+        BottomNavigationBarItem(
           icon: Icon(Icons.calendar_month),
-          label: 'Calendario',
-          //selectedIconTheme: IconThemeData(),
+          label: 'Calendário',
+          selectedIconTheme: IconThemeData(),
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.notification_add),
           label: 'Notificações',
-          //selectedIconTheme: IconThemeData(),
+          selectedIconTheme: IconThemeData(),
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.chat),
-          label: 'ChatRoom',
-          //selectedIconTheme: IconThemeData(),
+          label: 'Chat Room',
+          selectedIconTheme: IconThemeData(),
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.settings),
           label: 'Definições',
-          //selectedIconTheme: IconThemeData(),
+          selectedIconTheme: IconThemeData(),
         ),
       ],
       currentIndex: selectedIndex,

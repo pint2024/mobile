@@ -1,38 +1,39 @@
 import 'package:flutter/material.dart';
-import 'modificar_perfil.dart';
+import 'package:movel_pint/perfil/asMinhasAtividades.dart';
+import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
 
 void main() {
-  runApp(UserProfileApp());
+  runApp(UserProfileApp1());
 }
 
-class UserProfileApp extends StatelessWidget {
+class UserProfileApp1 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: UserProfilePage(),
+      home: UserProfilePage1(),
     );
   }
 }
 
-void _navigateToModificarPerfil(BuildContext context) {
-  Navigator.push(
-    context,
-    MaterialPageRoute(builder: (context) => UserProfilePage1()), // Corrected to ModificarPerfilPage
-  );
-}
-
-class UserProfilePage extends StatefulWidget {
+class UserProfilePage1 extends StatefulWidget {
   @override
-  _UserProfilePageState createState() => _UserProfilePageState();
+  _UserProfilePageState1 createState() => _UserProfilePageState1();
 }
 
-class _UserProfilePageState extends State<UserProfilePage> {
+class _UserProfilePageState1 extends State<UserProfilePage1> {
   int _selectedIndex = 0;
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  void _goToMyAtividadesPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => MyAtividade()),
+    );
   }
 
   @override
@@ -62,11 +63,11 @@ class _UserProfilePageState extends State<UserProfilePage> {
           children: <Widget>[
             CircleAvatar(
               radius: 50,
-              backgroundImage: NetworkImage('https://img.freepik.com/vetores-premium/ilustracao-de-avatar-de-estudante-icone-de-perfil-de-usuario-avatar-de-jovem_118339-4402.jpg?w=740'), // Altere para a URL da nova imagem do avatar
+              backgroundImage: NetworkImage('https://img.freepik.com/vetores-premium/ilustracao-de-avatar-de-estudante-icone-de-perfil-de-usuario-avatar-de-jovem_118339-4402.jpg?w=740'),
             ),
             SizedBox(height: 10),
             Text(
-              'Nome do Utilizador', // Substitua pelo nome do usuário
+              'Nome do Utilizador',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -92,6 +93,14 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 border: OutlineInputBorder(),
                 labelText: 'Descrição (Opcional)',
               ),
+              maxLines: 10, // Increase the maximum number of lines
+              minLines: 5, // Increase the minimum number of lines
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              child: Text('Ver Minhas Atividades'),
+              onPressed: _goToMyAtividadesPage,
+
             ),
             SizedBox(height: 10),
             Row(
@@ -101,19 +110,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   child: Padding(
                     padding: EdgeInsets.all(5.0),
                     child: ElevatedButton(
-                      onPressed: () {
-                        _navigateToModificarPerfil(context); // Navigate to Modificar Perfil screen
-                      },
-                      child: Text('Modificar'),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.all(5.0),
-                    child: ElevatedButton(
                       onPressed: () {},
-                      child: Text('Terminar sessão'),
+                      child: Text('Confirmar'),
                     ),
                   ),
                 ),
@@ -122,29 +120,16 @@ class _UserProfilePageState extends State<UserProfilePage> {
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_month),
-            label: 'Calendario',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.notification_add),
-            label: 'Notificações',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.chat),
-            label: 'ChatRoom',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Definições',
+      bottomNavigationBar: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CustomBottomNavigationBar(
+            selectedIndex: 0,
+            onItemTapped: (index) {
+              // 
+            },
           ),
         ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.blue,
-        unselectedItemColor: Colors.grey,
-        onTap: _onItemTapped,
       ),
     );
   }
