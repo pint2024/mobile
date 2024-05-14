@@ -123,49 +123,15 @@ class _EventFormPageState extends State<EventFormPage> {
                     children: [
                       Expanded(
                         child: TextFormField(
-                          controller: _locationController,
-                          decoration: InputDecoration(
-                            labelText: 'Local',
-                            border: OutlineInputBorder(),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Por favor, insira o local do evento';
-                            }
-                            return null;
-                          },
-                        ),
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.map),
-                        onPressed: () {
-                          _launchMap(_locationController.text);
-                        },
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 10),
-                  TextFormField(
-                    controller: _descriptionController,
-                    decoration: InputDecoration(
-                      labelText: 'Descrição',
-                      border: OutlineInputBorder(),
-                    ),
-                    maxLines: 3,
-                  ),
-                  SizedBox(height: 20),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextFormField(
-                          readOnly: true,
-                          controller: _selectedDate != null
-                              ? TextEditingController(text: '${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}')
-                              : null,
                           decoration: InputDecoration(
                             labelText: 'Dia',
                             border: OutlineInputBorder(),
                           ),
+                          readOnly: true,
+                          onTap: _selectDate,
+                          controller: _selectedDate != null
+                              ? TextEditingController(text: '${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}')
+                              : null,
                           validator: (value) {
                             if (_selectedDate == null) {
                               return 'Por favor, selecione o dia do evento';
@@ -185,14 +151,15 @@ class _EventFormPageState extends State<EventFormPage> {
                     children: [
                       Expanded(
                         child: TextFormField(
-                          readOnly: true,
-                          controller: _selectedTime != null
-                              ? TextEditingController(text: '${_selectedTime!.hour}:${_selectedTime!.minute}')
-                              : null,
                           decoration: InputDecoration(
                             labelText: 'Hora',
                             border: OutlineInputBorder(),
                           ),
+                          readOnly: true,
+                          onTap: _selectTime,
+                          controller: _selectedTime != null
+                              ? TextEditingController(text: '${_selectedTime!.hour}:${_selectedTime!.minute}')
+                              : null,
                           validator: (value) {
                             if (_selectedTime == null) {
                               return 'Por favor, selecione a hora do evento';
@@ -206,6 +173,29 @@ class _EventFormPageState extends State<EventFormPage> {
                         onPressed: _selectTime,
                       ),
                     ],
+                  ),
+                  SizedBox(height: 10),
+                  TextFormField(
+                    controller: _locationController,
+                    decoration: InputDecoration(
+                      labelText: 'Local',
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Por favor, insira o local do evento';
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 10),
+                  TextFormField(
+                    controller: _descriptionController,
+                    decoration: InputDecoration(
+                      labelText: 'Descrição',
+                      border: OutlineInputBorder(),
+                    ),
+                    maxLines: 3,
                   ),
                   SizedBox(height: 20),
                   ElevatedButton(
@@ -244,6 +234,20 @@ class _EventFormPageState extends State<EventFormPage> {
                           _image = null;
                         });
 
+                        // Navegar para a página de detalhes do evento
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => EventDetailsPage(
+                              name: name,
+                              location: location,
+                              description: description,
+                              dateTime: dateTime ?? DateTime.now(), // Defina um valor padrão se dateTime for nulo
+                              image: _image,
+                            ),
+                          ),
+                        );
+
                         // Pode adicionar lógica para enviar os dados para um serviço ou API aqui
                       }
                     },
@@ -251,6 +255,65 @@ class _EventFormPageState extends State<EventFormPage> {
                   ),
                 ],
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class EventDetailsPage extends StatelessWidget {
+  final String name;
+  final String location;
+  final String description;
+  final DateTime dateTime;
+  final File? image;
+
+  const EventDetailsPage({
+    required this.name,
+    required this.location,
+    required this.description,
+    required this.dateTime,
+    this.image,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Detalhes do Evento'),
+      ),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (image != null)
+              Image.file(
+                image!,
+                height: 200,
+                fit: BoxFit.cover,
+              ),
+            SizedBox(height: 20),
+            Text(
+              'Nome: $name',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 10),
+            Text(
+              'Local: $location',
+              style: TextStyle(fontSize: 16),
+            ),
+            SizedBox(height: 10),
+            Text(
+              'Descrição: $description',
+              style: TextStyle(fontSize: 16),
+            ),
+            SizedBox(height: 10),
+            Text(
+              'Data e Hora: ${dateTime.day}/${dateTime.month}/${dateTime.year} ${dateTime.hour}:${dateTime.minute}',
+              style: TextStyle(fontSize: 16),
             ),
           ],
         ),

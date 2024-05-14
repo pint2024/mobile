@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movel_pint/atividade/atividades.dart';
+import 'package:movel_pint/atividade/topicosAtividades.dart';
 import 'package:movel_pint/evento/criarEvento.dart';
 import 'package:movel_pint/perfil/login.dart';
 import 'package:movel_pint/perfil/registo.dart';
@@ -101,6 +102,13 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  void _goToCategoriesPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => CategoriesPage()),
+    );
+  }
+
   
 
   @override
@@ -191,6 +199,10 @@ class _HomePageState extends State<HomePage> {
               ElevatedButton(
                 onPressed: _goToAtividadesPage,
                 child: Text('Atividades'),
+              ),
+              ElevatedButton(
+                onPressed: _goToCategoriesPage,
+                child: Text('Categorias das atividades'),
               ),
           CustomBottomNavigationBar(
             selectedIndex: _selectedIndex,
