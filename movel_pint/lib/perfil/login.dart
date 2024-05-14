@@ -19,39 +19,122 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: SafeArea(
-          child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(15.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  alignment: Alignment.center,
-                  child: Text(
-                    'Logo',
-                    style: TextStyle(
-                      color: Color.fromRGBO(57, 99, 156, 1.0),
-                      fontSize: 35,
-                      fontWeight: FontWeight.bold,
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(60),
+        child: AppBar(
+          backgroundColor: const Color.fromRGBO(57, 99, 156, 1.0),
+          title: Row(
+            children: [
+              Padding(
+                padding: EdgeInsets.only(left: 16),
+                child: Image.asset(
+                  'assets/Images/logo.png',
+                  width: 40,
+                  height: 40,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      body: Container(
+        color: const Color.fromRGBO(57, 99, 156, 1.0), // Isso faz com que o fundo atrás da caixa seja azul
+        child: Center(
+          child: Transform.scale(
+            scale: 0.9, // Isso diminui o tamanho do widget por um fator de 3
+            child: Container(
+              padding: EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.only(bottom: 20.0, right: 10.0), // Adicione esta linha
+                    child: Text(
+                      'Faça login na sua conta',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 30),
-                Text(
-                  'Login to your account',
-                  style: TextStyle(
-                    color: Color.fromRGBO(57, 99, 156, 1.0),
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
+                  SizedBox(height: 10),
+                  TextField(
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0), // Adicione esta linha
+                      ),
+                      labelText: 'Email',
+                    ),
                   ),
-                ),          
-              ],
+                  SizedBox(height: 10),
+                  TextField(
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0), // Adicione esta linha
+                      ),
+                      labelText: 'Password',
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  Container(
+                    width: double.infinity, // Isso faz com que o botão tenha a largura máxima disponível
+                    child: ElevatedButton(
+                      onPressed: () {
+                        // Adicione aqui a lógica para autenticar o usuário
+                      },
+                      child: Text('Login'),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  OutlinedButton(
+                    onPressed: () {
+                      _handleSignInWithGoogle(context);
+                    },
+                    child: Text('Login com o Google'),
+                  ),
+                  SizedBox(height: 20),
+                  // Botão para ir para a página de registro
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => RegisterPage()), // Página de registro
+                      );
+                    },
+                    child: Text('Registrar'),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
       ),
     );
+  }
+
+  Future<void> _handleSignInWithGoogle(BuildContext context) async {
+    try {
+      // Configure o GoogleSignIn
+      GoogleSignIn googleSignIn = GoogleSignIn(scopes: ['email']);
+
+      // Autentique o usuário com o Google
+      GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+
+      if (googleUser != null) {
+        // O usuário está autenticado com o Google, você pode prosseguir com o login
+        // ou armazenar as credenciais do usuário, conforme necessário.
+        print('Usuário autenticado com sucesso: ${googleUser.email}');
+      } else {
+        // O usuário cancelou o processo de login com o Google
+        print('Falha ao autenticar com o Google');
+      }
+    } catch (error) {
+      print('Erro ao autenticar com o Google: $error');
+    }
   }
 }

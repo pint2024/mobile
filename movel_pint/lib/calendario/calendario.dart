@@ -29,10 +29,18 @@ class _CalendarScreenState extends State<CalendarScreen> {
   int _selectedIndex = 0;
 
   void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+  setState(() {
+    _selectedIndex = index;
+  });
+
+  if (index == 1) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => CalendarScreen()),
+    );
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
