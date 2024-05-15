@@ -68,12 +68,12 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  void _goToEventFormPage() {
+  /*void _goToEventFormPage() {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => EventFormPage()),
     );
-  }
+  }*/
 
   void _goToModificarPerfilPage() {
     Navigator.push(
@@ -187,10 +187,10 @@ void _goToAllEventsPage() {
         children: [
           MyCard(),
           SizedBox(height: 16), // Espaçamento entre o card e o botão
-          ElevatedButton(
+          /*ElevatedButton(
             onPressed: _goToEventFormPage,
             child: Text('Criar Novo Evento'),
-          ),
+          ),*/
            ElevatedButton(
                 onPressed: _goToModificarPerfilPage,
                 child: Text('Modificar Perfil'),
