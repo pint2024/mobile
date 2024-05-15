@@ -17,27 +17,27 @@ class CustomBottomNavigationBar extends StatelessWidget {
         BottomNavigationBarItem(
           icon: Icon(Icons.home),
           label: 'Home',
-          selectedIconTheme: IconThemeData(),
+         // selectedIconTheme: IconThemeData(),
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.calendar_month),
           label: 'Calendário',
-          selectedIconTheme: IconThemeData(),
+          //selectedIconTheme: IconThemeData(),
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.notification_add),
           label: 'Notificações',
-          selectedIconTheme: IconThemeData(),
+         // selectedIconTheme: IconThemeData(),
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.chat),
           label: 'Chat Room',
-          selectedIconTheme: IconThemeData(),
+          //selectedIconTheme: IconThemeData(),
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.settings),
           label: 'Definições',
-          selectedIconTheme: IconThemeData(),
+          //selectedIconTheme: IconThemeData(),
         ),
       ],
       currentIndex: selectedIndex,

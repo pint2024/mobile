@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:movel_pint/registo.dart'; // Importe o arquivo registro.dart
+import 'registo.dart'; // Importe o arquivo registro.dart
 
 void main() {
   runApp(LoginApp());
@@ -119,7 +119,7 @@ class LoginPage extends StatelessWidget {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => MyRegistrationForm()), // Página de registro
+                        MaterialPageRoute(builder: (context) => RegisterPage()), // Página de registro
                       );
                     },
                     child: Text(' Não tens uma conta? Registar'),
