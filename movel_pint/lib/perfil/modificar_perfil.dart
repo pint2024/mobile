@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:movel_pint/perfil/asMinhasAtividades.dart';
+import 'package:movel_pint/atividade/asMinhasAtividades.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
 
 void main() {

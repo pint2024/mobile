@@ -8,6 +8,7 @@ import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
 import 'package:movel_pint/widgets/card.dart';
 import 'package:movel_pint/widgets/customAppBar.dart';
 import 'package:movel_pint/calendario/calendario.dart'; // Importe o arquivo de calendario.dart
+import 'package:movel_pint/atividade/asMinhasAtividades.dart';
 import 'perfil/modificar_perfil.dart'; // Importe a página de modificar perfil
 
 void main() {
@@ -45,6 +46,12 @@ class _HomePageState extends State<HomePage> {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => CalendarScreen()),
+      );
+    }
+    if (index == 4) { 
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => CategoriesPage()),
       );
     }
   }
