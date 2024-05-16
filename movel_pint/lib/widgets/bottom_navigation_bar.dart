@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:ionicons/ionicons.dart';
+
 
 class CustomBottomNavigationBar extends StatelessWidget {
   final int selectedIndex;
@@ -29,14 +31,14 @@ class CustomBottomNavigationBar extends StatelessWidget {
           label: 'Notificações',
          // selectedIconTheme: IconThemeData(),
         ),
-        BottomNavigationBarItem(
+        /*BottomNavigationBarItem(
           icon: Icon(Icons.chat),
           label: 'Chat Room',
           //selectedIconTheme: IconThemeData(),
-        ),
+        ),*/
         BottomNavigationBarItem(
-          icon: Icon(Icons.settings),
-          label: 'Definições',
+          icon: Icon(Ionicons.grid_outline),
+          label: 'Atividades',
           //selectedIconTheme: IconThemeData(),
         ),
       ],

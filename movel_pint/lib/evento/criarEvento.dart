@@ -60,15 +60,6 @@ class _EventFormPageState extends State<EventFormPage> {
     }
   }
 
-  Future<void> _launchMap(String location) async {
-    final url = 'https://www.google.com/maps/search/?api=1&query=$location';
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      throw 'Could not launch $url';
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -119,30 +110,18 @@ class _EventFormPageState extends State<EventFormPage> {
                     },
                   ),
                   SizedBox(height: 10),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextFormField(
-                          controller: _locationController,
-                          decoration: InputDecoration(
-                            labelText: 'Local',
-                            border: OutlineInputBorder(),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Por favor, insira o local do evento';
-                            }
-                            return null;
-                          },
-                        ),
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.map),
-                        onPressed: () {
-                          _launchMap(_locationController.text);
-                        },
-                      ),
-                    ],
+                  TextFormField(
+                    controller: _locationController,
+                    decoration: InputDecoration(
+                      labelText: 'Local',
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Por favor, insira o local do evento';
+                      }
+                      return null;
+                    },
                   ),
                   SizedBox(height: 10),
                   TextFormField(

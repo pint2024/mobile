@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:movel_pint/atividade/TopicosAtividades.dart';
 import 'package:movel_pint/atividade/atividades.dart';
 import 'package:movel_pint/evento/criarEvento.dart';
+import 'package:movel_pint/notificacoes/Notifications.dart';
 import 'package:movel_pint/perfil/login.dart';
 import 'package:movel_pint/perfil/registo.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
@@ -39,11 +41,31 @@ class _HomePageState extends State<HomePage> {
       _selectedIndex = index;
     });
 
-    // Navegar para a página de calendário quando o índice do calendário for selecionado
-    if (index == 1) { // Se o índice selecionado for 1 (índice do calendário)
+    if (index == 0) { 
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage()),
+      );
+    }
+
+    if (index == 1) { 
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => CalendarScreen()),
+      );
+    }
+
+    if (index == 2) { 
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => Notificacoes()),
+      );
+    }
+
+    if (index == 3) { 
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => CategoriesPage()),
       );
     }
   }
@@ -101,7 +123,12 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  
+  void _goToCategoryPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => CategoriesPage()),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -176,22 +203,26 @@ class _HomePageState extends State<HomePage> {
             onPressed: _goToEventFormPage,
             child: Text('Criar Novo Evento'),
           ),
-           ElevatedButton(
-                onPressed: _goToModificarPerfilPage,
-                child: Text('Modificar Perfil'),
-              ),
-              ElevatedButton(
-                onPressed: _goToLoginPerfilPage,
-                child: Text('Login'),
-              ),
-              ElevatedButton(
-                onPressed: _goToRegisterPerfilPage,
-                child: Text('Registar'),
-              ),
-              ElevatedButton(
-                onPressed: _goToAtividadesPage,
-                child: Text('Atividades'),
-              ),
+          ElevatedButton(
+            onPressed: _goToModificarPerfilPage,
+            child: Text('Modificar Perfil'),
+          ),
+          ElevatedButton(
+            onPressed: _goToLoginPerfilPage,
+            child: Text('Login'),
+          ),
+          ElevatedButton(
+            onPressed: _goToRegisterPerfilPage,
+            child: Text('Registar'),
+          ),
+          ElevatedButton(
+            onPressed: _goToAtividadesPage,
+            child: Text('Atividades'),
+          ),
+          ElevatedButton(
+            onPressed: _goToCategoryPage,
+            child: Text('Categorias'),
+          ),
           CustomBottomNavigationBar(
             selectedIndex: _selectedIndex,
             onItemTapped: _onItemTapped,

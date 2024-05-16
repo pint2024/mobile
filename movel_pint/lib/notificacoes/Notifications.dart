@@ -4,15 +4,15 @@ import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
 import 'package:movel_pint/widgets/customAppBar.dart';
 
 void main() {
-  runApp(Atividade());
+  runApp(Notificacoes());
 }
 
-class Atividade extends StatefulWidget {
+class Notificacoes extends StatefulWidget {
   @override
-  _AtividadeState createState() => _AtividadeState();
+  _NotificacoesState createState() => _NotificacoesState();
 }
 
-class _AtividadeState extends State<Atividade> {
+class _NotificacoesState extends State<Notificacoes> {
   int _selectedIndex = 0;
   PageController _pageController = PageController(initialPage: 0);
 
@@ -43,19 +43,19 @@ class _AtividadeState extends State<Atividade> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: VerAtividade(_selectedIndex, _onItemTapped, _pageController, _nextPage, _previousPage),
+      home: VerNotificacoes(_selectedIndex, _onItemTapped, _pageController, _nextPage, _previousPage),
     );
   }
 }
 
-class VerAtividade extends StatelessWidget {
+class VerNotificacoes extends StatelessWidget {
   final int selectedIndex;
   final Function(int) onItemTapped;
   final PageController pageController;
   final Function() nextPage;
   final Function() previousPage;
 
-  VerAtividade(this.selectedIndex, this.onItemTapped, this.pageController, this.nextPage, this.previousPage);
+  VerNotificacoes(this.selectedIndex, this.onItemTapped, this.pageController, this.nextPage, this.previousPage);
 
   @override
   Widget build(BuildContext context) {
