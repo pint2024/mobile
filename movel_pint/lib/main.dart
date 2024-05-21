@@ -133,7 +133,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(),
+      //appBar: CustomAppBar(),
       body: SingleChildScrollView(
         child: Center(
           child: Container(
@@ -197,7 +197,7 @@ class _HomePageState extends State<HomePage> {
       bottomNavigationBar: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          MyCard(),
+          //MyCard(),
           SizedBox(height: 16), // Espaçamento entre o card e o botão
           ElevatedButton(
             onPressed: _goToEventFormPage,

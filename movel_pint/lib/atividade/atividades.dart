@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:movel_pint/backend/api_service.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
 import 'package:movel_pint/widgets/card.dart';
-import 'package:movel_pint/widgets/customAppBar.dart';
 
 void main() {
   runApp(Atividade());
@@ -63,11 +63,32 @@ class VerAtividade extends StatefulWidget {
 
 class _VerAtividadeState extends State<VerAtividade> {
   int _selectedIndex = 0;
+  List<dynamic> _atividades = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchAtividades();
+  }
+
+  Future<void> _fetchAtividades() async {
+  try {
+    print('Tentando acessar: http://localhost:8000/atividade/listar');
+    final data = await ApiService.fetchData('http://localhost:8000/atividade/listar');
+    setState(() {
+      _atividades = data['data'].expand((atividade) => atividade['conteudo_atividade']).toList();
+    });
+    print('Atividades carregadas com sucesso');
+  } catch (e) {
+    print('Erro ao carregar atividades: $e');
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(),
+      // appBar: CustomAppBar(),
       body: SingleChildScrollView(
         child: Center(
           child: Column(
@@ -93,9 +114,19 @@ class _VerAtividadeState extends State<VerAtividade> {
                   ],
                 ),
               ),
-              for (int i = 0; i < 8; i++)
-                if (_selectedIndex == 0 || _selectedIndex == i)
-                  MyCard(),
+              if (_atividades.isEmpty)
+                CircularProgressIndicator()
+              else
+                for (var atividade in _atividades)
+                  MyCard(
+                    titulo: atividade['titulo'],
+                    descricao: atividade['descricao'],
+                    imagem: 'http://10.0.2.2:8000/${atividade['imagem']}',
+                    dataCriacao: atividade['data_criacao'],
+                    nomeUsuario: 'Nome do Usuário', // Substituir pelo nome real do usuário se disponível
+                    numFotos: 5, // Substituir pelo número real de fotos se disponível
+                    numComentarios: 5, // Substituir pelo número real de comentários se disponível
+                  ),
             ],
           ),
         ),
