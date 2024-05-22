@@ -7,7 +7,7 @@ import 'package:movel_pint/perfil/login.dart';
 import 'package:movel_pint/perfil/registo.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
 import 'package:movel_pint/widgets/card.dart';
-import 'package:movel_pint/widgets/customAppBar.dart';
+import 'package:movel_pint/widgets/customAppBar.dart'; // Certifique-se que o caminho está correto
 import 'package:movel_pint/calendario/calendario.dart'; // Importe o arquivo de calendario.dart
 import 'perfil/modificar_perfil.dart'; // Importe a página de modificar perfil
 
@@ -133,7 +133,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //appBar: CustomAppBar(),
+      appBar: CustomAppBar(), // Integrando a CustomAppBar aqui
       body: SingleChildScrollView(
         child: Center(
           child: Container(
