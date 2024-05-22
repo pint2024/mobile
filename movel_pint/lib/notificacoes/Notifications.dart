@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:movel_pint/widgets/NotificationCard.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
 import 'package:movel_pint/widgets/customAppBar.dart';
+import 'package:movel_pint/backend/api_service.dart';
 
 void main() {
   runApp(Notificacoes());
@@ -15,6 +16,26 @@ class Notificacoes extends StatefulWidget {
 class _NotificacoesState extends State<Notificacoes> {
   int _selectedIndex = 0;
   PageController _pageController = PageController(initialPage: 0);
+  List<dynamic> _atividades = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchAtividades();
+  }
+
+  Future<void> _fetchAtividades() async {
+    try {
+      print('Tentando acessar: http://localhost:8000/atividade/listar');
+      final data = await ApiService.fetchData('http://localhost:8000/atividade/listar');
+      setState(() {
+        _atividades = data['data'];
+      });
+      print('Atividades carregadas com sucesso');
+    } catch (e) {
+      print('Erro ao carregar atividades: $e');
+    }
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -43,7 +64,7 @@ class _NotificacoesState extends State<Notificacoes> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: VerNotificacoes(_selectedIndex, _onItemTapped, _pageController, _nextPage, _previousPage),
+      home: VerNotificacoes(_selectedIndex, _onItemTapped, _pageController, _nextPage, _previousPage, _atividades),
     );
   }
 }
@@ -54,8 +75,9 @@ class VerNotificacoes extends StatelessWidget {
   final PageController pageController;
   final Function() nextPage;
   final Function() previousPage;
+  final List<dynamic> atividades;
 
-  VerNotificacoes(this.selectedIndex, this.onItemTapped, this.pageController, this.nextPage, this.previousPage);
+  VerNotificacoes(this.selectedIndex, this.onItemTapped, this.pageController, this.nextPage, this.previousPage, this.atividades);
 
   @override
   Widget build(BuildContext context) {
@@ -80,127 +102,37 @@ class VerNotificacoes extends StatelessWidget {
                     IconButton(
                       icon: Icon(Icons.filter_list),
                       onPressed: () {
-                        // 
+                        // Implementar filtro
                       },
                     ),
                   ],
                 ),
               ),
-              const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Hoje',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+              for (var atividade in atividades) ...[
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      atividade['date'],
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              GestureDetector(
-                onTap: () {
-                  // 
-                  print('Notificação clicada!');
-                },
-                child: NotificationCard(),
-              ),
-              const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    '1 Semana atrás',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                GestureDetector(
+                  onTap: () {
+                    print('Notificação clicada!');
+                  },
+                  child: NotificationCard(
+                    imageUrl: atividade['imageUrl'],
+                    description: atividade['description'],
+                    date: atividade['date'],
                   ),
                 ),
-              ),
-              GestureDetector(
-                onTap: () {
-                  // 
-                  print('Notificação clicada!');
-                },
-                child: NotificationCard(),
-              ),
-              GestureDetector(
-                onTap: () {
-                  // 
-                  print('Notificação clicada!');
-                },
-                child: NotificationCard(),
-              ),
-              const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    '5 semanas atrás',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-              GestureDetector(
-                onTap: () {
-                  // 
-                  print('Notificação clicada!');
-                },
-                child: NotificationCard(),
-              ),
-              GestureDetector(
-                onTap: () {
-                  // 
-                  print('Notificação clicada!');
-                },
-                child: NotificationCard(),
-              ),
-              const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Mais de 5 semanas atrás',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-              GestureDetector(
-                onTap: () {
-                  // 
-                  print('Notificação clicada!');
-                },
-                child: NotificationCard(),
-              ),
-              GestureDetector(
-                onTap: () {
-                  // 
-                  print('Notificação clicada!');
-                },
-                child: NotificationCard(),
-              ),
-              GestureDetector(
-                onTap: () {
-                  // 
-                  print('Notificação clicada!');
-                },
-                child: NotificationCard(),
-              ),
-              GestureDetector(
-                onTap: () {
-                  // 
-                  print('Notificação clicada!');
-                },
-                child: const NotificationCard(),
-              ),
+              ],
             ],
           ),
         ),
@@ -217,4 +149,3 @@ class VerNotificacoes extends StatelessWidget {
     );
   }
 }
-

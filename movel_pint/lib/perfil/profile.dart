@@ -1,34 +1,29 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
-import 'modificar_perfil.dart';
+import 'package:movel_pint/backend/api_service.dart';
 
 void main() {
-  runApp(UserProfileApp());
+  runApp(ProfileApp());
 }
 
-class UserProfileApp extends StatelessWidget {
+class ProfileApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: UserProfilePage(),
+      home: ProfilePage(),
     );
   }
 }
 
-void _navigateToModificarPerfil(BuildContext context) {
-  Navigator.push(
-    context,
-    MaterialPageRoute(builder: (context) => UserProfilePage1()), // Corrected to ModificarPerfilPage
-  );
-}
-
-class UserProfilePage extends StatefulWidget {
+class ProfilePage extends StatefulWidget {
   @override
-  _UserProfilePageState createState() => _UserProfilePageState();
+  _ProfilePageState createState() => _ProfilePageState();
 }
 
-class _UserProfilePageState extends State<UserProfilePage> {
+class _ProfilePageState extends State<ProfilePage> {
   int _selectedIndex = 0;
+  Map<String, dynamic>? _profileData;
 
   void _onItemTapped(int index) {
     setState(() {
@@ -37,100 +32,184 @@ class _UserProfilePageState extends State<UserProfilePage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _fetchProfileData();
+  }
+
+  Future<void> _fetchProfileData() async {
+    try {
+      print('Tentando acessar: http://10.0.2.2:8000/perfil');
+      final data = await ApiService.fetchData('http://10.0.2.2:8000/perfil');
+      if (data != null && data['data'] != null) {
+        setState(() {
+          _profileData = data['data'];
+        });
+        print('Perfil carregado com sucesso');
+      } else {
+        print('Dados do perfil não encontrados ou inválidos');
+      }
+    } catch (e) {
+      print('Erro ao carregar perfil: $e');
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(60),
-        child: AppBar(
-          backgroundColor: const Color.fromRGBO(57, 99, 156, 1.0),
-          title: Row(
+      appBar: CustomAppBar(),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
             children: [
-              Padding(
-                padding: EdgeInsets.only(left: 16),
-                child: Image.asset(
-                  'assets/Images/logo.png',
-                  width: 40,
-                  height: 40,
+              CircleAvatar(
+                radius: 50,
+                backgroundImage: _profileData != null && _profileData!['profile_picture'] != null
+                    ? (_profileData!['profile_picture'].startsWith('http')
+                        ? NetworkImage(_profileData!['profile_picture'])
+                        : AssetImage(_profileData!['profile_picture'])) as ImageProvider
+                    : AssetImage('assets/Images/profile_picture.png'),
+              ),
+              SizedBox(height: 16),
+              Text(
+                _profileData != null ? _profileData!['name'] ?? 'Nome não encontrado' : 'Nome não encontrado',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
                 ),
+              ),
+              SizedBox(height: 8),
+              _buildProfileItem(Icons.cake, 'Aniversario', _profileData != null ? _profileData!['birthday'] ?? 'Data não encontrada' : 'Data não encontrada'),
+              _buildProfileItem(Icons.phone, 'Numero', _profileData != null ? _profileData!['phone'] ?? 'Número não encontrado' : 'Número não encontrado'),
+              _buildProfileItem(Icons.camera_alt, 'Instagram', _profileData != null ? _profileData!['instagram'] ?? 'Instagram não encontrado' : 'Instagram não encontrado'),
+              _buildProfileItem(Icons.email, 'Email', _profileData != null ? _profileData!['email'] ?? 'Email não encontrado' : 'Email não encontrado'),
+              _buildProfileItem(Icons.lock, 'Password', '********'),
+              SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromRGBO(57, 99, 156, 1.0),
+                        padding: EdgeInsets.symmetric(vertical: 12),
+                      ),
+                      child: const Text(
+                        'Editar perfil',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.white, // Cor do texto
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 8), // Espaço entre os botões
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromRGBO(57, 99, 156, 1.0),
+                        padding: EdgeInsets.symmetric(vertical: 12),
+                      ),
+                      child: const Text(
+                        'Fotos',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.white, // Cor do texto
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 8), // Espaço entre os botões
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromRGBO(57, 99, 156, 1.0),
+                        padding: EdgeInsets.symmetric(vertical: 12),
+                      ),
+                      child: const Text(
+                        'Atividades',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.white, // Cor do texto
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
         ),
       ),
-      body: Padding(
-        padding: EdgeInsets.all(10),
-        child: Column(
-          children: <Widget>[
-            CircleAvatar(
-              radius: 50,
-              backgroundImage: NetworkImage('https://img.freepik.com/vetores-premium/ilustracao-de-avatar-de-estudante-icone-de-perfil-de-usuario-avatar-de-jovem_118339-4402.jpg?w=740'), // Altere para a URL da nova imagem do avatar
-            ),
-            SizedBox(height: 10),
-            Text(
-              'Nome do Utilizador', // Substitua pelo nome do usuário
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: 10),
-            TextField(
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Email: novo.email@exemplo.com',
-              ),
-            ),
-            SizedBox(height: 10),
-            TextField(
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Telefone: PT +356 123456789',
-              ),
-            ),
-            SizedBox(height: 10),
-            TextField(
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Descrição (Opcional)',
-              ),
-            ),
-            SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.all(5.0),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        _navigateToModificarPerfil(context); // Navigate to Modificar Perfil screen
-                      },
-                      child: Text('Modificar'),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.all(5.0),
-                    child: ElevatedButton(
-                      onPressed: () {},
-                      child: Text('Terminar sessão'),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
+      bottomNavigationBar: CustomBottomNavigationBar(
+        selectedIndex: _selectedIndex,
+        onItemTapped: _onItemTapped,
       ),
-      bottomNavigationBar: Column(
-        mainAxisSize: MainAxisSize.min,
+    );
+  }
+
+  Widget _buildProfileItem(IconData icon, String title, String subtitle) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
         children: [
-          CustomBottomNavigationBar(
-            selectedIndex: 0,
-            onItemTapped: (index) {
-              // 
-            },
+          Icon(icon, color: const Color.fromRGBO(57, 99, 156, 1.0)),
+          SizedBox(width: 16),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: 16,
+                ),
+              ),
+              SizedBox(height: 4),
+              Text(
+                subtitle,
+                style: TextStyle(
+                  fontSize: 16,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
+  @override
+  Size get preferredSize => Size.fromHeight(60);
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      backgroundColor: const Color.fromRGBO(57, 99, 156, 1.0),
+      title: Row(
+        children: [
+          Padding(
+            padding: EdgeInsets.only(left: 16),
+            child: Image.asset(
+              'assets/Images/logo.png',
+              width: 40,
+              height: 40,
+            ),
+          ),
+          Expanded(
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: IconButton(
+                icon: Icon(Icons.account_circle, color: Colors.white),
+                onPressed: () {},
+              ),
+            ),
           ),
         ],
       ),

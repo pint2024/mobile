@@ -19,17 +19,17 @@ class CustomBottomNavigationBar extends StatelessWidget {
         BottomNavigationBarItem(
           icon: Icon(Icons.home),
           label: 'Home',
-         selectedIconTheme: IconThemeData(),
+         //selectedIconTheme: IconThemeData(),
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.calendar_month),
           label: 'Calendário',
-          selectedIconTheme: IconThemeData(),
+          //selectedIconTheme: IconThemeData(),
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.notification_add),
           label: 'Notificações',
-         selectedIconTheme: IconThemeData(),
+         //selectedIconTheme: IconThemeData(),
         ),
         /*BottomNavigationBarItem(
           icon: Icon(Icons.chat),
@@ -38,8 +38,8 @@ class CustomBottomNavigationBar extends StatelessWidget {
         ),*/
         BottomNavigationBarItem(
           icon: Icon(Ionicons.grid_outline),
-          label: 'Atividades',
-          selectedIconTheme: IconThemeData(),
+          label: 'Forum',
+          //selectedIconTheme: IconThemeData(),
         ),
       ],
       currentIndex: selectedIndex,

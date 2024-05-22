@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
 class NotificationCard extends StatelessWidget {
-  final AssetImage? userImage;
-  final String? notificationText;
-  final String? notificationTime;
+  final String imageUrl;
+  final String description;
+  final String date;
 
   const NotificationCard({
-    this.userImage,
-    this.notificationText,
-    this.notificationTime,
+    required this.imageUrl,
+    required this.description,
+    required this.date,
   });
 
   @override
@@ -21,35 +21,35 @@ class NotificationCard extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Padding(
-                padding: EdgeInsets.only(right: 8.0), // Ajuste a quantidade de espaço à direita conforme necessário
-                child: CircleAvatar(
-                  backgroundImage: AssetImage('assets/Images/logo2.png'),
-                  radius: 20, 
-                ),
+            Padding(
+              padding: EdgeInsets.only(right: 8.0),
+              child: CircleAvatar(
+                backgroundImage: NetworkImage(imageUrl),
+                radius: 20,
               ),
-            SizedBox(width: 15), 
+            ),
+            SizedBox(width: 15),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    notificationText ?? 'O Joao Santos ouviu musica de kpop 134 vezes no dia de sabado, deve ser levado ao hospital psiquiatrico',
-                    maxLines: 2, 
+                    description,
+                    maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       fontSize: 16,
                     ),
                   ),
-                  SizedBox(height: 8), 
+                  SizedBox(height: 8),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      SizedBox(width: 0), 
+                      SizedBox(width: 0),
                       _buildIconWithCount(Icons.calendar_month, ''),
-                      SizedBox(width: 3), 
+                      SizedBox(width: 3),
                       Text(
-                        notificationTime ?? '10/2/2023',
+                        date,
                         style: TextStyle(
                           color: Colors.grey,
                         ),
