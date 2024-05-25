@@ -1,17 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:movel_pint/atividade/TopicosAtividades.dart';
+import 'package:movel_pint/calendario/calendario.dart';
+import 'package:movel_pint/main.dart';
+import 'package:movel_pint/notificacoes/Notifications.dart';
+import 'package:movel_pint/perfil/profile.dart';
 
-
-class CustomBottomNavigationBar extends StatelessWidget {
+class CustomBottomNavigationBar extends StatefulWidget {
   final int selectedIndex;
   final Function(int) onItemTapped;
 
   const CustomBottomNavigationBar({
-    super.key,
+    Key? key,
     required this.selectedIndex,
     required this.onItemTapped,
-  });
+  }) : super(key: key);
 
+  @override
+  _CustomBottomNavigationBarState createState() =>
+      _CustomBottomNavigationBarState();
+}
+
+class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
@@ -42,10 +52,34 @@ class CustomBottomNavigationBar extends StatelessWidget {
           //selectedIconTheme: IconThemeData(),
         ),
       ],
-      currentIndex: selectedIndex,
+      currentIndex: widget.selectedIndex,
       selectedItemColor: Colors.blue,
       unselectedItemColor: Colors.grey,
-      onTap: onItemTapped,
+      onTap: (index) {
+        if (index == 0) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => HomePage()),
+          );
+        } else if (index == 1) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => CalendarScreen()),
+          );
+        } else if (index == 2) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => Notificacoes()),
+          );
+        } else if (index == 3) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => CategoriesPage()),
+          );
+        }
+        // Atualiza o estado do índice selecionado
+        widget.onItemTapped(index);
+      },
     );
   }
 }

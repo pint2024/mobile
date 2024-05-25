@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:movel_pint/perfil/profile.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
@@ -23,7 +24,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               alignment: Alignment.centerRight,
               child: IconButton(
                 icon: Icon(Icons.account_circle, color: Colors.white),
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => ProfileApp()), // Navigate to ModificarPerfil
+                  );
+                },
               ),
             ),
           ),

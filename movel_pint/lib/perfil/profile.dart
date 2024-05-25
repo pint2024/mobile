@@ -2,6 +2,12 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
 import 'package:movel_pint/backend/api_service.dart';
+import 'package:movel_pint/atividade/TopicosAtividades.dart';
+import 'package:movel_pint/notificacoes/Notifications.dart';
+import 'package:movel_pint/calendario/calendario.dart';
+import 'package:movel_pint/main.dart';
+import 'package:movel_pint/perfil/modificar_perfil.dart';
+
 
 void main() {
   runApp(ProfileApp());
@@ -29,6 +35,33 @@ class _ProfilePageState extends State<ProfilePage> {
     setState(() {
       _selectedIndex = index;
     });
+
+    switch (index) {
+      case 0:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => HomePage()),
+        );
+        break;
+      case 1:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => CalendarScreen()),
+        );
+        break;
+      case 2:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => Notificacoes()),
+        );
+        break;
+      case 3:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => CategoriesPage()),
+        );
+        break;
+    }
   }
 
   @override
@@ -91,7 +124,12 @@ class _ProfilePageState extends State<ProfilePage> {
                 children: [
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => UserProfileApp1()), 
+                        );
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color.fromRGBO(57, 99, 156, 1.0),
                         padding: EdgeInsets.symmetric(vertical: 12),
@@ -100,12 +138,12 @@ class _ProfilePageState extends State<ProfilePage> {
                         'Editar perfil',
                         style: TextStyle(
                           fontSize: 14,
-                          color: Colors.white, // Cor do texto
+                          color: Colors.white,
                         ),
                       ),
                     ),
                   ),
-                  SizedBox(width: 8), // Espaço entre os botões
+                  SizedBox(width: 8),
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {},
@@ -117,12 +155,12 @@ class _ProfilePageState extends State<ProfilePage> {
                         'Fotos',
                         style: TextStyle(
                           fontSize: 14,
-                          color: Colors.white, // Cor do texto
+                          color: Colors.white,
                         ),
                       ),
                     ),
                   ),
-                  SizedBox(width: 8), // Espaço entre os botões
+                  SizedBox(width: 8),
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {},
@@ -134,7 +172,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         'Atividades',
                         style: TextStyle(
                           fontSize: 14,
-                          color: Colors.white, // Cor do texto
+                          color: Colors.white,
                         ),
                       ),
                     ),
@@ -207,7 +245,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               alignment: Alignment.centerRight,
               child: IconButton(
                 icon: Icon(Icons.account_circle, color: Colors.white),
-                onPressed: () {},
+                onPressed: () {
+                },
               ),
             ),
           ),
