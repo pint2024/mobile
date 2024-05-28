@@ -9,6 +9,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return AppBar(
       backgroundColor: const Color.fromRGBO(57, 99, 156, 1.0),
+      automaticallyImplyLeading: false, // Adicione esta linha
       title: Row(
         children: [
           Padding(
@@ -26,8 +27,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 icon: Icon(Icons.account_circle, color: Colors.white),
                 onPressed: () {
                   Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => ProfileApp()), // Navigate to ModificarPerfil
+                    context,
+                    MaterialPageRoute(builder: (context) => ProfileApp()), // Navegar para ModificarPerfil
                   );
                 },
               ),

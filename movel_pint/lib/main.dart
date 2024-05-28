@@ -9,7 +9,7 @@ import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
 import 'package:movel_pint/widgets/card.dart';
 import 'package:movel_pint/widgets/customAppBar.dart'; // Certifique-se que o caminho está correto
 import 'package:movel_pint/calendario/calendario.dart'; // Importe o arquivo de calendario.dart
-import 'perfil/modificar_perfil.dart'; // Importe a página de modificar perfil
+
 
 void main() {
   runApp(MyApp());
@@ -40,54 +40,9 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _selectedIndex = index;
     });
-
-    if (index == 0) { 
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => HomePage()),
-      );
-    }
-
-    if (index == 1) { 
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => CalendarScreen()),
-      );
-    }
-
-    if (index == 2) { 
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => Notificacoes()),
-      );
-    }
-
-    if (index == 3) { 
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => CategoriesPage()),
-      );
-    }
   }
 
-  void _nextPage() {
-    if (_pageController.page! < 2) {
-      _pageController.nextPage(
-        duration: Duration(milliseconds: 300),
-        curve: Curves.ease,
-      );
-    }
-  }
-
-  void _previousPage() {
-    if (_pageController.page! > 0) {
-      _pageController.previousPage(
-        duration: Duration(milliseconds: 300),
-        curve: Curves.ease,
-      );
-    }
-  }
-
+  /*
   void _goToEventFormPage() {
     Navigator.push(
       context,
@@ -128,7 +83,7 @@ class _HomePageState extends State<HomePage> {
       context,
       MaterialPageRoute(builder: (context) => CategoriesPage()),
     );
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -170,6 +125,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ],
                   ),
+                  /*
                   Positioned(
                     top: 80,
                     left: 1,
@@ -186,8 +142,10 @@ class _HomePageState extends State<HomePage> {
                       icon: Icon(Icons.arrow_forward, size: 20),
                       onPressed: _nextPage,
                       color: const Color.fromARGB(255, 255, 255, 255),
+                      
                     ),
                   ),
+                  */
                 ],
               ),
             ),
@@ -198,6 +156,7 @@ class _HomePageState extends State<HomePage> {
         mainAxisSize: MainAxisSize.min,
         children: [
           //MyCard(),
+          /*
           SizedBox(height: 16), // Espaçamento entre o card e o botão
           ElevatedButton(
             onPressed: _goToEventFormPage,
@@ -223,6 +182,7 @@ class _HomePageState extends State<HomePage> {
             onPressed: _goToCategoryPage,
             child: Text('Categorias'),
           ),
+          */
           CustomBottomNavigationBar(
             selectedIndex: _selectedIndex,
             onItemTapped: _onItemTapped,

@@ -8,7 +8,6 @@ import 'package:movel_pint/calendario/calendario.dart';
 import 'package:movel_pint/main.dart';
 import 'package:movel_pint/perfil/modificar_perfil.dart';
 
-
 void main() {
   runApp(ProfileApp());
 }
@@ -35,33 +34,6 @@ class _ProfilePageState extends State<ProfilePage> {
     setState(() {
       _selectedIndex = index;
     });
-
-    switch (index) {
-      case 0:
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => HomePage()),
-        );
-        break;
-      case 1:
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => CalendarScreen()),
-        );
-        break;
-      case 2:
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => Notificacoes()),
-        );
-        break;
-      case 3:
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => CategoriesPage()),
-        );
-        break;
-    }
   }
 
   @override
@@ -127,7 +99,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => ProfileEditScreen()), 
+                          MaterialPageRoute(builder: (context) => ProfileEditScreen()),
                         );
                       },
                       style: ElevatedButton.styleFrom(
@@ -245,8 +217,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               alignment: Alignment.centerRight,
               child: IconButton(
                 icon: Icon(Icons.account_circle, color: Colors.white),
-                onPressed: () {
-                },
+                onPressed: () {},
               ),
             ),
           ),
