@@ -1,135 +1,180 @@
 import 'package:flutter/material.dart';
-import 'package:movel_pint/perfil/asMinhasAtividades.dart';
+import 'package:movel_pint/perfil/profile.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
 
-void main() {
-  runApp(UserProfileApp1());
-}
-
-class UserProfileApp1 extends StatelessWidget {
+class ProfileEditScreen extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: UserProfilePage1(),
-    );
-  }
+  _ProfileEditScreenState createState() => _ProfileEditScreenState();
 }
 
-class UserProfilePage1 extends StatefulWidget {
-  @override
-  _UserProfilePageState1 createState() => _UserProfilePageState1();
-}
-
-class _UserProfilePageState1 extends State<UserProfilePage1> {
-  int _selectedIndex = 0;
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
-  void _goToMyAtividadesPage() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => MyAtividade()),
-    );
-  }
+class _ProfileEditScreenState extends State<ProfileEditScreen> {
+  String _name = "John Doe";
+  String _birthday = "01/01/1990";
+  String _phoneNumber = "123456789";
+  String _instagramName = "john_doe";
+  String _email = "john.doe@example.com";
+  String _password = "**********";
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(60),
-        child: AppBar(
-          backgroundColor: const Color.fromRGBO(57, 99, 156, 1.0),
-          title: Row(
-            children: [
-              Padding(
-                padding: EdgeInsets.only(left: 16),
-                child: Image.asset(
-                  'assets/Images/logo.png',
-                  width: 40,
-                  height: 40,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-      body: Padding(
-        padding: EdgeInsets.all(10),
+      appBar: CustomAppBar(),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(20),
         child: Column(
-          children: <Widget>[
-            CircleAvatar(
-              radius: 50,
-              backgroundImage: NetworkImage('https://img.freepik.com/vetores-premium/ilustracao-de-avatar-de-estudante-icone-de-perfil-de-usuario-avatar-de-jovem_118339-4402.jpg?w=740'),
-            ),
-            SizedBox(height: 10),
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
             Text(
-              'Nome do Utilizador',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
+              "Name:",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 10),
             TextField(
               decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Email: novo.email@exemplo.com',
+                hintText: "Enter your name",
               ),
-            ),
-            SizedBox(height: 10),
-            TextField(
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Telefone: PT +356 123456789',
-              ),
-            ),
-            SizedBox(height: 10),
-            TextField(
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Descrição (Opcional)',
-              ),
-              maxLines: 10, // Increase the maximum number of lines
-              minLines: 5, // Increase the minimum number of lines
+              onChanged: (value) {
+                _name = value;
+              },
             ),
             SizedBox(height: 20),
-            ElevatedButton(
-              child: Text('Ver Minhas Atividades'),
-              onPressed: _goToMyAtividadesPage,
-
+            Text(
+              "Birthday:",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 10),
+            TextField(
+              decoration: InputDecoration(
+                hintText: "Enter your birthday",
+              ),
+              onChanged: (value) {
+                _birthday = value;
+              },
+            ),
+            SizedBox(height: 20),
+            Text(
+              "Phone Number:",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            TextField(
+              decoration: InputDecoration(
+                hintText: "Enter your phone number",
+              ),
+              onChanged: (value) {
+                _phoneNumber = value;
+              },
+            ),
+            SizedBox(height: 20),
+            Text(
+              "Instagram Name:",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            TextField(
+              decoration: InputDecoration(
+                hintText: "Enter your Instagram name",
+              ),
+              onChanged: (value) {
+                _instagramName = value;
+              },
+            ),
+            SizedBox(height: 20),
+            Text(
+              "Email:",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            TextField(
+              decoration: InputDecoration(
+                hintText: "Enter your email",
+              ),
+              onChanged: (value) {
+                _email = value;
+              },
+            ),
+            SizedBox(height: 20),
+            Text(
+              "Password:",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            TextField(
+              decoration: InputDecoration(
+                hintText: "Enter your password",
+              ),
+              onChanged: (value) {
+                _password = value;
+              },
+            ),
+            SizedBox(height: 40),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.all(5.0),
-                    child: ElevatedButton(
-                      onPressed: () {},
-                      child: Text('Confirmar'),
-                    ),
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: Text("Cancel"),
+                        content: Text("All changes will not be saved."),
+                         actions: [
+                  TextButton(
+                    onPressed: () {
+                      // Navigate to profile page
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => ProfilePage()),
+                      );
+                    },
+                    child: Text("Continue"),
                   ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text("Cancel"),
+                  ),
+                ],
+                      ),
+                    );
+                  },
+                  child: Text("Cancel"),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: Text("Save"),
+                        content: Text("Are you sure you want to save?"),
+                         actions: [
+                  TextButton(
+                    onPressed: () {
+                      // Navigate to profile page
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => ProfilePage()),
+                      );
+                    },
+                    child: Text("Continue"),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text("Cancel"),
+                  ),
+                ],
+                      ),
+                    );
+                  },
+                  child: Text("Save"),
                 ),
               ],
             ),
           ],
         ),
       ),
-      bottomNavigationBar: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          CustomBottomNavigationBar(
-            selectedIndex: 0,
-            onItemTapped: (index) {
-              // 
-            },
-          ),
-        ],
+      bottomNavigationBar: CustomBottomNavigationBar(
+        selectedIndex: 0, // Set the correct index
+        onItemTapped: (int index) {
+          // Implement logic to switch screens
+        },
       ),
     );
   }

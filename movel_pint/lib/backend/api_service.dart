@@ -14,4 +14,6 @@ class ApiService {
       throw Exception('Failed to connect to server: $e');
     }
   }
+
+  static updateProfile(Map<String, dynamic> profileData) {}
 }
