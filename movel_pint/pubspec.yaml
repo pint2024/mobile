@@ -41,6 +41,7 @@ dependencies:
   ionicons: ^0.2.2
   http: ^0.13.4
   flutter_rating_bar: ^4.0.0
+  carousel_slider: ^4.0.0
 
 
 
