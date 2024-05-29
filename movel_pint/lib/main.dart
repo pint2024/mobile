@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:movel_pint/atividade/TopicosAtividades.dart';
 import 'package:movel_pint/atividade/atividades.dart';
+import 'package:movel_pint/atividade/criarAtividade.dart';
 import 'package:movel_pint/espa%C3%A7o/criarespa%C3%A7o.dart';
+import 'package:movel_pint/espa%C3%A7o/detalhesEspaco.dart';
 import 'package:movel_pint/evento/criarEvento.dart';
 import 'package:movel_pint/notificacoes/Notifications.dart';
 import 'package:movel_pint/perfil/login.dart';
@@ -93,6 +95,21 @@ class _HomePageState extends State<HomePage> {
       MaterialPageRoute(builder: (context) => RecommendationFormPage()),
     );
   }
+
+  void _goToCreateAtividadePage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => CreateActivityPage()),
+    );
+  }
+
+  void _goToDetalhesEspacoPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => SpaceDetailsPage()),
+    );
+  }
+
 
 
   @override
@@ -187,6 +204,14 @@ class _HomePageState extends State<HomePage> {
           ElevatedButton(
             onPressed: _goToCreateRecomendacaoPage,
             child: Text('Criar recomendação'),
+          ),
+          ElevatedButton(
+            onPressed: _goToCreateAtividadePage,
+            child: Text('Criar atividade'),
+          ),
+          ElevatedButton(
+            onPressed: _goToDetalhesEspacoPage,
+            child: Text('Detalhes de Espaço'),
           ),
           CustomBottomNavigationBar(
             selectedIndex: _selectedIndex,
