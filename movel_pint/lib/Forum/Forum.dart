@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
-import 'package:movel_pint/widgets/customAppBar.dart'; 
+import 'package:movel_pint/widgets/customAppBar.dart';
+import 'package:movel_pint/widgets/minicard.dart'; // Importe o MiniCard aqui
 
 void main() {
   runApp(MyApp());
@@ -57,65 +58,73 @@ class _HomePageState extends State<ForumPage> {
     return ListView(
       padding: EdgeInsets.all(16.0),
       children: [
-        SectionTitle(title: 'Saude', onViewMore: () {}),
+        SectionTitle(title: 'Atividades', onViewMore: () {}),
         SizedBox(height: 10.0),
         SizedBox(
           height: 200.0,
           child: ListView(
             scrollDirection: Axis.horizontal,
             children: [
-              myCard('https://t4.ftcdn.net/jpg/03/84/55/29/360_F_384552930_zPoe9zgmCF7qgt8fqSedcyJ6C6Ye3dFs.jpg', 'Saware Ki Hasi'),
-              myCard('https://cdn-dynmedia-1.microsoft.com/is/image/microsoftcorp/RE2wSVH_RE4dchU:VP1-539x349?resMode=sharp2&op_usm=1.5,0.65,15,0&qlt=90&fmt=png-alpha', 'Pehle Bhi Main'),
-              myCard('https://img.freepik.com/fotos-gratis/arvore-solitaria_181624-46361.jpg?w=1060&t=st=171812141722~exp=1712142322~hmac=a0f37d64a060617c99ed647fab3b10e1b8e770402f9cdcfcbaaf92b879e20aa7', 'Khamoshi'),
+              MiniCard(
+                imageUrl:
+                    'assets/Images/jauzim.jpg',
+                title: 'Saware Ki Hasi',
+              ),
+              MiniCard(
+                imageUrl:
+                    'assets/Images/logo2.png',
+                title: 'Pehle Bhi Main',
+              ),
+              MiniCard(
+                imageUrl:
+                    'assets/Images/logo2.png',
+                title: 'Khamoshi',
+              ),
+              MiniCard(
+                imageUrl:
+                    'assets/Images/logo2.png',
+                title: 'Khamoshi',
+              ),
+              MiniCard(
+                imageUrl:
+                    'assets/Images/logo2.png',
+                title: 'Khamoshi',
+              ),
+              MiniCard(
+                imageUrl:
+                    'assets/Images/logo2.png',
+                title: 'Khamoshi',
+              ),
             ],
           ),
         ),
         SizedBox(height: 20.0),
-        SectionTitle(title: 'Habitação', onViewMore: () {}),
+        SectionTitle(title: 'Eventos', onViewMore: () {}),
         SizedBox(height: 10.0),
         SizedBox(
           height: 200.0,
           child: ListView(
             scrollDirection: Axis.horizontal,
             children: [
-              myCard('https://t4.ftcdn.net/jpg/03/84/55/29/360_F_384552930_zPoe9zgmCF7qgt8fqSedcyJ6C6Ye3dFs.jpg', 'Chahun Main Ya Naa'),
-              myCard('https://cdn-dynmedia-1.microsoft.com/is/image/microsoftcorp/RE2wSVH_RE4dchU:VP1-539x349?resMode=sharp2&op_usm=1.5,0.65,15,0&qlt=90&fmt=png-alpha', 'Fitoor'),
-              myCard('https://img.freepik.com/fotos-gratis/arvore-solitaria_181624-46361.jpg?w=1060&t=st=1712142322~hmac=a0f37d64a060617c99ed647fab3b10e1b8e770402f9cdcfcbaaf92b879e20aa7', 'Dil Meri Na Sune'),
+              MiniCard(
+                imageUrl:
+                    'assets/Images/logo2.png',
+                title: 'Chahun Main Ya Naa',
+              ),
+              MiniCard(
+                imageUrl:
+                    'assets/Images/logo2.png',
+                title: 'Fitoor',
+              ),
+              MiniCard(
+                imageUrl:
+                    'assets/Images/logo2.png',
+                title: 'Dil Meri Na Sune',
+              ),
             ],
           ),
         ),
       ],
-    );
-  }
-
-  Widget myCard(String imageUrl, String title) {
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10.0),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 140.0,
-            height: 140.0,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10.0),
-              image: DecorationImage(
-                image: NetworkImage(imageUrl),
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              title,
-              style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
