@@ -5,6 +5,7 @@ import 'package:movel_pint/calendario/calendario.dart';
 import 'package:movel_pint/main.dart';
 import 'package:movel_pint/notificacoes/Notifications.dart';
 import 'package:movel_pint/perfil/profile.dart';
+import 'package:movel_pint/Forum/Forum.dart';
 
 class CustomBottomNavigationBar extends StatefulWidget {
   final int selectedIndex;
@@ -29,17 +30,17 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
         BottomNavigationBarItem(
           icon: Icon(Icons.home),
           label: 'Home',
-         selectedIconTheme: IconThemeData(),
+         //selectedIconTheme: IconThemeData(),
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.calendar_month),
           label: 'Calendário',
-          selectedIconTheme: IconThemeData(),
+          //selectedIconTheme: IconThemeData(),
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.notification_add),
           label: 'Notificações',
-         selectedIconTheme: IconThemeData(),
+         //selectedIconTheme: IconThemeData(),
         ),
         /*BottomNavigationBarItem(
           icon: Icon(Icons.chat),
@@ -49,7 +50,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
         BottomNavigationBarItem(
           icon: Icon(Ionicons.grid_outline),
           label: 'Forum',
-          selectedIconTheme: IconThemeData(),
+          //selectedIconTheme: IconThemeData(),
         ),
       ],
       currentIndex: widget.selectedIndex,
@@ -74,7 +75,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
         } else if (index == 3) {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => CategoriesPage()),
+            MaterialPageRoute(builder: (context) => ForumPage()),
           );
         }
         // Atualiza o estado do índice selecionado

@@ -12,8 +12,7 @@ import 'package:movel_pint/recomedacao/criarRecomendacao.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
 import 'package:movel_pint/widgets/card.dart';
 import 'package:movel_pint/widgets/customAppBar.dart'; // Certifique-se que o caminho está correto
-import 'package:movel_pint/calendario/calendario.dart'; // Importe o arquivo de calendario.dart
-
+import 'package:movel_pint/calendario/calendario.dart'; // Importe o arquivo de calendar
 
 void main() {
   runApp(MyApp());

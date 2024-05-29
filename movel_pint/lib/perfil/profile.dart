@@ -115,23 +115,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ),
                   ),
-                  SizedBox(width: 8),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color.fromRGBO(57, 99, 156, 1.0),
-                        padding: EdgeInsets.symmetric(vertical: 12),
-                      ),
-                      child: const Text(
-                        'Fotos',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
+                  
                   SizedBox(width: 8),
                   Expanded(
                     child: ElevatedButton(
