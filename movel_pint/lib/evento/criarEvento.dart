@@ -24,6 +24,17 @@ class _EventFormPageState extends State<EventFormPage> {
   File? _image;
   DateTime? _selectedDate;
   TimeOfDay? _selectedTime;
+  String? _selectedSubtopic;
+
+  final List<String> _subtopics = [
+    'Tecnologia',
+    'Ciência',
+    'Artes',
+    'Negócios',
+    'Entretenimento',
+    'Saúde',
+    'Esportes',
+  ];
 
   Future<void> _getImage() async {
     final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
@@ -132,6 +143,31 @@ class _EventFormPageState extends State<EventFormPage> {
                     ),
                     maxLines: 3,
                   ),
+                  SizedBox(height: 10),
+                  DropdownButtonFormField<String>(
+                    value: _selectedSubtopic,
+                    decoration: InputDecoration(
+                      labelText: 'Subtópico',
+                      border: OutlineInputBorder(),
+                    ),
+                    items: _subtopics.map((String subtopic) {
+                      return DropdownMenuItem<String>(
+                        value: subtopic,
+                        child: Text(subtopic),
+                      );
+                    }).toList(),
+                    onChanged: (newValue) {
+                      setState(() {
+                        _selectedSubtopic = newValue;
+                      });
+                    },
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Por favor, selecione um subtópico';
+                      }
+                      return null;
+                    },
+                  ),
                   SizedBox(height: 20),
                   Row(
                     children: [
@@ -193,6 +229,7 @@ class _EventFormPageState extends State<EventFormPage> {
                         String name = _nameController.text;
                         String location = _locationController.text;
                         String description = _descriptionController.text;
+                        String subtopic = _selectedSubtopic!;
 
                         DateTime? dateTime;
                         if (_selectedDate != null && _selectedTime != null) {
@@ -209,6 +246,7 @@ class _EventFormPageState extends State<EventFormPage> {
                         print('Nome do Evento: $name');
                         print('Local: $location');
                         print('Descrição: $description');
+                        print('Subtópico: $subtopic');
                         if (dateTime != null) {
                           print('Data e Hora: $dateTime');
                         }
@@ -221,6 +259,7 @@ class _EventFormPageState extends State<EventFormPage> {
                           _selectedDate = null;
                           _selectedTime = null;
                           _image = null;
+                          _selectedSubtopic = null;
                         });
 
                         // Pode adicionar lógica para enviar os dados para um serviço ou API aqui

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:movel_pint/atividade/TopicosAtividades.dart';
 import 'package:movel_pint/atividade/atividades.dart';
+import 'package:movel_pint/espa%C3%A7o/criarespa%C3%A7o.dart';
 import 'package:movel_pint/evento/criarEvento.dart';
 import 'package:movel_pint/notificacoes/Notifications.dart';
 import 'package:movel_pint/perfil/login.dart';
 import 'package:movel_pint/perfil/registo.dart';
+import 'package:movel_pint/recomedacao/criarRecomendacao.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
 import 'package:movel_pint/widgets/card.dart';
 import 'package:movel_pint/widgets/customAppBar.dart'; // Certifique-se que o caminho está correto
@@ -42,18 +44,11 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  /*
+  
   void _goToEventFormPage() {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => EventFormPage()),
-    );
-  }
-
-  void _goToModificarPerfilPage() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => UserProfilePage1()),
     );
   }
 
@@ -83,7 +78,22 @@ class _HomePageState extends State<HomePage> {
       context,
       MaterialPageRoute(builder: (context) => CategoriesPage()),
     );
-  }*/
+  }
+
+  void _goToCreateEspacoPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => SpaceFormPage()),
+    );
+  }
+
+  void _goToCreateRecomendacaoPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => RecommendationFormPage()),
+    );
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -156,23 +166,11 @@ class _HomePageState extends State<HomePage> {
         mainAxisSize: MainAxisSize.min,
         children: [
           //MyCard(),
-          /*
+          
           SizedBox(height: 16), // Espaçamento entre o card e o botão
           ElevatedButton(
             onPressed: _goToEventFormPage,
             child: Text('Criar Novo Evento'),
-          ),
-          ElevatedButton(
-            onPressed: _goToModificarPerfilPage,
-            child: Text('Modificar Perfil'),
-          ),
-          ElevatedButton(
-            onPressed: _goToLoginPerfilPage,
-            child: Text('Login'),
-          ),
-          ElevatedButton(
-            onPressed: _goToRegisterPerfilPage,
-            child: Text('Registar'),
           ),
           ElevatedButton(
             onPressed: _goToAtividadesPage,
@@ -182,11 +180,19 @@ class _HomePageState extends State<HomePage> {
             onPressed: _goToCategoryPage,
             child: Text('Categorias'),
           ),
-          */
+          ElevatedButton(
+            onPressed: _goToCreateEspacoPage,
+            child: Text('Criar Espaço'),
+          ),
+          ElevatedButton(
+            onPressed: _goToCreateRecomendacaoPage,
+            child: Text('Criar recomendação'),
+          ),
           CustomBottomNavigationBar(
             selectedIndex: _selectedIndex,
             onItemTapped: _onItemTapped,
           ),
+          
         ],
       ),
     );
