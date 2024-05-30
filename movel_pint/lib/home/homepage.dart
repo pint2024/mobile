@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'dart:math';
 import 'package:movel_pint/atividade/detalhes_atividade.dart';
 import 'package:movel_pint/backend/api_service.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
 import 'package:movel_pint/widgets/card.dart';
+import 'package:movel_pint/widgets/customAppBar.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -38,21 +38,20 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final random = Random();
-    final randomImages = List<String>.generate(5, (_) => images[random.nextInt(images.length)]);
-
     List<Widget> _pages = <Widget>[
       Column(
         children: [
+          SizedBox(height: 16.0), // Adiciona um espaçamento de 16 pixels
           CarouselSlider(
             options: CarouselOptions(
               height: 200.0,
               autoPlay: true,
+              autoPlayInterval: Duration(seconds: 3), // Define o intervalo de 3 segundos entre as transições automáticas
               enlargeCenterPage: true,
               aspectRatio: 16 / 9,
               viewportFraction: 0.8,
             ),
-            items: randomImages.map((image) {
+            items: images.map((image) {
               return Builder(
                 builder: (BuildContext context) {
                   return Container(
@@ -95,6 +94,53 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 // Adicione mais atividades aqui
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    'Recomendações de Lugares',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                Card(
+                  child: ListTile(
+                    leading: Image.network(
+                      'https://via.placeholder.com/50x50.png?text=Imagem+1',
+                      width: 50,
+                      height: 50,
+                      fit: BoxFit.cover,
+                    ),
+                    title: Text('Lugar 1'),
+                    subtitle: Text('Descrição breve do evento no lugar 1. Local: Cidade 1'),
+                  ),
+                ),
+                Card(
+                  child: ListTile(
+                    leading: Image.network(
+                      'https://via.placeholder.com/50x50.png?text=Imagem+2',
+                      width: 50,
+                      height: 50,
+                      fit: BoxFit.cover,
+                    ),
+                    title: Text('Lugar 2'),
+                    subtitle: Text('Descrição breve do evento no lugar 2. Local: Cidade 2'),
+                  ),
+                ),
+                Card(
+                  child: ListTile(
+                    leading: Image.network(
+                      'https://via.placeholder.com/50x50.png?text=Imagem+3',
+                      width: 50,
+                      height: 50,
+                      fit: BoxFit.cover,
+                    ),
+                    title: Text('Lugar 3'),
+                    subtitle: Text('Descrição breve do evento no lugar 3. Local: Cidade 3'),
+                  ),
+                ),
+                // Adicione mais recomendações aqui
               ],
             ),
           ),
@@ -106,9 +152,7 @@ class _HomePageState extends State<HomePage> {
     ];
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Página Inicial'),
-      ),
+      appBar: CustomAppBar(), // Utilize o CustomAppBar aqui
       body: PageView(
         controller: _pageController,
         onPageChanged: (index) {
