@@ -193,10 +193,6 @@ class _HomePageState extends State<HomePage> {
             child: Text('Atividades'),
           ),
           ElevatedButton(
-            onPressed: _goToCategoryPage,
-            child: Text('Categorias'),
-          ),
-          ElevatedButton(
             onPressed: _goToCreateEspacoPage,
             child: Text('Criar Espaço'),
           ),

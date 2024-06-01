@@ -1,7 +1,9 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:movel_pint/widgets/customAppBar.dart';
+import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
+import 'package:movel_pint/Forum/Forum.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -24,6 +26,7 @@ class _EventFormPageState extends State<EventFormPage> {
   DateTime? _selectedDate;
   TimeOfDay? _selectedTime;
   String? _selectedSubtopic;
+  int _selectedIndex = 0;
 
   final List<String> _subtopics = [
     'Tecnologia',
@@ -70,16 +73,47 @@ class _EventFormPageState extends State<EventFormPage> {
     }
   }
 
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  void _showCancelDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Cancelar Criação do Evento'),
+          content: Text('Tem a certeza que quer cancelar a criação do evento? Os dados não serão guardados.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Fecha o diálogo
+              },
+              child: Text('Continuar'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => ForumPage()), // Navega para a página ForumPage
+                );
+              },
+              child: Text('Cancelar'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Novo Evento'),
-        backgroundColor: const Color.fromRGBO(57, 99, 156, 1.0),
-      ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
+      appBar: CustomAppBar(),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -97,15 +131,23 @@ class _EventFormPageState extends State<EventFormPage> {
                 child: Column(
                   children: [
                     if (_image != null)
-                      Image.file(
-                        _image!,
+                      Container(
+                        width: double.infinity,
                         height: 200,
-                        fit: BoxFit.cover,
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey),
+                        ),
+                        child: Image.file(
+                          _image!,
+                          fit: BoxFit.cover,
+                        ),
                       ),
+                    SizedBox(height: 10),
                     ElevatedButton(
                       onPressed: _getImage,
                       child: Text('Selecionar Imagem'),
                     ),
+                    SizedBox(height: 10),
                     TextFormField(
                       controller: _nameController,
                       decoration: InputDecoration(
@@ -222,49 +264,61 @@ class _EventFormPageState extends State<EventFormPage> {
                       ],
                     ),
                     SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          String name = _nameController.text;
-                          String location = _locationController.text;
-                          String description = _descriptionController.text;
-                          String subtopic = _selectedSubtopic!;
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () {
+                            _showCancelDialog();
+                          },
+                          style: ElevatedButton.styleFrom(backgroundColor: Color.fromRGBO(247, 245, 249, 1)),
+                          child: const Text('Cancelar'),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            if (_formKey.currentState!.validate()) {
+                              String name = _nameController.text;
+                              String location = _locationController.text;
+                              String description = _descriptionController.text;
+                              String subtopic = _selectedSubtopic!;
 
-                          DateTime? dateTime;
-                          if (_selectedDate != null && _selectedTime != null) {
-                            dateTime = DateTime(
-                              _selectedDate!.year,
-                              _selectedDate!.month,
-                              _selectedDate!.day,
-                              _selectedTime!.hour,
-                              _selectedTime!.minute,
-                            );
-                          }
+                              DateTime? dateTime;
+                              if (_selectedDate != null && _selectedTime != null) {
+                                dateTime = DateTime(
+                                  _selectedDate!.year,
+                                  _selectedDate!.month,
+                                  _selectedDate!.day,
+                                  _selectedTime!.hour,
+                                  _selectedTime!.minute,
+                                );
+                              }
 
-                          // Exemplo de uso dos dados (pode ser enviado para um serviço, etc.)
-                          print('Nome do Evento: $name');
-                          print('Local: $location');
-                          print('Descrição: $description');
-                          print('Subtópico: $subtopic');
-                          if (dateTime != null) {
-                            print('Data e Hora: $dateTime');
-                          }
+                              // Exemplo de uso dos dados (pode ser enviado para um serviço, etc.)
+                              print('Nome do Evento: $name');
+                              print('Local: $location');
+                              print('Descrição: $description');
+                              print('Subtópico: $subtopic');
+                              if (dateTime != null) {
+                                print('Data e Hora: $dateTime');
+                              }
 
-                          // Limpar formulário após envio
-                          _nameController.clear();
-                          _locationController.clear();
-                          _descriptionController.clear();
-                          setState(() {
-                            _selectedDate = null;
-                            _selectedTime = null;
-                            _image = null;
-                            _selectedSubtopic = null;
-                          });
+                              // Limpar formulário após envio
+                              _nameController.clear();
+                              _locationController.clear();
+                              _descriptionController.clear();
+                              setState(() {
+                                _selectedDate = null;
+                                _selectedTime = null;
+                                _image = null;
+                                _selectedSubtopic = null;
+                              });
 
-                          // Pode adicionar lógica para enviar os dados para um serviço ou API aqui
-                        }
-                      },
-                      child: const Text('Criar evento'),
+                              // Pode adicionar lógica para enviar os dados para um serviço ou API aqui
+                            }
+                          },
+                          child: const Text('Criar evento'),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -273,6 +327,11 @@ class _EventFormPageState extends State<EventFormPage> {
           ),
         ),
       ),
+      bottomNavigationBar: CustomBottomNavigationBar(
+        selectedIndex: _selectedIndex,
+        onItemTapped: _onItemTapped,
+      ),
     );
   }
 }
+

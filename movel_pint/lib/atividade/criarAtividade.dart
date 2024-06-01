@@ -1,7 +1,8 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:movel_pint/widgets/customAppBar.dart';
+import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
 
 class CreateActivityPage extends StatefulWidget {
   const CreateActivityPage({Key? key}) : super(key: key);
@@ -18,6 +19,7 @@ class _CreateActivityPageState extends State<CreateActivityPage> {
   String? _selectedSubtopic;
   DateTime? _selectedDate;
   TimeOfDay? _selectedTime;
+  int _selectedIndex = 0;
   File? _image;
 
   @override
@@ -37,16 +39,19 @@ class _CreateActivityPageState extends State<CreateActivityPage> {
     }
   }
 
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Criar nova atividade'),
-        backgroundColor: const Color.fromRGBO(57, 99, 156, 1.0),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
+      appBar: CustomAppBar(),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
           child: Form(
             key: _formKey,
             child: Column(
@@ -300,6 +305,10 @@ class _CreateActivityPageState extends State<CreateActivityPage> {
             ),
           ),
         ),
+      ),
+      bottomNavigationBar: CustomBottomNavigationBar(
+        selectedIndex: _selectedIndex,
+        onItemTapped: _onItemTapped,
       ),
     );
   }
