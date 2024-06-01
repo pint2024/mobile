@@ -3,6 +3,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:movel_pint/widgets/customAppBar.dart';
+import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
+import 'package:movel_pint/Forum/Forum.dart'; // Importe a página ForumPage aqui
 
 void main() {
   runApp(MaterialApp(
@@ -21,6 +24,7 @@ class _RecommendationFormPageState extends State<RecommendationFormPage> {
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
+  int _selectedIndex = 0;
 
   File? _image;
   String? _selectedSubtopic;
@@ -35,7 +39,8 @@ class _RecommendationFormPageState extends State<RecommendationFormPage> {
   ];
 
   Future<void> _getImage() async {
-    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       setState(() {
         _image = File(pickedFile.path);
@@ -43,13 +48,16 @@ class _RecommendationFormPageState extends State<RecommendationFormPage> {
     }
   }
 
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Nova Recomendação'),
-        backgroundColor: const Color.fromRGBO(57, 99, 156, 1.0),
-      ),
+      appBar: CustomAppBar(),
       body: Padding(
         padding: EdgeInsets.all(16.0),
         child: SingleChildScrollView(
@@ -175,38 +183,52 @@ class _RecommendationFormPageState extends State<RecommendationFormPage> {
                       },
                     ),
                     SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          String title = _titleController.text;
-                          String description = _descriptionController.text;
-                          String address = _addressController.text;
-                          String price = _priceController.text;
-                          String subtopic = _selectedSubtopic!;
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () async {
+                            bool? confirm = await _showCancelConfirmationDialog(context);
+                            if (confirm ?? false) {
+                              Navigator.pop(context); // Voltar para a página anterior
+                            }
+                          },
+                          child: Text('Cancelar'),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            if (_formKey.currentState!.validate()) {
+                              String title = _titleController.text;
+                              String description = _descriptionController.text;
+                              String address = _addressController.text;
+                              String price = _priceController.text;
+                              String subtopic = _selectedSubtopic!;
 
-                          // Exemplo de uso dos dados (pode ser enviado para um serviço, etc.)
-                          print('Título: $title');
-                          print('Descrição: $description');
-                          print('Endereço: $address');
-                          print('Preço: $price');
-                          print('Classificação: $_rating');
-                          print('Subtópico: $subtopic');
+                              // Exemplo de uso dos dados (pode ser enviado para um serviço, etc.)
+                              print('Título: $title');
+                              print('Descrição: $description');
+                              print('Endereço: $address');
+                              print('Preço: $price');
+                              print('Classificação: $_rating');
+                              print('Subtópico: $subtopic');
 
-                          // Limpar formulário após envio
-                          _titleController.clear();
-                          _descriptionController.clear();
-                          _addressController.clear();
-                          _priceController.clear();
-                          setState(() {
-                            _image = null;
-                            _selectedSubtopic = null;
-                            _rating = 0;
-                          });
+                              // Limpar formulário após envio
+                              _titleController.clear();
+                              _descriptionController.clear();
+                              _addressController.clear();
+                              _priceController.clear();
+                              setState(() {
+                                _image = null;
+                                _selectedSubtopic = null;
+                                _rating = 0;
+                              });
 
-                          // Pode adicionar lógica para enviar os dados para um serviço ou API aqui
-                        }
-                      },
-                      child: const Text('Criar recomendação'),
+                              // Pode adicionar lógica para enviar os dados para um serviço ou API aqui
+                            }
+                          },
+                          child: const Text('Criar recomendação'),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -215,6 +237,37 @@ class _RecommendationFormPageState extends State<RecommendationFormPage> {
           ),
         ),
       ),
+      bottomNavigationBar: CustomBottomNavigationBar(
+        selectedIndex: _selectedIndex,
+        onItemTapped: _onItemTapped,
+      ),
+    );
+  }
+
+  Future<bool?> _showCancelConfirmationDialog(BuildContext context) {
+    return showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Cancelar Recomendação'),
+          content: Text('Tem certeza de que deseja cancelar a recomendação? Os dados não serão salvos.'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: ()
+              {
+                Navigator.of(context).pop(false); // Cancelar
+              },
+              child: Text('Cancelar'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true); // Continuar
+              },
+              child: Text('Continuar'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

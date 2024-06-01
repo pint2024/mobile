@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:movel_pint/widgets/customAppBar.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
+import 'package:movel_pint/Forum/Forum.dart';
 
 class CreateActivityPage extends StatefulWidget {
   const CreateActivityPage({Key? key}) : super(key: key);
@@ -257,50 +258,84 @@ class _CreateActivityPageState extends State<CreateActivityPage> {
                   ],
                 ),
                 SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      String title = _titleController.text;
-                      String description = _descriptionController.text;
-                      String location = _locationController.text;
-                      String subtopic = _selectedSubtopic!;
-                      DateTime? dateTime;
-                      if (_selectedDate != null && _selectedTime != null) {
-                        dateTime = DateTime(
-                          _selectedDate!.year,
-                          _selectedDate!.month,
-                          _selectedDate!.day,
-                          _selectedTime!.hour,
-                          _selectedTime!.minute,
-                        );
-                      }
-
-                      // Exemplo de uso dos dados (pode ser enviado para um serviço, etc.)
-                      print('Título: $title');
-                      print('Descrição: $description');
-                      print('Endereço: $location');
-                      print('Subtópico: $subtopic');
-                      if (dateTime != null) {
-                        print('Data e Hora: $dateTime');
-                      }
-                      if (_image != null) {
-                        print('Imagem selecionada: ${_image!.path}');
-                      }
-
-                      // Limpar formulário após envio
-                      _titleController.clear();
-                      _descriptionController.clear();
-                      _locationController.clear();
-                      setState(() {
-                        _selectedDate = null;
-                        _selectedTime = null;
-                        _selectedSubtopic = null;
-                        _image = null;
-                      });
-                    }
-                  },
-                  child: const Text('Adicionar'),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text('Cancelar Atividade'),
+                                content: Text('Tem certeza de que deseja cancelar a atividade? Os dados não serão salvos.'),
+                                actions: <Widget>[
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: Text('Cancelar'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                      Navigator.of(context).pushReplacement(
+                                        MaterialPageRoute(
+                                          builder: (BuildContext context) =>
+                                              ForumPage(),
+                                        ),
+                                      );
+                                    },
+                                    child: Text('Continuar'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                        child: const Text('Cancelar'),
+                      ),
+                    ),
+                    SizedBox(width: 8), // Espaçamento entre os botões
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text('Cancelar Atividade'),
+                                content: Text('Tem certeza de que deseja cancelar a atividade? Os dados não serão salvos.'),
+                                actions: <Widget>[
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: Text('Cancelar'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                      Navigator.of(context).pushReplacement(
+                                        MaterialPageRoute(
+                                          builder: (BuildContext context) =>
+                                              ForumPage(),
+                                        ),
+                                      );
+                                    },
+                                    child: Text('Continuar'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                        child: const Text('Adicionar'),
+                      ),
+                    ),
+                  ],
                 ),
+                SizedBox(height: 16),
               ],
             ),
           ),
