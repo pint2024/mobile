@@ -22,7 +22,7 @@ class ForumPage extends StatefulWidget {
 }
 
 class _HomePageState extends State<ForumPage> {
-  int _selectedIndex = 0;
+  int _selectedIndex = 3;
   final PageController _pageController = PageController();
 
   void _onItemTapped(int index) {

@@ -56,6 +56,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
   String _email = "john.doe@example.com";
   String _password = "**********";
   File? _image;
+  int _selectedIndex = -1;
 
   Future<void> _getImage() async {
     final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);

@@ -15,6 +15,7 @@ class Atividade extends StatefulWidget {
 
 class _AtividadeState extends State<Atividade> {
   int _selectedFilterIndex = 0;
+  int _selectedIndex = 3;
   PageController _pageController = PageController(initialPage: 0);
 
   void _onItemTapped(int index) {

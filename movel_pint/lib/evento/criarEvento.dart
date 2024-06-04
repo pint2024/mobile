@@ -26,7 +26,7 @@ class _EventFormPageState extends State<EventFormPage> {
   DateTime? _selectedDate;
   TimeOfDay? _selectedTime;
   String? _selectedSubtopic;
-  int _selectedIndex = 0;
+  int _selectedIndex = 3;
 
   final List<String> _subtopics = [
     'Tecnologia',

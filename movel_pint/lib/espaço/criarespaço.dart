@@ -22,7 +22,7 @@ class _SpaceFormPageState extends State<SpaceFormPage> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
-  int _selectedIndex = 0;
+  int _selectedIndex = 3;
 
   File? _image;
   String? _selectedSubtopic;

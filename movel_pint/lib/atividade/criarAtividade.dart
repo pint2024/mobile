@@ -20,7 +20,7 @@ class _CreateActivityPageState extends State<CreateActivityPage> {
   String? _selectedSubtopic;
   DateTime? _selectedDate;
   TimeOfDay? _selectedTime;
-  int _selectedIndex = 0;
+  int _selectedIndex = 3;
   File? _image;
 
   @override

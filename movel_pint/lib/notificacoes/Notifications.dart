@@ -14,9 +14,10 @@ class Notificacoes extends StatefulWidget {
 }
 
 class _NotificacoesState extends State<Notificacoes> {
-  int _selectedIndex = 0;
+  int _selectedIndex = 2;
   PageController _pageController = PageController(initialPage: 0);
   List<dynamic> _atividades = [];
+
 
   @override
   void initState() {
