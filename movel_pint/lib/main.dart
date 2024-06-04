@@ -5,10 +5,12 @@ import 'package:movel_pint/atividade/criarAtividade.dart';
 import 'package:movel_pint/espa%C3%A7o/criarespa%C3%A7o.dart';
 import 'package:movel_pint/espa%C3%A7o/detalhesEspaco.dart';
 import 'package:movel_pint/evento/criarEvento.dart';
+import 'package:movel_pint/evento/detalhesEvento.dart';
 import 'package:movel_pint/notificacoes/Notifications.dart';
 import 'package:movel_pint/perfil/login.dart';
 import 'package:movel_pint/perfil/registo.dart';
 import 'package:movel_pint/recomedacao/criarRecomendacao.dart';
+import 'package:movel_pint/recomedacao/detalhesRecomendacao.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
 import 'package:movel_pint/widgets/card.dart';
 import 'package:movel_pint/widgets/customAppBar.dart'; // Certifique-se que o caminho está correto
@@ -109,6 +111,19 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  void _goToDetalhesRecomedacaoPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => RecomendacaoDetailsPage()),
+    );
+  }
+
+void _goToDetalheEventoPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => EventoDetailsPage()),
+    );
+  }
 
 
   @override
@@ -207,6 +222,14 @@ class _HomePageState extends State<HomePage> {
           ElevatedButton(
             onPressed: _goToDetalhesEspacoPage,
             child: Text('Detalhes de Espaço'),
+          ),
+          ElevatedButton(
+            onPressed: _goToDetalhesRecomedacaoPage,
+            child: Text('Detalhes da Recomendacao'),
+          ),
+          ElevatedButton(
+            onPressed: _goToDetalheEventoPage,
+            child: Text('Detalhes do Evento'),
           ),
           CustomBottomNavigationBar(
             selectedIndex: _selectedIndex,
