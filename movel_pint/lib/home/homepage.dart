@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:carousel_slider/carousel_slider.dart';
+//import 'package:carousel_slider/carousel_slider.dart';
 import 'package:movel_pint/atividade/detalhes_atividade.dart';
 import 'package:movel_pint/backend/api_service.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
@@ -42,7 +42,7 @@ class _HomePageState extends State<HomePage> {
       Column(
         children: [
           SizedBox(height: 16.0), // Adiciona um espaçamento de 16 pixels
-          CarouselSlider(
+          /*CarouselSlider(
             options: CarouselOptions(
               height: 200.0,
               autoPlay: true,
@@ -68,7 +68,7 @@ class _HomePageState extends State<HomePage> {
                 },
               );
             }).toList(),
-          ),
+          ),*/
           Expanded(
             child: ListView(
               children: <Widget>[
