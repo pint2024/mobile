@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:movel_pint/atividade/TopicosAtividades.dart';
-import 'package:movel_pint/atividade/atividades.dart';
 import 'package:movel_pint/atividade/criarAtividade.dart';
+import 'package:movel_pint/atividade/detalhes_atividade.dart';
 import 'package:movel_pint/espa%C3%A7o/criarespa%C3%A7o.dart';
 import 'package:movel_pint/espa%C3%A7o/detalhesEspaco.dart';
 import 'package:movel_pint/evento/criarEvento.dart';
@@ -69,20 +68,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void _goToAtividadesPage() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => Atividade()),
-    );
-  }
-
-  void _goToCategoryPage() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => CategoriesPage()),
-    );
-  }
-
   void _goToCreateEspacoPage() {
     Navigator.push(
       context,
@@ -125,6 +110,23 @@ void _goToDetalheEventoPage() {
     );
   }
 
+  void _goToDetalheAtividadePage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => DetalhesAtividade()),
+    );
+  }
+
+    void _goToRegisterPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => RegisterPage()),
+    );
+  }
+  
+  
+  
+
 
   @override
   Widget build(BuildContext context) {
@@ -161,7 +163,7 @@ void _goToDetalheEventoPage() {
                         width: 300,
                         height: 200,
                         child: Image.network(
-                          'https://img.freepik.com/fotos-gratis/arvore-solitaria_181624-46361.jpg?w=1060&t=st=171812141722~exp=1712142322~hmac=a0f37d64a060617c99ed647fab3b10e1b8e770402f9cdcfcbaaf92b879e20aa7',
+                          'https://cdn-dynmedia-1.microsoft.com/is/image/microsoftcorp/RE2wSVH_RE4dchU:VP1-539x349?resMode=sharp2&op_usm=1.5,0.65,15,0&qlt=90&fmt=png-alpha',
                         ),
                       ),
                     ],
@@ -204,10 +206,6 @@ void _goToDetalheEventoPage() {
             child: Text('Criar Novo Evento'),
           ),
           ElevatedButton(
-            onPressed: _goToAtividadesPage,
-            child: Text('Atividades'),
-          ),
-          ElevatedButton(
             onPressed: _goToCreateEspacoPage,
             child: Text('Criar Espaço'),
           ),
@@ -230,6 +228,14 @@ void _goToDetalheEventoPage() {
           ElevatedButton(
             onPressed: _goToDetalheEventoPage,
             child: Text('Detalhes do Evento'),
+          ),
+          ElevatedButton(
+            onPressed: _goToDetalheAtividadePage,
+            child: Text('Detalhes da Atividade'),
+          ),
+          ElevatedButton(
+            onPressed: _goToRegisterPage,
+            child: Text('Registar'),
           ),
           CustomBottomNavigationBar(
             selectedIndex: _selectedIndex,

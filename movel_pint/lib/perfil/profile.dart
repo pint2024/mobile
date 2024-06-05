@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
 import 'package:movel_pint/backend/api_service.dart';
-import 'package:movel_pint/atividade/TopicosAtividades.dart';
 import 'package:movel_pint/notificacoes/Notifications.dart';
 import 'package:movel_pint/calendario/calendario.dart';
 import 'package:movel_pint/main.dart';

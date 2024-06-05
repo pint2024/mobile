@@ -1,3 +1,4 @@
+/*
 import 'package:flutter/material.dart';
 //import 'package:carousel_slider/carousel_slider.dart';
 import 'package:movel_pint/atividade/detalhes_atividade.dart';
@@ -198,6 +199,7 @@ class _VerAtividadeState extends State<VerAtividade> {
     }
   }
 
+
   void _navigateToDetails(int atividadeId) {
     Navigator.push(
       context,
@@ -303,4 +305,4 @@ class _VerAtividadeState extends State<VerAtividade> {
       }
     });
   }
-}
+}*/

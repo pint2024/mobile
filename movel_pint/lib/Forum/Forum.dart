@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:movel_pint/atividade/criarAtividade.dart';
+import 'package:movel_pint/espa%C3%A7o/criarespa%C3%A7o.dart';
+import 'package:movel_pint/evento/criarEvento.dart';
+import 'package:movel_pint/recomedacao/criarRecomendacao.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
 import 'package:movel_pint/widgets/customAppBar.dart';
 import 'package:movel_pint/widgets/minicard.dart'; // Importe o MiniCard aqui
@@ -25,6 +29,8 @@ class _HomePageState extends State<ForumPage> {
   int _selectedIndex = 3;
   final PageController _pageController = PageController();
 
+  String _selectedOption = ''; // Estado para armazenar a opção selecionada
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -35,7 +41,7 @@ class _HomePageState extends State<ForumPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(), // Aqui está o CustomAppBar sendo chamado
+      appBar: CustomAppBar(), 
       body: PageView(
         controller: _pageController,
         onPageChanged: (index) {
@@ -55,77 +61,175 @@ class _HomePageState extends State<ForumPage> {
   }
 
   Widget buildHomePage(BuildContext context) {
-    return ListView(
-      padding: EdgeInsets.all(16.0),
+  return ListView(
+    padding: EdgeInsets.all(16.0),
+    children: [
+      Padding(
+        padding: const EdgeInsets.only(left: 16.0, bottom: 16.0),
+        child: Text(
+          'Fórum',
+          style: TextStyle(
+            fontSize: 24.0,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+      _buildAddButton(), // Adiciona o botão "Adicionar"
+      SizedBox(height: 20.0), // Espaço entre o botão e a seção de atividades
+      buildSection('Atividades', Icons.sports_soccer, context),
+      buildSection('Eventos', Icons.event, context),
+      buildSection('Recomendações', Icons.thumb_up, context),
+      buildSection('Espaços', Icons.location_city, context),
+    ],
+  );
+}
+
+
+  Widget buildSection(String title, IconData iconData, BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SectionTitle(title: 'Atividades', onViewMore: () {}),
+        SectionTitle(title: title, onViewMore: () {}),
         SizedBox(height: 10.0),
         SizedBox(
           height: 200.0,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
+          child: Column(
             children: [
-              MiniCard(
-                imageUrl:
-                    'assets/Images/jauzim.jpg',
-                title: 'Saware Ki Hasi',
+              Expanded(
+                child: Scrollbar(
+                  thumbVisibility: true, // Mostra sempre a barra de rolagem
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: 6, // Número de itens, ajuste conforme necessário
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 8.0),
+                        child: MiniCard(
+                          imageUrl: 'assets/Images/logo2.png',
+                          title: '$title $index',
+                        ),
+                      );
+                    },
+                  ),
+                ),
               ),
-              MiniCard(
-                imageUrl:
-                    'assets/Images/logo2.png',
-                title: 'Pehle Bhi Main',
-              ),
-              MiniCard(
-                imageUrl:
-                    'assets/Images/logo2.png',
-                title: 'Khamoshi',
-              ),
-              MiniCard(
-                imageUrl:
-                    'assets/Images/logo2.png',
-                title: 'Khamoshi',
-              ),
-              MiniCard(
-                imageUrl:
-                    'assets/Images/logo2.png',
-                title: 'Khamoshi',
-              ),
-              MiniCard(
-                imageUrl:
-                    'assets/Images/logo2.png',
-                title: 'Khamoshi',
-              ),
+              SizedBox(height: 10.0), // Espaçamento entre cartões e barra de rolagem
             ],
           ),
         ),
-        SizedBox(height: 20.0),
-        SectionTitle(title: 'Eventos', onViewMore: () {}),
-        SizedBox(height: 10.0),
-        SizedBox(
-          height: 200.0,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            children: [
-              MiniCard(
-                imageUrl:
-                    'assets/Images/logo2.png',
-                title: 'Chahun Main Ya Naa',
-              ),
-              MiniCard(
-                imageUrl:
-                    'assets/Images/logo2.png',
-                title: 'Fitoor',
-              ),
-              MiniCard(
-                imageUrl:
-                    'assets/Images/logo2.png',
-                title: 'Dil Meri Na Sune',
-              ),
-            ],
-          ),
-        ),
+        SizedBox(height: 20.0), // Espaço adicional entre seções
       ],
     );
+  }
+
+Widget _buildAddButton() {
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.start,
+    children: [
+      SizedBox(width: 16.0),
+      GestureDetector(
+        onTap: () {
+          _showOptionsDialog(context);
+        },
+        child: Container(
+          padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+          decoration: BoxDecoration(
+            color: Colors.blue,
+            borderRadius: BorderRadius.circular(20.0), // Bordas arredondadas
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Adicionar',
+                style: TextStyle(fontSize: 16.0, color: Colors.white),
+              ),
+              SizedBox(width: 8.0),
+              Icon(Icons.add, color: Colors.white),
+            ],
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+
+
+  void _showOptionsDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Selecione uma opção'),
+        content: SingleChildScrollView(
+          child: ListBody(
+            children: [
+              ListTile(
+                leading: Icon(Icons.sports_soccer),
+                title: Text('Atividades'),
+                onTap: () {
+                  Navigator.pop(context); 
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CreateActivityPage(),
+                    ),
+                  );
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.event),
+                title: Text('Eventos'),
+                onTap: () {
+                  Navigator.pop(context); 
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => EventFormPage(),
+                    ),
+                  );
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.thumbs_up_down),
+                title: Text('Recomendações'),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => RecommendationFormPage(),
+                    ),
+                  );
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.location_city),
+                title: Text('Espaços'),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => SpaceFormPage(),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
+
+
+  void _selectOption(String option) {
+    setState(() {
+      _selectedOption = option; 
+    });
   }
 }
 
@@ -147,7 +251,7 @@ class SectionTitle extends StatelessWidget {
         GestureDetector(
           onTap: onViewMore,
           child: Text(
-            'View More',
+            'Ver mais...',
             style: TextStyle(fontSize: 14.0, color: Colors.blue),
           ),
         ),

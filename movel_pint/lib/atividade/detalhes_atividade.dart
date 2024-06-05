@@ -1,85 +1,101 @@
 import 'package:flutter/material.dart';
-import 'package:movel_pint/backend/api_service.dart';
 
-class DetalhesAtividade extends StatefulWidget {
-  final int atividadeId;
-
-  DetalhesAtividade({required this.atividadeId});
-
-  @override
-  _DetalhesAtividadeState createState() => _DetalhesAtividadeState();
+void main() {
+  runApp(MaterialApp(
+    home: DetalhesAtividade(),
+  ));
 }
 
-class _DetalhesAtividadeState extends State<DetalhesAtividade> {
-  Map<String, dynamic>? _atividadeDetalhes;
-
-  @override
-  void initState() {
-    super.initState();
-    _fetchAtividadeDetalhes();
-  }
-
-  Future<void> _fetchAtividadeDetalhes() async {
-    try {
-      final data = await ApiService.fetchData('http://localhost:8000/atividade/obter/${widget.atividadeId}');
-      setState(() {
-        _atividadeDetalhes = data['data'];
-      });
-      print('Detalhes da atividade carregados com sucesso');
-    } catch (e) {
-      print('Erro ao carregar detalhes da atividade: $e');
-    }
-  }
-
+class DetalhesAtividade extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Detalhes da Atividade'),
+        title: Text('Detalhes da Atividade', style: TextStyle(fontSize: 18.0)),
+        backgroundColor: const Color.fromRGBO(57, 99, 156, 1.0),
       ),
       body: SingleChildScrollView(
-        child: _atividadeDetalhes == null
-            ? Center(child: CircularProgressIndicator())
-            : Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (_atividadeDetalhes!['conteudo_atividade'] != null)
-                      for (var conteudo in _atividadeDetalhes!['conteudo_atividade'])
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Image.network('http://10.0.2.2:8000/${conteudo['imagem']}'),
-                            SizedBox(height: 10),
-                            Text(
-                              conteudo['titulo'],
-                              style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            SizedBox(height: 10),
-                            Text(
-                              conteudo['descricao'],
-                              style: TextStyle(
-                                fontSize: 16,
-                              ),
-                            ),
-                            SizedBox(height: 10),
-                            Text('Criado em: ${conteudo['data_criacao']}'),
-                            SizedBox(height: 10),
-                            Text('Endereço: ${conteudo['endereco']}'),
-                            SizedBox(height: 10),
-                            Text('Subtópico: ${conteudo['subtopico']}'),
-                            SizedBox(height: 10),
-                            Text('Espaço: ${conteudo['espaco'] ?? "Não informado"}'),
-                            // Outros detalhes da atividade
-                          ],
-                        ),
-                  ],
-                ),
-              ),
+        padding: EdgeInsets.all(12.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _buildDetailItemWithLabel(
+              'Atividade de Exemplo',
+              isTitle: true,
+            ),
+            SizedBox(height: 12),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                _buildTag('Tecnologia'), // Exemplo de tag
+              ],
+            ),
+            SizedBox(height: 8),
+            Image.asset(
+              'assets/Images/jauzim.jpg', // Caminho da sua imagem
+              height: 160,
+              fit: BoxFit.cover,
+            ),
+            SizedBox(height: 16),
+            _buildDetailItemWithLabel(
+              'Rua Exemplo, Número 456 - Cidade',
+            ),
+            _buildDetailItemWithLabel(
+              '30/06/2024 09:00',
+            ),
+            SizedBox(height: 16),
+            _buildDetailItemLabel('Descrição'),
+            _buildDetailItemWithLabel(
+              'Lorem ipsum dolor sit amet, consectetur adipiscing elit. '
+              'Fusce maximus porta sapien, non tempor elit vestibulum a.',
+              isDescription: true,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDetailItemWithLabel(String value, {bool isTitle = false, bool isSubtopic = false, bool isDescription = false}) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 6.0),
+      child: Text(
+        value,
+        style: TextStyle(
+          fontSize: isTitle ? 18 : isSubtopic ? 14 : isDescription ? 12 : 14,
+          fontWeight: isTitle || isSubtopic ? FontWeight.bold : FontWeight.normal,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDetailItemLabel(String label) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 6.0),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 14,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTag(String text) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),
+      decoration: BoxDecoration(
+        color: Colors.blue,
+        borderRadius: BorderRadius.circular(12.0),
+      ),
+      child: Text(
+        text,
+        style: TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+          fontSize: 12,
+        ),
       ),
     );
   }

@@ -130,22 +130,44 @@ class _EventFormPageState extends State<EventFormPage> {
                 key: _formKey,
                 child: Column(
                   children: [
-                    if (_image != null)
-                      Container(
-                        width: double.infinity,
-                        height: 200,
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey),
-                        ),
-                        child: Image.file(
-                          _image!,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    SizedBox(height: 10),
-                    ElevatedButton(
-                      onPressed: _getImage,
-                      child: Text('Selecionar Imagem'),
+                    GestureDetector(
+                      onTap: _getImage,
+                      child: _image != null
+                          ? Container(
+                              width: double.infinity,
+                              height: 200,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8.0),
+                                image: DecorationImage(
+                                  image: FileImage(_image!),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            )
+                          : Container(
+                              width: double.infinity,
+                              height: 200,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8.0),
+                                border: Border.all(color: Colors.grey),
+                              ),
+                              child: Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.camera_alt,
+                                      color: Colors.grey,
+                                      size: 40,
+                                    ),
+                                    Text(
+                                      'Selecionar Imagem',
+                                      style: TextStyle(color: Colors.grey),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
                     ),
                     SizedBox(height: 10),
                     TextFormField(
