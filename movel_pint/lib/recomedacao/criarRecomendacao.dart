@@ -24,7 +24,7 @@ class _RecommendationFormPageState extends State<RecommendationFormPage> {
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
-  int _selectedIndex = 0;
+  int _selectedIndex = 3;
 
   File? _image;
   String? _selectedSubtopic;

@@ -17,12 +17,15 @@ class MyCard2 extends StatelessWidget {
               ),
               title: Text('Título da Atividade'),
               subtitle: Text('Nome do usuário • Data'),
-              trailing: IconButton(
-                icon: Icon(Icons.edit),
-                onPressed: () {
-                  // Lógica para editar a atividade
-                  // Este onPressed será chamado ao pressionar o ícone de edição
-                },
+              trailing: Padding(
+                padding: const EdgeInsets.only(right: 8.0), // Preenchimento à direita
+                child: IconButton(
+                  icon: Icon(Icons.edit),
+                  onPressed: () {
+                    // Lógica para editar a atividade
+                    // Este onPressed será chamado ao pressionar o ícone de edição
+                  },
+                ),
               ),
             ),
             SizedBox(height: 8), // Espaçamento entre o título e a imagem

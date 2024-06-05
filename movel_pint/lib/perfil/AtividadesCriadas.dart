@@ -5,16 +5,16 @@ import 'package:movel_pint/widgets/card.dart';
 import 'package:movel_pint/widgets/customAppBar.dart';
 
 void main() {
-  runApp(MyAtividadeprofile());
+  runApp(MyAtividade());
 }
 
-class MyAtividadeprofile extends StatefulWidget {
+class MyAtividade extends StatefulWidget {
   @override
   _AtividadeState createState() => _AtividadeState();
 }
 
-class _AtividadeState extends State<MyAtividadeprofile> {
-  int _selectedIndex = 3;
+class _AtividadeState extends State<MyAtividade> {
+  int _selectedIndex = 0;
   PageController _pageController = PageController(initialPage: 0);
 
   void _onItemTapped(int index) {
@@ -41,15 +41,10 @@ class _AtividadeState extends State<MyAtividadeprofile> {
     }
   }
 
-  void _handleFilterSelection(String value) {
-    // Aqui você pode adicionar lógica para aplicar o filtro selecionado
-    print('Filtro selecionado: $value');
-  }
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: VerAtividade(_selectedIndex, _onItemTapped, _pageController, _nextPage, _previousPage, _handleFilterSelection),
+      home: VerAtividade(_selectedIndex, _onItemTapped, _pageController, _nextPage, _previousPage),
     );
   }
 }
@@ -60,9 +55,8 @@ class VerAtividade extends StatelessWidget {
   final PageController pageController;
   final Function() nextPage;
   final Function() previousPage;
-  final Function(String) handleFilterSelection;
 
-  VerAtividade(this.selectedIndex, this.onItemTapped, this.pageController, this.nextPage, this.previousPage, this.handleFilterSelection);
+  VerAtividade(this.selectedIndex, this.onItemTapped, this.pageController, this.nextPage, this.previousPage);
 
   @override
   Widget build(BuildContext context) {
@@ -78,35 +72,17 @@ class VerAtividade extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Atividades Criadas',
+                      'Atividades',
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    PopupMenuButton<String>(
+                    IconButton(
                       icon: Icon(Icons.filter_list),
-                      onSelected: (String value) {
-                        handleFilterSelection(value);
+                      onPressed: () {
+                        // 
                       },
-                      itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                        const PopupMenuItem<String>(
-                          value: 'Mais recentes',
-                          child: Text('Mais recentes'),
-                        ),
-                        const PopupMenuItem<String>(
-                          value: 'Mais antigas',
-                          child: Text('Mais antigas'),
-                        ),
-                        const PopupMenuItem<String>(
-                          value: 'A-Z',
-                          child: Text('A-Z'),
-                        ),
-                        const PopupMenuItem<String>(
-                          value: 'Z-A',
-                          child: Text('Z-A'),
-                        ),
-                      ],
                     ),
                   ],
                 ),

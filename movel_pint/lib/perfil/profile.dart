@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:movel_pint/perfil/asMinhasAtividades.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
 import 'package:movel_pint/backend/api_service.dart';
 import 'package:movel_pint/notificacoes/Notifications.dart';
@@ -118,7 +119,12 @@ class _ProfilePageState extends State<ProfilePage> {
                   SizedBox(width: 8),
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => MyAtividadeprofile()),
+                        );
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color.fromRGBO(57, 99, 156, 1.0),
                         padding: EdgeInsets.symmetric(vertical: 12),
