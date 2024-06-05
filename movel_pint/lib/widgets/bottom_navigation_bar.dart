@@ -29,27 +29,22 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
         BottomNavigationBarItem(
           icon: Icon(Icons.home),
           label: 'Home',
-         //selectedIconTheme: IconThemeData(),
+         selectedIconTheme: IconThemeData(),
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.calendar_month),
           label: 'Calendário',
-          //selectedIconTheme: IconThemeData(),
+          selectedIconTheme: IconThemeData(),
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.notification_add),
-          label: 'Notificações',
-         //selectedIconTheme: IconThemeData(),
+          icon: Icon(Icons.person_outline),
+          label: 'Perfil',
+         selectedIconTheme: IconThemeData(),
         ),
-        /*BottomNavigationBarItem(
-          icon: Icon(Icons.chat),
-          label: 'Chat Room',
-          selectedIconTheme: IconThemeData(),
-        ),*/
         BottomNavigationBarItem(
           icon: Icon(Ionicons.grid_outline),
           label: 'Forum',
-          //selectedIconTheme: IconThemeData(),
+          selectedIconTheme: IconThemeData(),
         ),
       ],
       currentIndex: widget.selectedIndex,
@@ -69,7 +64,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
         } else if (index == 2) {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => Notificacoes()),
+            MaterialPageRoute(builder: (context) => NotificationsPage()),
           );
         } else if (index == 3) {
           Navigator.push(
