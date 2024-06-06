@@ -61,31 +61,32 @@ class _HomePageState extends State<ForumPage> {
   }
 
   Widget buildHomePage(BuildContext context) {
-  return ListView(
-    padding: EdgeInsets.all(16.0),
-    children: [
-      Padding(
-        padding: const EdgeInsets.only(left: 16.0, bottom: 16.0),
-        child: Text(
-          'Fórum',
-          style: TextStyle(
-            fontSize: 24.0,
-            fontWeight: FontWeight.bold,
+    return ListView(
+      padding: EdgeInsets.all(16.0),
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 16.0, bottom: 16.0),
+          child: Text(
+            'Fórum',
+            style: TextStyle(
+              fontSize: 24.0,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
-      ),
-      _buildAddButton(), // Adiciona o botão "Adicionar"
-      SizedBox(height: 20.0), // Espaço entre o botão e a seção de atividades
-      buildSection('Atividades', Icons.sports_soccer, context),
-      buildSection('Eventos', Icons.event, context),
-      buildSection('Recomendações', Icons.thumb_up, context),
-      buildSection('Espaços', Icons.location_city, context),
-    ],
-  );
-}
-
+        _buildAddButton(), // Adiciona o botão "Adicionar"
+        SizedBox(height: 20.0), // Espaço entre o botão e a seção de atividades
+        buildSection('Atividades', Icons.sports_soccer, context),
+        buildSection('Eventos', Icons.event, context),
+        buildSection('Recomendações', Icons.thumb_up, context),
+        buildSection('Espaços', Icons.location_city, context),
+      ],
+    );
+  }
 
   Widget buildSection(String title, IconData iconData, BuildContext context) {
+    final ScrollController scrollController = ScrollController(); // Adicione o ScrollController
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -97,8 +98,10 @@ class _HomePageState extends State<ForumPage> {
             children: [
               Expanded(
                 child: Scrollbar(
+                  controller: scrollController, // Passe o ScrollController aqui
                   thumbVisibility: true, // Mostra sempre a barra de rolagem
                   child: ListView.builder(
+                    controller: scrollController, // Passe o ScrollController aqui também
                     scrollDirection: Axis.horizontal,
                     itemCount: 6, // Número de itens, ajuste conforme necessário
                     itemBuilder: (context, index) {
@@ -122,109 +125,106 @@ class _HomePageState extends State<ForumPage> {
     );
   }
 
-Widget _buildAddButton() {
-  return Row(
-    mainAxisAlignment: MainAxisAlignment.start,
-    children: [
-      SizedBox(width: 16.0),
-      GestureDetector(
-        onTap: () {
-          _showOptionsDialog(context);
-        },
-        child: Container(
-          padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-          decoration: BoxDecoration(
-            color: Colors.blue,
-            borderRadius: BorderRadius.circular(20.0), // Bordas arredondadas
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Adicionar',
-                style: TextStyle(fontSize: 16.0, color: Colors.white),
-              ),
-              SizedBox(width: 8.0),
-              Icon(Icons.add, color: Colors.white),
-            ],
+  Widget _buildAddButton() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        SizedBox(width: 16.0),
+        GestureDetector(
+          onTap: () {
+            _showOptionsDialog(context);
+          },
+          child: Container(
+            padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+            decoration: BoxDecoration(
+              color: Colors.blue,
+              borderRadius: BorderRadius.circular(20.0), // Bordas arredondadas
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Adicionar',
+                  style: TextStyle(fontSize: 16.0, color: Colors.white),
+                ),
+                SizedBox(width: 8.0),
+                Icon(Icons.add, color: Colors.white),
+              ],
+            ),
           ),
         ),
-      ),
-    ],
-  );
-}
-
-
+      ],
+    );
+  }
 
   void _showOptionsDialog(BuildContext context) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text('Selecione uma opção'),
-        content: SingleChildScrollView(
-          child: ListBody(
-            children: [
-              ListTile(
-                leading: Icon(Icons.sports_soccer),
-                title: Text('Atividades'),
-                onTap: () {
-                  Navigator.pop(context); 
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => CreateActivityPage(),
-                    ),
-                  );
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.event),
-                title: Text('Eventos'),
-                onTap: () {
-                  Navigator.pop(context); 
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => EventFormPage(),
-                    ),
-                  );
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.thumbs_up_down),
-                title: Text('Recomendações'),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => RecommendationFormPage(),
-                    ),
-                  );
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.location_city),
-                title: Text('Espaços'),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => SpaceFormPage(),
-                    ),
-                  );
-                },
-              ),
-            ],
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Selecione uma opção'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: [
+                ListTile(
+                  leading: Icon(Icons.sports_soccer),
+                  title: Text('Atividades'),
+                  onTap: () {
+                    Navigator.pop(context); 
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CreateActivityPage(),
+                      ),
+                    );
+                  },
+                ),
+                ListTile(
+                  leading: Icon(Icons.event),
+                  title: Text('Eventos'),
+                  onTap: () {
+                    Navigator.pop(context); 
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => EventFormPage(),
+                      ),
+                    );
+                  },
+                ),
+                ListTile(
+                  leading: Icon(Icons.thumbs_up_down),
+                  title: Text('Recomendações'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => RecommendationFormPage(),
+                      ),
+                    );
+                  },
+                ),
+                ListTile(
+                  leading: Icon(Icons.location_city),
+                  title: Text('Espaços'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SpaceFormPage(),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
-        ),
-      );
-    },
-  );
-}
-
+        );
+      },
+    );
+  }
 
   void _selectOption(String option) {
     setState(() {
