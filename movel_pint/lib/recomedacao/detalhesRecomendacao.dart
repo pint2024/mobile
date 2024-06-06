@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
+import 'package:movel_pint/widgets/customAppBar.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -6,14 +8,24 @@ void main() {
   ));
 }
 
-class RecomendacaoDetailsPage extends StatelessWidget {
+class RecomendacaoDetailsPage extends StatefulWidget {
+  @override
+  _RecomendacaoDetailsPageState createState() => _RecomendacaoDetailsPageState();
+}
+
+class _RecomendacaoDetailsPageState extends State<RecomendacaoDetailsPage> {
+  int _selectedIndex = 3;
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Detalhes da Recomendação', style: TextStyle(fontSize: 18.0)),
-        backgroundColor: const Color.fromRGBO(57, 99, 156, 1.0),
-      ),
+      appBar: CustomAppBar(),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(12.0),
         child: Column(
@@ -65,6 +77,10 @@ class RecomendacaoDetailsPage extends StatelessWidget {
           ],
         ),
       ),
+      bottomNavigationBar: CustomBottomNavigationBar(
+        selectedIndex: _selectedIndex,
+        onItemTapped: _onItemTapped,
+      ),
     );
   }
 
@@ -115,7 +131,7 @@ class RecomendacaoDetailsPage extends StatelessWidget {
   Widget _buildStarRating(double rating) {
     int fullStars = rating.floor();
     bool halfStar = rating - fullStars > 0;
-    
+
     return Row(
       children: List.generate(5, (index) {
         if (index < fullStars) {

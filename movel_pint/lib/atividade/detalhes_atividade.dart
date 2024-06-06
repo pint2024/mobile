@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
+import 'package:movel_pint/widgets/customAppBar.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -6,14 +8,24 @@ void main() {
   ));
 }
 
-class DetalhesAtividade extends StatelessWidget {
+class DetalhesAtividade extends StatefulWidget {
+  @override
+  _DetalhesAtividadeState createState() => _DetalhesAtividadeState();
+}
+
+class _DetalhesAtividadeState extends State<DetalhesAtividade> {
+  int _selectedIndex = 3;
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Detalhes da Atividade', style: TextStyle(fontSize: 18.0)),
-        backgroundColor: const Color.fromRGBO(57, 99, 156, 1.0),
-      ),
+      appBar: CustomAppBar(),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(12.0),
         child: Column(
@@ -52,6 +64,10 @@ class DetalhesAtividade extends StatelessWidget {
             ),
           ],
         ),
+      ),
+      bottomNavigationBar: CustomBottomNavigationBar(
+        selectedIndex: _selectedIndex,
+        onItemTapped: _onItemTapped,
       ),
     );
   }
