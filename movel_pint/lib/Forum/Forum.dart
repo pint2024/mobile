@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:movel_pint/atividade/TodasAtividades.dart';
 import 'package:movel_pint/atividade/criarAtividade.dart';
-import 'package:movel_pint/espa%C3%A7o/criarespa%C3%A7o.dart';
+import 'package:movel_pint/espaço/criarespaço.dart';
+import 'package:movel_pint/espaço/todosEspacos.dart'; // Importe a página TodosEspacos aqui
+import 'package:movel_pint/evento/TodosEventos.dart';
 import 'package:movel_pint/evento/criarEvento.dart';
+import 'package:movel_pint/recomedacao/TodasRecomendacoes.dart';
 import 'package:movel_pint/recomedacao/criarRecomendacao.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
 import 'package:movel_pint/widgets/customAppBar.dart';
@@ -41,7 +45,7 @@ class _HomePageState extends State<ForumPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(), 
+      appBar: CustomAppBar(),
       body: PageView(
         controller: _pageController,
         onPageChanged: (index) {
@@ -64,17 +68,19 @@ class _HomePageState extends State<ForumPage> {
     return ListView(
       padding: EdgeInsets.all(16.0),
       children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 16.0, bottom: 16.0),
-          child: Text(
-            'Fórum',
-            style: TextStyle(
-              fontSize: 24.0,
-              fontWeight: FontWeight.bold,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Fórum',
+              style: TextStyle(
+                fontSize: 24.0,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
+            _buildAddButton(), // Adiciona o botão "Adicionar" ao lado do título "Fórum"
+          ],
         ),
-        _buildAddButton(), // Adiciona o botão "Adicionar"
         SizedBox(height: 20.0), // Espaço entre o botão e a seção de atividades
         buildSection('Atividades', Icons.sports_soccer, context),
         buildSection('Eventos', Icons.event, context),
@@ -90,7 +96,40 @@ class _HomePageState extends State<ForumPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SectionTitle(title: title, onViewMore: () {}),
+        SectionTitle(
+          title: title,
+          onViewMore: () {
+            if (title == 'Atividades') {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => TodasAtividades(), // Navegue para TodasAtividades quando o título for "Atividades"
+                ),
+              );
+            } else if (title == 'Eventos') {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => TodosEventos(), // Navegue para TodosEventos quando o título for "Eventos"
+                ),
+              );
+            } else if (title == 'Recomendações') {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => TodasRecomendacoes(), // Navegue para TodasRecomendacoes quando o título for "Recomendações"
+                ),
+              );
+            } else if (title == 'Espaços') {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => TodosEspacos(), // Navegue para TodosEspacos quando o título for "Espaços"
+                ),
+              );
+            }
+          },
+        ),
         SizedBox(height: 10.0),
         SizedBox(
           height: 200.0,
@@ -126,34 +165,28 @@ class _HomePageState extends State<ForumPage> {
   }
 
   Widget _buildAddButton() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        SizedBox(width: 16.0),
-        GestureDetector(
-          onTap: () {
-            _showOptionsDialog(context);
-          },
-          child: Container(
-            padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-            decoration: BoxDecoration(
-              color: Colors.blue,
-              borderRadius: BorderRadius.circular(20.0), // Bordas arredondadas
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'Adicionar',
-                  style: TextStyle(fontSize: 16.0, color: Colors.white),
-                ),
-                SizedBox(width: 8.0),
-                Icon(Icons.add, color: Colors.white),
-              ],
-            ),
-          ),
+    return GestureDetector(
+      onTap: () {
+        _showOptionsDialog(context);
+      },
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+        decoration: BoxDecoration(
+          color: Colors.blue,
+          borderRadius: BorderRadius.circular(20.0), // Bordas arredondadas
         ),
-      ],
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Adicionar',
+              style: TextStyle(fontSize: 16.0, color: Colors.white),
+            ),
+            SizedBox(width: 8.0),
+            Icon(Icons.add, color: Colors.white),
+          ],
+        ),
+      ),
     );
   }
 
@@ -193,7 +226,7 @@ class _HomePageState extends State<ForumPage> {
                   },
                 ),
                 ListTile(
-                  leading: Icon(Icons.thumbs_up_down),
+                  leading: Icon(Icons.thumb_up),
                   title: Text('Recomendações'),
                   onTap: () {
                     Navigator.pop(context);
