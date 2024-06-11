@@ -120,7 +120,7 @@ void _goToDetalheEventoPage() {
     void _goToRegisterPage() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => RegisterPage()),
+      MaterialPageRoute(builder: (context) => LoginApp()),
     );
   }
   

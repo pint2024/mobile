@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'registo.dart'; // Importe o arquivo registro.dart
 
 void main() {
@@ -98,7 +99,7 @@ class LoginPage extends StatelessWidget {
                         backgroundColor: MaterialStateProperty.all<Color>(Color.fromRGBO(57, 99, 156, 1.0)),
                       ),
                       onPressed: () {
-                        // Adicione aqui a lógica para autenticar o usuário
+                        _handleLogin(context);
                       },
                       child: Text(
                         'Login',
@@ -161,32 +162,72 @@ class LoginPage extends StatelessWidget {
     );
   }
 
-  Future<void> _handleSignInWithGoogle(BuildContext context) async {
-    try {
-      GoogleSignIn googleSignIn = GoogleSignIn(scopes: ['email']);
-      GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+  Future<void> _handleLogin(BuildContext context) async {
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.none) {
+      _showNoInternetDialog(context);
+    } else {
+      // Adicione aqui a lógica para autenticar o usuário
+      print('Usuário autenticado com sucesso');
+    }
+  }
 
-      if (googleUser != null) {
-        print('Usuário autenticado com sucesso: ${googleUser.email}');
-      } else {
-        print('Falha ao autenticar com o Google');
+  Future<void> _handleSignInWithGoogle(BuildContext context) async {
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.none) {
+      _showNoInternetDialog(context);
+    } else {
+      try {
+        GoogleSignIn googleSignIn = GoogleSignIn(scopes: ['email']);
+        GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+
+        if (googleUser != null) {
+          print('Usuário autenticado com sucesso: ${googleUser.email}');
+        } else {
+          print('Falha ao autenticar com o Google');
+        }
+      } catch (error) {
+        print('Erro ao autenticar com o Google: $error');
       }
-    } catch (error) {
-      print('Erro ao autenticar com o Google: $error');
     }
   }
 
   Future<void> _handleSignInWithFacebook(BuildContext context) async {
-    try {
-      final LoginResult result = await FacebookAuth.instance.login(); // by default we request the email and the public profile
-      if (result.status == LoginStatus.success) {
-        final AccessToken accessToken = result.accessToken!;
-        print('Usuário autenticado com sucesso no Facebook');
-      } else {
-        print('Falha ao autenticar com o Facebook: ${result.status}');
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.none) {
+      _showNoInternetDialog(context);
+    } else {
+      try {
+        final LoginResult result = await FacebookAuth.instance.login();
+        if (result.status == LoginStatus.success) {
+          final AccessToken accessToken = result.accessToken!;
+          print('Usuário autenticado com sucesso no Facebook');
+        } else {
+          print('Falha ao autenticar com o Facebook: ${result.status}');
+        }
+      } catch (error) {
+        print('Erro ao autenticar com o Facebook: $error');
       }
-    } catch (error) {
-      print('Erro ao autenticar com o Facebook: $error');
     }
+  }
+
+  void _showNoInternetDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Sem Conexão com a Internet'),
+          content: Text('Por favor, ligue-se à internet para continuar.'),
+          actions: [
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }
