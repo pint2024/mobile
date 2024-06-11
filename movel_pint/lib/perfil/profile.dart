@@ -44,8 +44,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Future<void> _fetchProfileData() async {
     try {
-      print('Tentando acessar: http://10.0.2.2:8000/perfil');
-      final data = await ApiService.fetchData('http://10.0.2.2:8000/perfil');
+      final data = await ApiService.fetchData('utilizador/obter/1');
       if (data != null && data['data'] != null) {
         setState(() {
           _profileData = data['data'];
@@ -70,26 +69,23 @@ class _ProfilePageState extends State<ProfilePage> {
             children: [
               CircleAvatar(
                 radius: 50,
-                backgroundImage: _profileData != null && _profileData!['profile_picture'] != null
-                    ? (_profileData!['profile_picture'].startsWith('http')
-                        ? NetworkImage(_profileData!['profile_picture'])
-                        : AssetImage(_profileData!['profile_picture'])) as ImageProvider
+                backgroundImage: _profileData != null && _profileData!['imagem'] != null
+                    ? (_profileData!['imagem'].startsWith('http')
+                        ? NetworkImage(_profileData!['imagem'])
+                        : AssetImage(_profileData!['imagem'])) as ImageProvider
                     : AssetImage('assets/Images/profile_picture.png'),
               ),
               SizedBox(height: 16),
               Text(
-                _profileData != null ? _profileData!['name'] ?? 'Nome não encontrado' : 'Nome não encontrado',
+                _profileData != null ? _profileData!['nome'] ?? 'Nome não encontrado' : 'Nome não encontrado',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               SizedBox(height: 8),
-              _buildProfileItem(Icons.cake, 'Aniversario', _profileData != null ? _profileData!['birthday'] ?? 'Data não encontrada' : 'Data não encontrada'),
-              _buildProfileItem(Icons.phone, 'Numero', _profileData != null ? _profileData!['phone'] ?? 'Número não encontrado' : 'Número não encontrado'),
-              _buildProfileItem(Icons.camera_alt, 'Instagram', _profileData != null ? _profileData!['instagram'] ?? 'Instagram não encontrado' : 'Instagram não encontrado'),
               _buildProfileItem(Icons.email, 'Email', _profileData != null ? _profileData!['email'] ?? 'Email não encontrado' : 'Email não encontrado'),
-              _buildProfileItem(Icons.lock, 'Password', '********'),
+              _buildProfileItem(Icons.lock, 'Senha', '********'),
               SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,

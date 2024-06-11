@@ -2,10 +2,10 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  static const String baseUrl = 'localhost:8000';
+  static const String baseUrl = 'http://localhost:8000';
 
-  static Future<dynamic> fetchData(String tableName, String id, {Map<String, String>? headers}) async {
-    final url = '$baseUrl/$tableName/$id';
+  static Future<dynamic> fetchData(String endpoint, {Map<String, String>? headers}) async {
+    final url = '$baseUrl/$endpoint';
     try {
       final response = await http.get(Uri.parse(url), headers: headers);
       if (response.statusCode == 200) {
@@ -18,5 +18,7 @@ class ApiService {
     }
   }
 
-  static updateProfile(Map<String, dynamic> profileData) {}
+  static updateProfile(Map<String, dynamic> profileData) {
+    // Implementação do método updateProfile
+  }
 }
