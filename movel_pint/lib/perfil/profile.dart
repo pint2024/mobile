@@ -73,7 +73,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ? (_profileData!['imagem'].startsWith('http')
                         ? NetworkImage(_profileData!['imagem'])
                         : AssetImage(_profileData!['imagem'])) as ImageProvider
-                    : AssetImage('assets/Images/profile_picture.png'),
+                    : AssetImage('assets/Images/jauzim.jpg'),
               ),
               SizedBox(height: 16),
               Text(
@@ -84,8 +84,16 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
               SizedBox(height: 8),
+              _buildProfileItem(Icons.tag, 'Tag', _profileData != null ? _profileData!['tag'] ?? 'Tag não encontrada' : 'Tag não encontrada'),
               _buildProfileItem(Icons.email, 'Email', _profileData != null ? _profileData!['email'] ?? 'Email não encontrado' : 'Email não encontrado'),
-              _buildProfileItem(Icons.lock, 'Senha', '********'),
+              if (_profileData != null && _profileData!['linkedin'] != null)
+                _buildProfileItem(Icons.link, 'LinkedIn', _profileData!['linkedin']),
+              if (_profileData != null && _profileData!['facebook'] != null)
+                _buildProfileItem(Icons.facebook, 'Facebook', _profileData!['facebook']),
+              if (_profileData != null && _profileData!['instagram'] != null)
+                _buildProfileItem(Icons.camera_alt, 'Instagram', _profileData!['instagram']),
+              _buildProfileItem(Icons.location_city, 'Centro', _profileData != null ? _profileData!['utilizador_centro']['centro'] ?? 'Centro não encontrado' : 'Centro não encontrado'),
+              _buildProfileItem(Icons.person, 'Perfil', _profileData != null ? _profileData!['utilizador_perfil']['perfil'] ?? 'Perfil não encontrado' : 'Perfil não encontrado'),
               SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -111,7 +119,6 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ),
                   ),
-                  
                   SizedBox(width: 8),
                   Expanded(
                     child: ElevatedButton(
