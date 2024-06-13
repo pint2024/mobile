@@ -1,62 +1,53 @@
+import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:movel_pint/perfil/profile.dart';
+import 'package:movel_pint/perfil/profile.dart'; // Certifique-se de ajustar o import conforme necessário
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
-import 'dart:io';
-
-class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
-  @override
-  Size get preferredSize => Size.fromHeight(60);
-
-  @override
-  Widget build(BuildContext context) {
-    return AppBar(
-      backgroundColor: const Color.fromRGBO(57, 99, 156, 1.0),
-      automaticallyImplyLeading: false,
-      title: Row(
-        children: [
-          Padding(
-            padding: EdgeInsets.only(left: 16),
-            child: Image.asset(
-              'assets/Images/logo.png',
-              width: 40,
-              height: 40,
-            ),
-          ),
-          Expanded(
-            child: Align(
-              alignment: Alignment.centerRight,
-              child: IconButton(
-                icon: Icon(Icons.account_circle, color: Colors.white),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => ProfileApp()),
-                  );
-                },
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
+import 'package:movel_pint/backend/api_service.dart';
 
 class ProfileEditScreen extends StatefulWidget {
+  final Map<String, dynamic> profileData; // Dados iniciais do perfil
+
+  ProfileEditScreen({required this.profileData});
+
   @override
   _ProfileEditScreenState createState() => _ProfileEditScreenState();
 }
 
 class _ProfileEditScreenState extends State<ProfileEditScreen> {
-  String _name = "John Doe";
-  String _birthday = "01/01/1990";
-  String _phoneNumber = "123456789";
-  String _instagramName = "john_doe";
-  String _email = "john.doe@example.com";
-  String _password = "**********";
+  late TextEditingController _nameController;
+  late TextEditingController _surnameController;
+  late TextEditingController _emailController;
+  late TextEditingController _passwordController;
+  late TextEditingController _linkedinController;
+  late TextEditingController _facebookController;
+  late TextEditingController _instagramController;
   File? _image;
-  int _selectedIndex = -1;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController(text: widget.profileData['nome']);
+    _surnameController = TextEditingController(text: widget.profileData['sobrenome'] ?? '');
+    _emailController = TextEditingController(text: widget.profileData['email']);
+    _linkedinController = TextEditingController(text: widget.profileData['linkedin'] ?? '');
+    _facebookController = TextEditingController(text: widget.profileData['facebook'] ?? '');
+    _instagramController = TextEditingController(text: widget.profileData['instagram'] ?? '');
+    _passwordController = TextEditingController(); // Não mostraremos a senha atual aqui
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _surnameController.dispose();
+    _emailController.dispose();
+    _linkedinController.dispose();
+    _facebookController.dispose();
+    _instagramController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   Future<void> _getImage() async {
     final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
@@ -64,6 +55,60 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
       setState(() {
         _image = File(pickedFile.path);
       });
+    }
+  }
+
+  Future<void> _saveChanges() async {
+    try {
+      // Preparar dados atualizados do perfil
+      Map<String, dynamic> updatedProfile = {
+        'id': widget.profileData['id'],
+        'nome': _nameController.text,
+        'sobrenome': _surnameController.text,
+        'email': _emailController.text,
+        'linkedin': _linkedinController.text,
+        'facebook': _facebookController.text,
+        'instagram': _instagramController.text,
+        // A senha não será atualizada aqui por questões de segurança
+      };
+
+      // Atualizar perfil na API
+      await ApiService.updateProfile(updatedProfile);
+
+      // Exibir mensagem de sucesso
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text("Sucesso"),
+          content: Text("Perfil atualizado com sucesso."),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Fechar o diálogo
+                Navigator.pop(context); // Fechar a tela de edição de perfil
+              },
+              child: Text("OK"),
+            ),
+          ],
+        ),
+      );
+    } catch (e) {
+      // Em caso de erro, exibir mensagem
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text("Erro"),
+          content: Text("Não foi possível atualizar o perfil. Tente novamente mais tarde."),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Fechar o diálogo
+              },
+              child: Text("OK"),
+            ),
+          ],
+        ),
+      );
     }
   }
 
@@ -80,7 +125,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
               onTap: _getImage,
               child: CircleAvatar(
                 radius: 50,
-                backgroundImage: _image != null ? FileImage(_image!) : AssetImage('assets/Images/profile_picture.png') as ImageProvider,
+                backgroundImage: _image != null ? FileImage(_image!) : AssetImage('assets/Images/jauzim.jpg') as ImageProvider,
               ),
             ),
             SizedBox(height: 10),
@@ -96,51 +141,21 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             TextField(
+              controller: _nameController,
               decoration: InputDecoration(
                 hintText: "Escreva o seu nome",
               ),
-              onChanged: (value) {
-                _name = value;
-              },
             ),
             SizedBox(height: 20),
             Text(
-              "Aniversario:",
+              "Sobrenome:",
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             TextField(
+              controller: _surnameController,
               decoration: InputDecoration(
-                hintText: "Adicione a sua data de aniversário",
+                hintText: "Escreva o seu sobrenome",
               ),
-              onChanged: (value) {
-                _birthday = value;
-              },
-            ),
-            SizedBox(height: 20),
-            Text(
-              "Numero:",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            TextField(
-              decoration: InputDecoration(
-                hintText: "Novo numero de telemovel",
-              ),
-              onChanged: (value) {
-                _phoneNumber = value;
-              },
-            ),
-            SizedBox(height: 20),
-            Text(
-              "Nome do intagram:",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            TextField(
-              decoration: InputDecoration(
-                hintText: "Insira o nome do instagram",
-              ),
-              onChanged: (value) {
-                _instagramName = value;
-              },
             ),
             SizedBox(height: 20),
             Text(
@@ -148,12 +163,43 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             TextField(
+              controller: _emailController,
               decoration: InputDecoration(
                 hintText: "Novo email",
               ),
-              onChanged: (value) {
-                _email = value;
-              },
+            ),
+            SizedBox(height: 20),
+            Text(
+              "LinkedIn:",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            TextField(
+              controller: _linkedinController,
+              decoration: InputDecoration(
+                hintText: "Insira o seu LinkedIn",
+              ),
+            ),
+            SizedBox(height: 20),
+            Text(
+              "Facebook:",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            TextField(
+              controller: _facebookController,
+              decoration: InputDecoration(
+                hintText: "Insira o seu Facebook",
+              ),
+            ),
+            SizedBox(height: 20),
+            Text(
+              "Instagram:",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            TextField(
+              controller: _instagramController,
+              decoration: InputDecoration(
+                hintText: "Insira o seu Instagram",
+              ),
             ),
             SizedBox(height: 20),
             Text(
@@ -161,12 +207,11 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             TextField(
+              controller: _passwordController,
               decoration: InputDecoration(
                 hintText: "Insira a sua nova password",
               ),
-              onChanged: (value) {
-                _password = value;
-              },
+              obscureText: true, // Para ocultar a senha
             ),
             SizedBox(height: 40),
             Row(
@@ -174,62 +219,12 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: Text("Cancelar"),
-                        content: Text("As modificações não serão guardadas"),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              // Navigate to profile page
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(builder: (context) => ProfilePage()),
-                              );
-                            },
-                            child: Text("Continuar"),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: Text("Cancelar"),
-                          ),
-                        ],
-                      ),
-                    );
+                    Navigator.pop(context); // Voltar para a tela anterior
                   },
                   child: Text("Cancelar"),
                 ),
                 ElevatedButton(
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: Text("Guardar"),
-                        content: Text("Tem a certeza que quer guardar?"),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              // Navigate to profile page
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(builder: (context) => ProfilePage()),
-                              );
-                            },
-                            child: Text("Continuar"),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: Text("Cancelar"),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
+                  onPressed: _saveChanges,
                   child: Text("Guardar"),
                 ),
               ],

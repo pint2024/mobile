@@ -16,12 +16,16 @@ class ProfileApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: ProfilePage(),
+      home: ProfilePage(userId: 1), // Passando o ID padrão para testes
     );
   }
 }
 
 class ProfilePage extends StatefulWidget {
+  final int userId;
+
+  ProfilePage({required this.userId});
+
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }
@@ -39,12 +43,12 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
-    _fetchProfileData();
+    _fetchProfileData(widget.userId); // Usando o ID passado pelo widget
   }
 
-  Future<void> _fetchProfileData() async {
+  Future<void> _fetchProfileData(int userId) async {
     try {
-      final data = await ApiService.fetchData('utilizador/obter/1');
+      final data = await ApiService.fetchData('utilizador/obter/$userId');
       if (data != null && data['data'] != null) {
         setState(() {
           _profileData = data['data'];
@@ -56,6 +60,12 @@ class _ProfilePageState extends State<ProfilePage> {
     } catch (e) {
       print('Erro ao carregar perfil: $e');
     }
+  }
+
+  void updateUserId(int newUserId) {
+    setState(() {
+      _fetchProfileData(newUserId);
+    });
   }
 
   @override
@@ -103,7 +113,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => ProfileEditScreen()),
+                          MaterialPageRoute(builder: (context) => ProfileEditScreen(profileData: {},)),
                         );
                       },
                       style: ElevatedButton.styleFrom(
