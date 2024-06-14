@@ -51,16 +51,15 @@ class _SpaceDetailsPageState extends State<SpaceDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    print("joao é gay 3");
-  return Scaffold(
-    appBar: CustomAppBar(),
-    body: _conteudoTipo != null ? _buildContentItem(_conteudoTipo) : Center(child: Text('Nenhum conteúdo disponível')),
-    bottomNavigationBar: CustomBottomNavigationBar(
-      selectedIndex: _selectedIndex,
-      onItemTapped: _onItemTapped,
-    ),
-  );
-}
+    return Scaffold(
+      appBar: CustomAppBar(),
+      body: _conteudoTipo != null ? _buildContentItem(_conteudoTipo) : Center(child: Text('Nenhum conteúdo disponível')),
+      bottomNavigationBar: CustomBottomNavigationBar(
+        selectedIndex: _selectedIndex,
+        onItemTapped: _onItemTapped,
+      ),
+    );
+  }
 
   Widget _buildContentItem(Map<String, dynamic>? item) {
     print(item);
@@ -77,7 +76,9 @@ class _SpaceDetailsPageState extends State<SpaceDetailsPage> {
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              _buildTag(item?['conteudo_tipo']['tipo']), // Ajuste conforme necessário para outras tags
+              _buildTag(item?['conteudo_tipo']['tipo']), // Tipo de conteúdo
+              SizedBox(width: 8),
+              _buildTag(item?['conteudo_subtopico']['area']), // Área do subtopico
             ],
           ),
           SizedBox(height: 8),
@@ -93,13 +94,10 @@ class _SpaceDetailsPageState extends State<SpaceDetailsPage> {
                 fit: BoxFit.cover,
               ),
             ),
-          ), 
+          ),
           SizedBox(height: 16),
           _buildDetailItemWithLabel(
             item?['endereco'] ?? 'Endereço não encontrado',
-          ),
-          _buildDetailItemWithLabel(
-            item?['data_evento'] ?? 'Data não encontrada',
           ),
           SizedBox(height: 16),
           _buildDetailItemLabel('Descrição'),
@@ -108,13 +106,17 @@ class _SpaceDetailsPageState extends State<SpaceDetailsPage> {
             isDescription: true,
           ),
           SizedBox(height: 16),
+          _buildDetailItemLabel('Criado por'),
+          _buildDetailItemWithLabel(
+            "${item?['conteudo_utilizador']['nome']} ${item?['conteudo_utilizador']['sobrenome']} em ${item?['data_criacao'].toString().substring(0, 10)}",
+            isDescription: true,
+          ),
         ],
       ),
     );
   }
 
   Widget _buildDetailItemWithLabel(String value, {bool isTitle = false, bool isSubtopic = false, bool isDescription = false}) {
-    print("joao é gay");
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 6.0),
       child: Text(
@@ -128,7 +130,6 @@ class _SpaceDetailsPageState extends State<SpaceDetailsPage> {
   }
 
   Widget _buildDetailItemLabel(String label) {
-    print("joao é gay 2");
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 6.0),
       child: Text(
@@ -142,7 +143,6 @@ class _SpaceDetailsPageState extends State<SpaceDetailsPage> {
   }
 
   Widget _buildTag(String text) {
-    print("joao é gay 1");
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),
       decoration: BoxDecoration(
