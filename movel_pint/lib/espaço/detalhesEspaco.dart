@@ -79,6 +79,8 @@ class _SpaceDetailsPageState extends State<SpaceDetailsPage> {
               _buildTag(item?['conteudo_tipo']['tipo']), // Tipo de conteúdo
               SizedBox(width: 8),
               _buildTag(item?['conteudo_subtopico']['area']), // Área do subtopico
+              SizedBox(width: 8),
+              _buildTag(item?['conteudo_subtopico']['subtopico_topico']['topico']), // Tópico
             ],
           ),
           SizedBox(height: 8),
