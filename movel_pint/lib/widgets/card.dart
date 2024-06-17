@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'constants.dart';
 
 class MyCard extends StatelessWidget {
   final String titulo;
@@ -93,7 +94,7 @@ MyCard createCardFromJson(Map<String, dynamic> json, VoidCallback onTap) {
   return MyCard(
     titulo: atividade['titulo'],
     descricao: atividade['descricao'],
-    imagem: 'http://localhost:8000/${atividade['imagem']}', // URL completa da imagem
+    imagem: '${Constants.API_BASE_URL}/${atividade['imagem']}', // URL completa da imagem
     dataCriacao: atividade['data_criacao'],
     nomeUsuario: 'Nome do Usuário', // Substituir pelo nome real do usuário se disponível
     numFotos: 5, // Substituir pelo número real de fotos se disponível
