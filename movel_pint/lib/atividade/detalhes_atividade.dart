@@ -20,6 +20,7 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
   int _selectedIndex = 3;
   Map<String, dynamic>? _activityDetails;
   List<dynamic>? _comments;
+  bool _showAllComments = false; // Estado para controlar a visualização dos comentários
   final int activityId = 2; // Definindo o ID da atividade internamente
 
   void _onItemTapped(int index) {
@@ -51,6 +52,17 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
       print('Erro ao carregar dados: $e');
     }
   }
+  
+
+  Future<Map<String, dynamic>> _fetchUserDetails(int userId) async {
+  try {
+    final userData = await ApiService.fetchData('utilizador/listar/$userId');
+    return userData['data'][0]; // Assuming API returns single user data
+  } catch (e) {
+    print('Erro ao carregar dados do usuário: $e');
+    throw Exception('Erro ao carregar dados do usuário');
+  }
+}
 
   String _formatDateTime(String dateTime) {
     final DateTime parsedDateTime = DateTime.parse(dateTime);
@@ -150,6 +162,8 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
       return SizedBox.shrink();
     }
 
+    List<dynamic> visibleComments = _showAllComments ? comments : [comments.first];
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -158,11 +172,26 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
         ListView.builder(
           shrinkWrap: true,
           physics: NeverScrollableScrollPhysics(),
-          itemCount: comments.length,
+          itemCount: visibleComments.length,
           itemBuilder: (context, index) {
-            return _buildCommentItem(comments[index]);
+            return _buildCommentItem(visibleComments[index]);
           },
         ),
+        if (comments.length > 1) // Mostrar o botão de expansão se houver mais de um comentário
+          TextButton(
+            onPressed: () {
+              setState(() {
+                _showAllComments = !_showAllComments;
+              });
+            },
+            child: Text(
+              _showAllComments ? 'Mostrar menos' : 'Mostrar mais',
+              style: TextStyle(
+                color: Colors.blue,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
       ],
     );
   }
@@ -179,18 +208,18 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            comment['comentario'] ?? 'Comentário não disponível',
-            style: TextStyle(fontSize: 14),
-          ),
-          SizedBox(height: 8),
-          Text(
-            'Por: ${comment['utilizador']}',
+            '${comment['utilizador']}',
             style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
           ),
+          SizedBox(height: 4),
+          Text(
+            '${_formatDateTime(comment['data_criacao'])}',
+            style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
+          ),
           SizedBox(height: 8),
           Text(
-            'Em: ${_formatDateTime(comment['data_criacao'])}',
-            style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
+            comment['comentario'] ?? 'Comentário não disponível',
+            style: TextStyle(fontSize: 14),
           ),
         ],
       ),

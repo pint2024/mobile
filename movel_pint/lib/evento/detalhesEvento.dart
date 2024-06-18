@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart'; // Importe adicionado para formatar datas
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
 import 'package:movel_pint/widgets/customAppBar.dart';
 import 'package:movel_pint/backend/api_service.dart';
-import 'package:intl/intl.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -19,6 +19,8 @@ class EventDetailsPage extends StatefulWidget {
 class _EventDetailsPageState extends State<EventDetailsPage> {
   int _selectedIndex = 3;
   Map<String, dynamic>? _eventDetails;
+  List<dynamic>? _comments;
+  bool _showAllComments = false; // Estado para controlar a visualização dos comentários
   final int eventId = 1; // Definindo o ID do evento internamente
 
   void _onItemTapped(int index) {
@@ -40,6 +42,7 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
       if (data != null) {
         setState(() {
           _eventDetails = data?['data'];
+          _comments = data?['data']['comentario_conteudo'];
         });
         print('Dados carregados com sucesso');
       } else {
@@ -47,6 +50,16 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
       }
     } catch (e) {
       print('Erro ao carregar dados: $e');
+    }
+  }
+
+  Future<Map<String, dynamic>> _fetchUserDetails(int userId) async {
+    try {
+      final userData = await ApiService.fetchData('utilizador/listar/$userId');
+      return userData['data'][0]; // Assuming API returns single user data
+    } catch (e) {
+      print('Erro ao carregar dados do usuário: $e');
+      throw Exception('Erro ao carregar dados do usuário');
     }
   }
 
@@ -61,7 +74,19 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
     return Scaffold(
       appBar: CustomAppBar(),
       body: _eventDetails != null
-          ? _buildEventItem(_eventDetails)
+          ? SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _buildEventItem(_eventDetails!),
+                    SizedBox(height: 16),
+                    _buildCommentsSection(_comments),
+                  ],
+                ),
+              ),
+            )
           : Center(child: Text('Nenhum conteúdo disponível')),
       bottomNavigationBar: CustomBottomNavigationBar(
         selectedIndex: _selectedIndex,
@@ -70,64 +95,130 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
     );
   }
 
-  Widget _buildEventItem(Map<String, dynamic>? item) {
-    print(item);
-    return SingleChildScrollView(
-      padding: EdgeInsets.all(12.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          _buildDetailItemWithLabel(
-            item?['titulo'] ?? 'Título não encontrado',
-            isTitle: true,
+  Widget _buildEventItem(Map<String, dynamic> item) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _buildDetailItemWithLabel(
+          item['titulo'] ?? 'Título não encontrado',
+          isTitle: true,
+        ),
+        SizedBox(height: 12),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            _buildTag(item['conteudo_tipo']['tipo']), // Tipo de conteúdo
+            SizedBox(width: 8),
+            _buildTag(item['conteudo_subtopico']['area']), // Área do subtopico
+            SizedBox(width: 8),
+            _buildTag(item['conteudo_subtopico']['subtopico_topico']['topico']), // Tópico
+          ],
+        ),
+        SizedBox(height: 8),
+        Container(
+          height: 160,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            image: DecorationImage(
+              image: item['imagem'] != null
+                  ? (item['imagem'].startsWith('http')
+                      ? NetworkImage(item['imagem'])
+                      : AssetImage('assets/Images/${item['imagem']}')) as ImageProvider
+                  : AssetImage('assets/Images/jauzim.jpg'),
+              fit: BoxFit.cover,
+            ),
           ),
-          SizedBox(height: 12),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              _buildTag(item?['conteudo_tipo']['tipo']), // Tipo de conteúdo
-              SizedBox(width: 8),
-              _buildTag(item?['conteudo_subtopico']['area']), // Área do subtopico
-              SizedBox(width: 8),
-              _buildTag(item?['conteudo_subtopico']['subtopico_topico']['topico']), // Tópico
-            ],
-          ),
-          SizedBox(height: 8),
-          Container(
-            height: 160,
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: item?['imagem'] != null
-                    ? (item!['imagem'].startsWith('http')
-                        ? NetworkImage(item['imagem'])
-                        : AssetImage('assets/Images/${item['imagem']}')) as ImageProvider
-                    : AssetImage('assets/Images/jauzim.jpg'),
-                fit: BoxFit.cover,
+        ),
+        SizedBox(height: 16),
+        _buildDetailItemWithLabel(
+          item['endereco'] ?? 'Endereço não encontrado',
+        ),
+        SizedBox(height: 16),
+        _buildDetailItemLabel('Descrição'),
+        _buildDetailItemWithLabel(
+          item['descricao'] ?? 'Descrição não encontrada',
+          isDescription: true,
+        ),
+        SizedBox(height: 16),
+        _buildDetailItemLabel('Data do Evento'),
+        _buildDetailItemWithLabel(
+          item['data_evento'] != null
+              ? _formatDateTime(item['data_evento'])
+              : 'Data do evento não disponível',
+        ),
+        SizedBox(height: 16),
+        _buildDetailItemLabel('Criado por'),
+        _buildDetailItemWithLabel(
+          "${item['conteudo_utilizador']['nome']} ${item['conteudo_utilizador']['sobrenome']} em ${_formatDateTime(item['data_criacao'])}",
+          isDescription: true,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCommentsSection(List<dynamic>? comments) {
+    if (comments == null || comments.isEmpty) {
+      return SizedBox.shrink();
+    }
+
+    List<dynamic> visibleComments = _showAllComments ? comments : [comments.first];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _buildDetailItemLabel('Comentários'),
+        SizedBox(height: 8),
+        ListView.builder(
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          itemCount: visibleComments.length,
+          itemBuilder: (context, index) {
+            return _buildCommentItem(visibleComments[index]);
+          },
+        ),
+        if (comments.length > 1) // Mostrar o botão de expansão se houver mais de um comentário
+          TextButton(
+            onPressed: () {
+              setState(() {
+                _showAllComments = !_showAllComments;
+              });
+            },
+            child: Text(
+              _showAllComments ? 'Mostrar menos' : 'Mostrar mais',
+              style: TextStyle(
+                color: Colors.blue,
+                fontWeight: FontWeight.bold,
               ),
             ),
           ),
-          SizedBox(height: 16),
-          _buildDetailItemWithLabel(
-            item?['endereco'] ?? 'Endereço não encontrado',
+      ],
+    );
+  }
+
+  Widget _buildCommentItem(Map<String, dynamic> comment) {
+    return Container(
+      padding: EdgeInsets.all(12),
+      margin: EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: Colors.grey[200],
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            '${comment['utilizador']}',
+            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
           ),
-          SizedBox(height: 16),
-          _buildDetailItemLabel('Descrição'),
-          _buildDetailItemWithLabel(
-            item?['descricao'] ?? 'Descrição não encontrada',
-            isDescription: true,
+          SizedBox(height: 4),
+          Text(
+            '${_formatDateTime(comment['data_criacao'])}',
+            style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
           ),
-          SizedBox(height: 16),
-          _buildDetailItemLabel('Data do Evento'),
-          _buildDetailItemWithLabel(
-            item?['data_evento'] != null
-                ? _formatDateTime(item!['data_evento'])
-                : 'Data do evento não disponível',
-          ),
-          SizedBox(height: 16),
-          _buildDetailItemLabel('Criado por'),
-          _buildDetailItemWithLabel(
-            "${item?['conteudo_utilizador']['nome']} ${item?['conteudo_utilizador']['sobrenome']} em ${_formatDateTime(item?['data_criacao'])}",
-            isDescription: true,
+          SizedBox(height: 8),
+          Text(
+            comment['comentario'] ?? 'Comentário não disponível',
+            style: TextStyle(fontSize: 14),
           ),
         ],
       ),
