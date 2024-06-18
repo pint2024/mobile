@@ -8,7 +8,7 @@ class MyCardEvento extends StatelessWidget {
       onTap: () {
         Navigator.push( // Navega para a página detalhesEvento.dart quando clicado
           context,
-          MaterialPageRoute(builder: (context) => EventoDetailsPage()), // Substitua DetalhesEvento() pela classe correta se necessário
+          MaterialPageRoute(builder: (context) => EventDetailsPage()), // Substitua DetalhesEvento() pela classe correta se necessário
         );
       },
       child: Card(

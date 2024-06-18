@@ -1,8 +1,9 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:movel_pint/utils/constants.dart';
 
 class ApiService {
-  static const String baseUrl = 'http://localhost:8000'; // Ajuste conforme necessário
+    static const String baseUrl = CONSTANTS.API_BASE_URL;
 
   static Future<dynamic> fetchData(String endpoint, {Map<String, String>? headers}) async {
     final url = '$baseUrl/$endpoint';

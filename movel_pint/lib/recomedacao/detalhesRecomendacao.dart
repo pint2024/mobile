@@ -1,20 +1,24 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
 import 'package:movel_pint/widgets/customAppBar.dart';
+import 'package:movel_pint/backend/api_service.dart';
 
 void main() {
   runApp(MaterialApp(
-    home: RecomendacaoDetailsPage(),
+    home: RecommendationDetailsPage(),
   ));
 }
 
-class RecomendacaoDetailsPage extends StatefulWidget {
+class RecommendationDetailsPage extends StatefulWidget {
   @override
-  _RecomendacaoDetailsPageState createState() => _RecomendacaoDetailsPageState();
+  _RecommendationDetailsPageState createState() => _RecommendationDetailsPageState();
 }
 
-class _RecomendacaoDetailsPageState extends State<RecomendacaoDetailsPage> {
+class _RecommendationDetailsPageState extends State<RecommendationDetailsPage> {
   int _selectedIndex = 3;
+  Map<String, dynamic>? _recommendationDetails;
+  final int recommendationId = 3; // Definindo o ID da recomendação internamente
 
   void _onItemTapped(int index) {
     setState(() {
@@ -23,60 +27,35 @@ class _RecomendacaoDetailsPageState extends State<RecomendacaoDetailsPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _fetchRecommendationDetails(recommendationId); // Usando o ID definido internamente
+  }
+
+  Future<void> _fetchRecommendationDetails(int recommendationId) async {
+    try {
+      final data = await ApiService.fetchData('conteudo/obter/$recommendationId'); // Alterando a rota
+      print(data);
+      if (data != null) {
+        setState(() {
+          _recommendationDetails = data?['data'];
+        });
+        print('Dados carregados com sucesso');
+      } else {
+        print('Dados não encontrados ou inválidos');
+      }
+    } catch (e) {
+      print('Erro ao carregar dados: $e');
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(12.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _buildDetailItemWithLabel(
-              'Recomendaçao de Exemplo',
-              isTitle: true,
-            ),
-            SizedBox(height: 12),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                _buildTag('Tecnologia'),
-              ],
-            ),
-            SizedBox(height: 8),
-            Image.asset(
-              'assets/Images/logo2.png', // Substitua pelo caminho da sua imagem
-              height: 160,
-              fit: BoxFit.cover,
-            ),
-            SizedBox(height: 16),
-            _buildDetailItemWithLabel(
-              'Rua Exemplo, Número 123 - Cidade',
-            ),
-            _buildDetailItemWithLabel(
-              '25/05/2024 14:30',
-            ),
-            SizedBox(height: 16),
-            _buildDetailItemLabel('Descrição'),
-            _buildDetailItemWithLabel(
-              'Lorem ipsum dolor sit amet, consectetur adipiscing elit. '
-              'GYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAT'
-              'GYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAT'
-              'GYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAT'
-              'GYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAT'
-              'Fusce maximus porta sapien, non tempor elit vestibulum a.',
-              isDescription: true,
-            ),
-            SizedBox(height: 16),
-            _buildDetailItemLabel('Classificação'),
-            _buildStarRating(4.5),
-            SizedBox(height: 16),
-            _buildDetailItemLabel('Preço'),
-            _buildDetailItemWithLabel(
-              'R\$ 199,99',
-            ),
-          ],
-        ),
-      ),
+      body: _recommendationDetails != null
+          ? _buildContentItem(_recommendationDetails)
+          : Center(child: Text('Nenhum conteúdo disponível')),
       bottomNavigationBar: CustomBottomNavigationBar(
         selectedIndex: _selectedIndex,
         onItemTapped: _onItemTapped,
@@ -84,7 +63,73 @@ class _RecomendacaoDetailsPageState extends State<RecomendacaoDetailsPage> {
     );
   }
 
-  Widget _buildDetailItemWithLabel(String value, {bool isTitle = false, bool isSubtopic = false, bool isDescription = false}) {
+  Widget _buildContentItem(Map<String, dynamic>? item) {
+    print(item);
+    return SingleChildScrollView(
+      padding: EdgeInsets.all(12.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _buildDetailItemWithLabel(
+            item?['titulo'] ?? 'Título não encontrado',
+            isTitle: true,
+          ),
+          SizedBox(height: 12),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              _buildTag(item?['conteudo_tipo']['tipo']), // Tipo de conteúdo
+              SizedBox(width: 8),
+              _buildTag(item?['conteudo_subtopico']['area']), // Área do subtopico
+              SizedBox(width: 8),
+              _buildTag(item?['conteudo_subtopico']['subtopico_topico']['topico']), // Tópico
+            ],
+          ),
+          SizedBox(height: 8),
+          Container(
+            height: 160,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: item?['imagem'] != null
+                    ? (item!['imagem'].startsWith('http')
+                        ? NetworkImage(item['imagem'])
+                        : AssetImage('assets/Images/${item['imagem']}')) as ImageProvider
+                    : AssetImage('assets/Images/jauzim.jpg'),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          SizedBox(height: 16),
+          _buildDetailItemWithLabel(
+            item?['endereco'] ?? 'Endereço não encontrado',
+          ),
+          SizedBox(height: 16),
+          _buildDetailItemLabel('Descrição'),
+          _buildDetailItemWithLabel(
+            item?['descricao'] ?? 'Descrição não encontrada',
+            isDescription: true,
+          ),
+          SizedBox(height: 16),
+          _buildDetailItemLabel('Preço'),
+          _buildDetailItemWithLabel(
+            item?['preco'] ?? 'Preço não disponível',
+          ),
+          SizedBox(height: 16),
+          _buildDetailItemLabel('Classificação'),
+          _buildRatingStars(item?['classificacao'] ?? 0),
+          SizedBox(height: 16),
+          _buildDetailItemLabel('Criado por'),
+          _buildDetailItemWithLabel(
+            "${item?['conteudo_utilizador']['nome']} ${item?['conteudo_utilizador']['sobrenome']} em ${item?['data_criacao'].toString().substring(0, 10)}",
+            isDescription: true,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDetailItemWithLabel(String value,
+      {bool isTitle = false, bool isSubtopic = false, bool isDescription = false}) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 6.0),
       child: Text(
@@ -128,19 +173,13 @@ class _RecomendacaoDetailsPageState extends State<RecomendacaoDetailsPage> {
     );
   }
 
-  Widget _buildStarRating(double rating) {
-    int fullStars = rating.floor();
-    bool halfStar = rating - fullStars > 0;
-
+  Widget _buildRatingStars(int rating) {
     return Row(
       children: List.generate(5, (index) {
-        if (index < fullStars) {
-          return Icon(Icons.star, color: Colors.yellow);
-        } else if (index == fullStars && halfStar) {
-          return Icon(Icons.star_half, color: Colors.yellow);
-        } else {
-          return Icon(Icons.star_border, color: Colors.yellow);
-        }
+        return Icon(
+          index < rating ? Icons.star : Icons.star_border,
+          color: Colors.yellow,
+        );
       }),
     );
   }

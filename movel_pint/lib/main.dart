@@ -99,21 +99,21 @@ class _HomePageState extends State<HomePage> {
   void _goToDetalhesRecomedacaoPage() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => RecomendacaoDetailsPage()),
+      MaterialPageRoute(builder: (context) => RecommendationDetailsPage()),
     );
   }
 
 void _goToDetalheEventoPage() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => EventoDetailsPage()),
+      MaterialPageRoute(builder: (context) => EventDetailsPage()),
     );
   }
 
   void _goToDetalheAtividadePage() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => DetalhesAtividade()),
+      MaterialPageRoute(builder: (context) => ActivityDetailsPage()),
     );
   }
 
