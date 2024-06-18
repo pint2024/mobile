@@ -45,115 +45,119 @@ class LoginPage extends StatelessWidget {
         child: Center(
           child: Transform.scale(
             scale: 0.9,
-            child: Container(
-              padding: EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.only(bottom: 20.0, right: 10.0),
-                    child: Text(
-                      'Login in to your Account',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  TextField(
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      labelText: 'Email',
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  TextField(
-                    obscureText: true,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      labelText: 'Password',
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  SwitchListTile(
-                    title: Text('Lembrar-se do login'),
-                    value: false,
-                    onChanged: (bool value) {
-                      // Adicione aqui a lógica para lidar com a alteração do estado do switch
-                    },
-                  ),
-                  SizedBox(height: 10),
-                  Container(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all<Color>(Color.fromRGBO(57, 99, 156, 1.0)),
-                      ),
-                      onPressed: () {
-                        _handleLogin(context);
-                      },
+            child: Center(
+              child: Container(
+                padding: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Spacer(),
+                    Padding(
+                      padding: EdgeInsets.only(bottom: 20.0, right: 10.0),
                       child: Text(
-                        'Login',
+                        'Login in to your Account',
                         style: TextStyle(
-                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
-                  ),
-                  SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      IconButton(
-                        icon: Transform.scale(
-                          scale: 1.5, // Ajuste o tamanho conforme necessário
-                          child: Icon(
-                            Ionicons.logo_google,
-                            color: Colors.red,
-                            size: 30,
-                          ),
+                    SizedBox(height: 10),
+                    TextField(
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        labelText: 'Email',
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    TextField(
+                      obscureText: true,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        labelText: 'Password',
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    SwitchListTile(
+                      title: Text('Lembrar-se do login'),
+                      value: false,
+                      onChanged: (bool value) {
+                        // Adicione aqui a lógica para lidar com a alteração do estado do switch
+                      },
+                    ),
+                    SizedBox(height: 10),
+                    Container(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all<Color>(Color.fromRGBO(57, 99, 156, 1.0)),
                         ),
                         onPressed: () {
-                          _handleSignInWithGoogle(context);
+                          _handleLogin(context);
                         },
-                      ),
-                      SizedBox(width: 20), // Espaçamento entre os ícones
-                      IconButton(
-                        icon: Transform.scale(
-                          scale: 1.5, // Ajuste o tamanho conforme necessário
-                          child: Icon(
-                            Ionicons.logo_facebook,
-                            color: Colors.blue,
-                            size: 30,
+                        child: Text(
+                          'Login',
+                          style: TextStyle(
+                            color: Colors.white,
                           ),
                         ),
-                        onPressed: () {
-                          _handleSignInWithFacebook(context);
-                        },
                       ),
-                    ],
-                  ),
-                  Spacer(),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => RegisterPage()),
-                      );
-                    },
-                    child: Text(' Não tens uma conta? Registar'),
-                  ),
-                  SizedBox(height: 20),
-                ],
+                    ),
+                    SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          icon: Transform.scale(
+                            scale: 1.5, // Ajuste o tamanho conforme necessário
+                            child: Icon(
+                              Ionicons.logo_google,
+                              color: Colors.red,
+                              size: 30,
+                            ),
+                          ),
+                          onPressed: () {
+                            _handleSignInWithGoogle(context);
+                          },
+                        ),
+                        SizedBox(width: 20), // Espaçamento entre os ícones
+                        IconButton(
+                          icon: Transform.scale(
+                            scale: 1.5, // Ajuste o tamanho conforme necessário
+                            child: Icon(
+                              Ionicons.logo_facebook,
+                              color: Colors.blue,
+                              size: 30,
+                            ),
+                          ),
+                          onPressed: () {
+                            _handleSignInWithFacebook(context);
+                          },
+                        ),
+                      ],
+                    ),
+                    Spacer(),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => RegisterPage()),
+                        );
+                      },
+                      child: Text(' Não tens uma conta? Registar'),
+                    ),
+                    SizedBox(height: 20),
+                  ],
+                ),
               ),
             ),
           ),
