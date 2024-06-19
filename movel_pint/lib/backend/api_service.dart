@@ -51,4 +51,25 @@ class ApiService {
       throw Exception('Erro na conexão com o servidor: $e');
     }
   }
+
+
+  static Future<Map<String, dynamic>?> postData(String endpoint, Map<String, dynamic> data) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/$endpoint'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(data),
+      );
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        throw Exception('Falha ao enviar dados para a API');
+      }
+    } catch (e) {
+      throw Exception('Erro na comunicação com a API: $e');
+    }
+  }
 }

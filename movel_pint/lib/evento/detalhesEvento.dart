@@ -1,6 +1,5 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // Importe adicionado para formatar datas
+import 'package:intl/intl.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
 import 'package:movel_pint/widgets/customAppBar.dart';
 import 'package:movel_pint/backend/api_service.dart';
@@ -20,8 +19,10 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
   int _selectedIndex = 3;
   Map<String, dynamic>? _eventDetails;
   List<dynamic>? _comments;
-  bool _showAllComments = false; // Estado para controlar a visualização dos comentários
-  final int eventId = 1; // Definindo o ID do evento internamente
+  bool _showAllComments = false;
+  final int eventId = 1;
+
+  TextEditingController _commentController = TextEditingController();
 
   void _onItemTapped(int index) {
     setState(() {
@@ -32,12 +33,12 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
   @override
   void initState() {
     super.initState();
-    _fetchEventDetails(eventId); // Usando o ID definido internamente
+    _fetchEventDetails(eventId);
   }
 
   Future<void> _fetchEventDetails(int eventId) async {
     try {
-      final data = await ApiService.fetchData('conteudo/obter/$eventId'); // Alterando a rota
+      final data = await ApiService.fetchData('conteudo/obter/$eventId');
       print(data);
       if (data != null) {
         setState(() {
@@ -53,20 +54,21 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
     }
   }
 
-  Future<Map<String, dynamic>> _fetchUserDetails(int userId) async {
-    try {
-      final userData = await ApiService.fetchData('utilizador/listar/$userId');
-      return userData['data'][0]; // Assuming API returns single user data
-    } catch (e) {
-      print('Erro ao carregar dados do usuário: $e');
-      throw Exception('Erro ao carregar dados do usuário');
-    }
-  }
+  Future<Map<String, dynamic>?> _postComment() async {
+    Map<String, dynamic> commentData = {
+      'comentario': _commentController.text,
+      'conteudo': eventId,
+      'utilizador': 1, // ID do usuário estático
+    };
 
-  String _formatDateTime(String dateTime) {
-    final DateTime parsedDateTime = DateTime.parse(dateTime);
-    final DateFormat formatter = DateFormat('dd/MM/yyyy HH:mm');
-    return formatter.format(parsedDateTime);
+    try {
+      final response = await ApiService.postData('comentario/criar', commentData);
+      print(response);
+      return response;
+    } catch (e) {
+      print('Erro ao enviar comentário: $e');
+      return null;
+    }
   }
 
   @override
@@ -83,6 +85,8 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
                     _buildEventItem(_eventDetails!),
                     SizedBox(height: 16),
                     _buildCommentsSection(_comments),
+                    SizedBox(height: 16),
+                    _buildCommentInput(),
                   ],
                 ),
               ),
@@ -143,13 +147,13 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
         _buildDetailItemLabel('Data do Evento'),
         _buildDetailItemWithLabel(
           item['data_evento'] != null
-              ? _formatDateTime(item['data_evento'])
+              ? DateFormat('dd/MM/yyyy HH:mm').format(DateTime.parse(item['data_evento']))
               : 'Data do evento não disponível',
         ),
         SizedBox(height: 16),
         _buildDetailItemLabel('Criado por'),
         _buildDetailItemWithLabel(
-          "${item['conteudo_utilizador']['nome']} ${item['conteudo_utilizador']['sobrenome']} em ${_formatDateTime(item['data_criacao'])}",
+          "${item['conteudo_utilizador']['nome']} ${item['conteudo_utilizador']['sobrenome']} em ${DateFormat('dd/MM/yyyy HH:mm').format(DateTime.parse(item['data_criacao']))}",
           isDescription: true,
         ),
       ],
@@ -163,35 +167,42 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
 
     List<dynamic> visibleComments = _showAllComments ? comments : [comments.first];
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        _buildDetailItemLabel('Comentários'),
-        SizedBox(height: 8),
-        ListView.builder(
-          shrinkWrap: true,
-          physics: NeverScrollableScrollPhysics(),
-          itemCount: visibleComments.length,
-          itemBuilder: (context, index) {
-            return _buildCommentItem(visibleComments[index]);
-          },
-        ),
-        if (comments.length > 1) // Mostrar o botão de expansão se houver mais de um comentário
-          TextButton(
-            onPressed: () {
-              setState(() {
-                _showAllComments = !_showAllComments;
-              });
+    return Container(
+      padding: EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.grey[200],
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _buildDetailItemLabel('Comentários'),
+          SizedBox(height: 8),
+          ListView.builder(
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            itemCount: visibleComments.length,
+            itemBuilder: (context, index) {
+              return _buildCommentItem(visibleComments[index]);
             },
-            child: Text(
-              _showAllComments ? 'Mostrar menos' : 'Mostrar mais',
-              style: TextStyle(
-                color: Colors.blue,
-                fontWeight: FontWeight.bold,
+          ),
+          if (comments.length > 1)
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  _showAllComments = !_showAllComments;
+                });
+              },
+              child: Text(
+                _showAllComments ? 'Mostrar menos' : 'Mostrar mais',
+                style: TextStyle(
+                  color: Colors.blue,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
-          ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -200,7 +211,7 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
       padding: EdgeInsets.all(12),
       margin: EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: Colors.grey[200],
+        color: Colors.grey[300],
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
@@ -212,7 +223,7 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
           ),
           SizedBox(height: 4),
           Text(
-            '${_formatDateTime(comment['data_criacao'])}',
+            '${DateFormat('dd/MM/yyyy HH:mm').format(DateTime.parse(comment['data_criacao']))}',
             style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
           ),
           SizedBox(height: 8),
@@ -267,6 +278,52 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
           fontSize: 12,
         ),
       ),
+    );
+  }
+
+  Widget _buildCommentInput() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Container(
+          margin: EdgeInsets.only(bottom: 12),
+          padding: EdgeInsets.symmetric(horizontal: 12),
+          decoration: BoxDecoration(
+            color: Colors.grey[300],
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: TextField(
+            controller: _commentController,
+            decoration: InputDecoration(
+              hintText: 'Adicione um comentário',
+              border: InputBorder.none,
+            ),
+          ),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            _postComment().then((_) {
+              setState(() {
+                _fetchEventDetails(eventId);
+                _commentController.clear();
+              });
+            });
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.blue,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+          child: Text(
+            'Enviar',
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

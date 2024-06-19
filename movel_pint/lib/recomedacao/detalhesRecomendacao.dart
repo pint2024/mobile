@@ -23,6 +23,8 @@ class _RecommendationDetailsPageState extends State<RecommendationDetailsPage> {
   bool _showAllComments = false; // Estado para controlar a visualização dos comentários
   final int recommendationId = 3; // Definindo o ID da recomendação internamente
 
+  TextEditingController _commentController = TextEditingController();
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -53,13 +55,21 @@ class _RecommendationDetailsPageState extends State<RecommendationDetailsPage> {
     }
   }
 
-  Future<Map<String, dynamic>> _fetchUserDetails(int userId) async {
+  Future<Map<String, dynamic>?> _postComment() async {
+    // Simulando dados para enviar ao API
+    Map<String, dynamic> commentData = {
+      'comentario': _commentController.text,
+      'conteudo': recommendationId,
+      'utilizador': 1, // ID do usuário estático
+    };
+
     try {
-      final userData = await ApiService.fetchData('utilizador/listar/$userId');
-      return userData['data'][0]; // Assuming API returns single user data
+      final response = await ApiService.postData('comentario/criar', commentData);
+      print(response);
+      return response;
     } catch (e) {
-      print('Erro ao carregar dados do usuário: $e');
-      throw Exception('Erro ao carregar dados do usuário');
+      print('Erro ao enviar comentário: $e');
+      return null;
     }
   }
 
@@ -83,6 +93,8 @@ class _RecommendationDetailsPageState extends State<RecommendationDetailsPage> {
                     _buildContentItem(_recommendationDetails!),
                     SizedBox(height: 16),
                     _buildCommentsSection(_comments),
+                    SizedBox(height: 16),
+                    _buildCommentInput(),
                   ],
                 ),
               ),
@@ -279,6 +291,48 @@ class _RecommendationDetailsPageState extends State<RecommendationDetailsPage> {
           color: Colors.yellow,
         );
       }),
+    );
+  }
+
+  Widget _buildCommentInput() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Container(
+          margin: EdgeInsets.only(bottom: 12),
+          padding: EdgeInsets.symmetric(horizontal: 12),
+          decoration: BoxDecoration(
+            color: Colors.grey[300],
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: TextField(
+            controller: _commentController,
+            decoration: InputDecoration(
+              hintText: 'Adicione um comentário',
+              border: InputBorder.none,
+            ),
+          ),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            _postComment();
+            _commentController.clear();
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.blue,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+          child: Text(
+            'Enviar',
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
