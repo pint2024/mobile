@@ -82,6 +82,24 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
     }
   }
 
+  Future<void> _rateComment(int commentId, int rating) async {
+    Map<String, dynamic> rateData = {
+      'classificacao_comentario': rating,
+    };
+
+    try {
+      final response = await ApiService.postData('classificacao/obter/$commentId', rateData);
+      print(response);
+      // Atualizar localmente a classificação do comentário
+      setState(() {
+        var commentToUpdate = _comments!.firstWhere((comment) => comment['id'] == commentId);
+        commentToUpdate['classificacao_comentario'] = rating;
+      });
+    } catch (e) {
+      print('Erro ao classificar comentário: $e');
+    }
+  }
+
   String _formatDateTime(String dateTime) {
     final DateTime parsedDateTime = DateTime.parse(dateTime);
     final DateFormat formatter = DateFormat('dd/MM/yyyy HH:mm');
@@ -252,6 +270,8 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
   }
 
   Widget _buildCommentItem(Map<String, dynamic> comment) {
+    int rating = comment['classificacao_comentario'] ?? 0;
+
     return Container(
       padding: EdgeInsets.all(12),
       margin: EdgeInsets.only(bottom: 12),
@@ -268,6 +288,20 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
               Text(
                 '${comment['utilizador']}',
                 style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+              ),
+              Row(
+                children: List.generate(
+                  5,
+                  (index) => IconButton(
+                    icon: Icon(
+                      index < rating ? Icons.star : Icons.star_border,
+                      color: Colors.yellow,
+                    ),
+                    onPressed: () {
+                      _rateComment(comment['id'], index + 1);
+                    },
+                  ),
+                ),
               ),
               IconButton(
                 icon: Icon(Icons.delete),
@@ -381,7 +415,3 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
     );
   }
 }
-
-
-
-

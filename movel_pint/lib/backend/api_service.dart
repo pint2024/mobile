@@ -87,26 +87,6 @@ class ApiService {
   }
 
 
-  static Future<Map<String, dynamic>?> postData(String endpoint, Map<String, dynamic> data) async {
-    try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/$endpoint'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(data),
-      );
-
-      if (response.statusCode == 200) {
-        return json.decode(response.body);
-      } else {
-        throw Exception('Falha ao enviar dados para a API');
-      }
-    } catch (e) {
-      throw Exception('Erro na comunicação com a API: $e');
-    }
-  }
-
  // Método genérico para fazer requisições PUT
   static Future<Map<String, dynamic>?> putData(String endpoint, Map<String, dynamic> data) async {
     try {
