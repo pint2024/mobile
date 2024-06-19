@@ -19,6 +19,40 @@ class ApiService {
     }
   }
 
+  static Future<dynamic> listar(String endpoint, {Map<String, String>? headers, Map<String, String>? body}) async {
+    final url = '$baseUrl/$endpoint';
+    try {
+      final response = await http.post(Uri.parse(url), headers: headers, body: body);
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception('Failed to load data');
+      }
+    } catch (e) {
+      throw Exception('Failed to connect to server: $e');
+    }
+  }
+
+    static Future<Map<String, dynamic>?> postData(String endpoint, Map<String, dynamic> data) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/$endpoint'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(data),
+      );
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        throw Exception('Falha ao enviar dados para a API');
+      }
+    } catch (e) {
+      throw Exception('Erro na comunicação com a API: $e');
+    }
+  }
+
   static Future<void> updateProfile(Map<String, dynamic> profileData) async {
     final String endpoint = 'utilizador/atualizar/${profileData['id']}';
     try {

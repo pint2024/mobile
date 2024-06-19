@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:movel_pint/atividade/detalhes_atividade.dart'; // Importa a página detalhesEvento.dart
 
 class MyCardAtividade extends StatelessWidget {
+  final Map<String, dynamic> atividade; // Adicionando um campo para atividade
+
+  MyCardAtividade({required this.atividade}); // Adicionando um construtor para aceitar atividade
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector( // Adiciona um GestureDetector para detectar cliques
@@ -21,10 +25,12 @@ class MyCardAtividade extends StatelessWidget {
             children: [
               ListTile(
                 leading: CircleAvatar(
-                  backgroundImage: NetworkImage('assets/Images/logo2.png'),
+                  backgroundImage: atividade['imagem'] != null
+                      ? NetworkImage(atividade['imagem'])
+                      : AssetImage('assets/Images/logo2.png') as ImageProvider,
                 ),
-                title: Text('Título da atividade'),
-                subtitle: Text('Nome do usuário • Data'),
+                title: Text(atividade['titulo'] ?? 'Título da atividade'),
+                subtitle: Text('${atividade['usuario_nome']} • ${atividade['data']}'),
                 trailing: Padding(
                   padding: const EdgeInsets.only(right: 8.0), // Preenchimento à direita
                 ),
@@ -36,7 +42,9 @@ class MyCardAtividade extends StatelessWidget {
                   height: 150, // Altura desejada para a imagem
                   decoration: BoxDecoration(
                     image: DecorationImage(
-                      image: AssetImage('assets/Images/logo2.png'),
+                      image: atividade['imagem'] != null
+                          ? NetworkImage(atividade['imagem'])
+                          : AssetImage('assets/Images/logo2.png') as ImageProvider,
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -44,14 +52,14 @@ class MyCardAtividade extends StatelessWidget {
               ),
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 8.0),
-                child: Text('Um pouco do texto da atividade'),
+                child: Text(atividade['descricao'] ?? 'Um pouco do texto da atividade'),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end, // Alinhamento à direita
                 children: [
-                  _buildIconWithCount(Icons.photo_library_outlined, '5'),
+                  _buildIconWithCount(Icons.photo_library_outlined, atividade['num_photos'].toString() ?? '0'),
                   SizedBox(width: 20), // Espaçamento entre os ícones
-                  _buildIconWithCount(Icons.comment_outlined, '5'),
+                  _buildIconWithCount(Icons.comment_outlined, atividade['num_comments'].toString() ?? '0'),
                 ],
               ),
             ],
