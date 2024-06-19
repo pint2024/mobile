@@ -72,4 +72,46 @@ class ApiService {
       throw Exception('Erro na comunicação com a API: $e');
     }
   }
+
+ // Método genérico para fazer requisições PUT
+  static Future<Map<String, dynamic>?> putData(String endpoint, Map<String, dynamic> data) async {
+    try {
+      final response = await http.put(
+        Uri.parse('$baseUrl/$endpoint'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(data),
+      );
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        throw Exception('Erro ao atualizar dados: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Erro ao atualizar dados: $e');
+      throw Exception('Erro ao atualizar dados');
+    }
+  }
+
+  // Método genérico para fazer requisições DELETE
+  static Future<void> deleteData(String endpoint) async {
+    try {
+      final response = await http.delete(
+        Uri.parse('$baseUrl/$endpoint'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+      if (response.statusCode == 200) {
+        print('Dados removidos com sucesso');
+      } else {
+        throw Exception('Erro ao remover dados: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Erro ao remover dados: $e');
+      throw Exception('Erro ao remover dados');
+    }
+  }
+
 }

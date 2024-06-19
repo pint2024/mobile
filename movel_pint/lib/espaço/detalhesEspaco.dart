@@ -71,6 +71,45 @@ class _SpaceDetailsPageState extends State<SpaceDetailsPage> {
     }
   }
 
+  Future<void> _deleteComment(int commentId) async {
+    try {
+      await ApiService.deleteData('comentario/remover/$commentId');
+      setState(() {
+        _comments!.removeWhere((comment) => comment['id'] == commentId);
+      });
+    } catch (e) {
+      print('Erro ao remover comentário: $e');
+    }
+  }
+
+  Future<void> _confirmDeleteComment(int commentId) async {
+    // Mostrar um diálogo de confirmação
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Confirmação"),
+          content: Text("Tem certeza que deseja apagar o comentário?"),
+          actions: <Widget>[
+            TextButton(
+              child: Text("Cancelar"),
+              onPressed: () {
+                Navigator.of(context).pop(); // Fechar o diálogo
+              },
+            ),
+            TextButton(
+              child: Text("Excluir"),
+              onPressed: () {
+                _deleteComment(commentId);
+                Navigator.of(context).pop(); // Fechar o diálogo
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -199,42 +238,50 @@ class _SpaceDetailsPageState extends State<SpaceDetailsPage> {
     );
   }
 
-Widget _buildCommentItem(Map<String, dynamic> comment) {
-  // Parse da data no formato ISO 8601 para DateTime
-  DateTime commentDate = DateTime.parse(comment['data_criacao']);
+  Widget _buildCommentItem(Map<String, dynamic> comment) {
+    // Parse da data no formato ISO 8601 para DateTime
+    DateTime commentDate = DateTime.parse(comment['data_criacao']);
 
-  // Formatando a data no formato desejado (data e hora)
-  String formattedDate = DateFormat('dd/MM/yyyy HH:mm').format(commentDate);
+    // Formatando a data no formato desejado (data e hora)
+    String formattedDate = DateFormat('dd/MM/yyyy HH:mm').format(commentDate);
 
-  return Container(
-    padding: EdgeInsets.all(12),
-    margin: EdgeInsets.only(bottom: 12),
-    decoration: BoxDecoration(
-      color: Colors.grey[300],
-      borderRadius: BorderRadius.circular(8),
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text(
-          '${comment['utilizador']}',
-          style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-        ),
-        SizedBox(height: 4),
-        Text(
-          formattedDate, // Usando a data formatada
-          style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
-        ),
-        SizedBox(height: 8),
-        Text(
-          comment['comentario'] ?? 'Comentário não disponível',
-          style: TextStyle(fontSize: 14),
-        ),
-      ],
-    ),
-  );
-}
-
+    return Container(
+      padding: EdgeInsets.all(12),
+      margin: EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: Colors.grey[300],
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                '${comment['utilizador']}',
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+              ),
+              IconButton(
+                icon: Icon(Icons.delete),
+                onPressed: () => _confirmDeleteComment(comment['id']),
+              ),
+            ],
+          ),
+          SizedBox(height: 4),
+          Text(
+            formattedDate, // Usando a data formatada
+            style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
+          ),
+          SizedBox(height: 8),
+          Text(
+            comment['comentario'] ?? 'Comentário não disponível',
+            style: TextStyle(fontSize: 14),
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _buildDetailItemWithLabel(String value, {bool isTitle = false, bool isSubtopic = false, bool isDescription = false}) {
     return Padding(

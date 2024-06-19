@@ -1,6 +1,5 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // Importe adicionado para formatar datas
+import 'package:intl/intl.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
 import 'package:movel_pint/widgets/customAppBar.dart';
 import 'package:movel_pint/backend/api_service.dart';
@@ -13,15 +12,16 @@ void main() {
 
 class RecommendationDetailsPage extends StatefulWidget {
   @override
-  _RecommendationDetailsPageState createState() => _RecommendationDetailsPageState();
+  _RecommendationDetailsPageState createState() =>
+      _RecommendationDetailsPageState();
 }
 
 class _RecommendationDetailsPageState extends State<RecommendationDetailsPage> {
   int _selectedIndex = 3;
   Map<String, dynamic>? _recommendationDetails;
   List<dynamic>? _comments;
-  bool _showAllComments = false; // Estado para controlar a visualização dos comentários
-  final int recommendationId = 3; // Definindo o ID da recomendação internamente
+  bool _showAllComments = false;
+  final int recommendationId = 3;
 
   TextEditingController _commentController = TextEditingController();
 
@@ -34,12 +34,13 @@ class _RecommendationDetailsPageState extends State<RecommendationDetailsPage> {
   @override
   void initState() {
     super.initState();
-    _fetchRecommendationDetails(recommendationId); // Usando o ID definido internamente
+    _fetchRecommendationDetails(recommendationId);
   }
 
   Future<void> _fetchRecommendationDetails(int recommendationId) async {
     try {
-      final data = await ApiService.fetchData('conteudo/obter/$recommendationId'); // Alterando a rota
+      final data =
+          await ApiService.fetchData('conteudo/obter/$recommendationId');
       print(data);
       if (data != null) {
         setState(() {
@@ -56,7 +57,6 @@ class _RecommendationDetailsPageState extends State<RecommendationDetailsPage> {
   }
 
   Future<Map<String, dynamic>?> _postComment() async {
-    // Simulando dados para enviar ao API
     Map<String, dynamic> commentData = {
       'comentario': _commentController.text,
       'conteudo': recommendationId,
@@ -64,7 +64,8 @@ class _RecommendationDetailsPageState extends State<RecommendationDetailsPage> {
     };
 
     try {
-      final response = await ApiService.postData('comentario/criar', commentData);
+      final response =
+          await ApiService.postData('comentario/criar', commentData);
       print(response);
       return response;
     } catch (e) {
@@ -73,10 +74,49 @@ class _RecommendationDetailsPageState extends State<RecommendationDetailsPage> {
     }
   }
 
+  Future<void> _deleteComment(int commentId) async {
+    try {
+      await ApiService.deleteData('comentario/remover/$commentId');
+      setState(() {
+        _comments!.removeWhere((comment) => comment['id'] == commentId);
+      });
+    } catch (e) {
+      print('Erro ao remover comentário: $e');
+    }
+  }
+
   String _formatDateTime(String dateTime) {
     final DateTime parsedDateTime = DateTime.parse(dateTime);
     final DateFormat formatter = DateFormat('dd/MM/yyyy HH:mm');
     return formatter.format(parsedDateTime);
+  }
+
+  Future<void> _confirmDeleteComment(int commentId) async {
+    // Mostrar um diálogo de confirmação
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Confirmação"),
+          content: Text("Tem certeza que deseja excluir este comentário?"),
+          actions: <Widget>[
+            TextButton(
+              child: Text("Cancelar"),
+              onPressed: () {
+                Navigator.of(context).pop(); // Fechar o diálogo
+              },
+            ),
+            TextButton(
+              child: Text("Excluir"),
+              onPressed: () {
+                _deleteComment(commentId);
+                Navigator.of(context).pop(); // Fechar o diálogo
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -119,11 +159,11 @@ class _RecommendationDetailsPageState extends State<RecommendationDetailsPage> {
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            _buildTag(item['conteudo_tipo']['tipo']), // Tipo de conteúdo
+            _buildTag(item['conteudo_tipo']['tipo']),
             SizedBox(width: 8),
-            _buildTag(item['conteudo_subtopico']['area']), // Área do subtopico
+            _buildTag(item['conteudo_subtopico']['area']),
             SizedBox(width: 8),
-            _buildTag(item['conteudo_subtopico']['subtopico_topico']['topico']), // Tópico
+            _buildTag(item['conteudo_subtopico']['subtopico_topico']['topico']),
           ],
         ),
         SizedBox(height: 8),
@@ -189,7 +229,7 @@ class _RecommendationDetailsPageState extends State<RecommendationDetailsPage> {
             return _buildCommentItem(visibleComments[index]);
           },
         ),
-        if (comments.length > 1) // Mostrar o botão de expansão se houver mais de um comentário
+        if (comments.length > 1)
           TextButton(
             onPressed: () {
               setState(() {
@@ -219,9 +259,18 @@ class _RecommendationDetailsPageState extends State<RecommendationDetailsPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            '${comment['utilizador']}',
-            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                '${comment['utilizador']}',
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+              ),
+              IconButton(
+                icon: Icon(Icons.delete),
+                onPressed: () => _confirmDeleteComment(comment['id']),
+              ),
+            ],
           ),
           SizedBox(height: 4),
           Text(
@@ -315,8 +364,12 @@ class _RecommendationDetailsPageState extends State<RecommendationDetailsPage> {
         ),
         ElevatedButton(
           onPressed: () {
-            _postComment();
-            _commentController.clear();
+            _postComment().then((_) {
+              setState(() {
+                _fetchRecommendationDetails(recommendationId);
+                _commentController.clear();
+              });
+            });
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.blue,

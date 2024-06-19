@@ -71,10 +71,49 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
     }
   }
 
+  Future<void> _deleteComment(int commentId) async {
+    try {
+      await ApiService.deleteData('comentario/remover/$commentId');
+      setState(() {
+        _comments!.removeWhere((comment) => comment['id'] == commentId);
+      });
+    } catch (e) {
+      print('Erro ao remover comentário: $e');
+    }
+  }
+
   String _formatDateTime(String dateTime) {
     final DateTime parsedDateTime = DateTime.parse(dateTime);
     final DateFormat formatter = DateFormat('dd/MM/yyyy HH:mm');
     return formatter.format(parsedDateTime);
+  }
+
+  Future<void> _confirmDeleteComment(int commentId) async {
+    // Mostrar um diálogo de confirmação
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Confirmação"),
+          content: Text("Tem certeza que deseja excluir este comentário?"),
+          actions: <Widget>[
+            TextButton(
+              child: Text("Cancelar"),
+              onPressed: () {
+                Navigator.of(context).pop(); // Fechar o diálogo
+              },
+            ),
+            TextButton(
+              child: Text("Excluir"),
+              onPressed: () {
+                _deleteComment(commentId);
+                Navigator.of(context).pop(); // Fechar o diálogo
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -223,9 +262,18 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            '${comment['utilizador']}',
-            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                '${comment['utilizador']}',
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+              ),
+              IconButton(
+                icon: Icon(Icons.delete),
+                onPressed: () => _confirmDeleteComment(comment['id']),
+              ),
+            ],
           ),
           SizedBox(height: 4),
           Text(
@@ -333,3 +381,7 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
     );
   }
 }
+
+
+
+
