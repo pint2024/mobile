@@ -27,7 +27,6 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _emailController = TextEditingController();
   late TextEditingController _passwordController = TextEditingController();
-  bool _rememberMe = false;
   bool _passwordVisible = false;
 
   @override
@@ -88,16 +87,19 @@ class _LoginPageState extends State<LoginPage> {
                     children: <Widget>[
                       Spacer(),
                       Padding(
-                        padding: EdgeInsets.only(
-                          leftt: 10.0,
-                          bottom: 20.0, 
+                        padding: const EdgeInsets.only(
+                          left: 10,
+                          bottom: 30,
                           top: 50,
-                          ),
-                        child: Text(
-                          'Login',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
+                        ),
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            'Login',
+                            style: TextStyle(
+                              fontSize: 25,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),
@@ -127,7 +129,7 @@ class _LoginPageState extends State<LoginPage> {
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.0),
                           ),
-                          labelText: 'Password',
+                          labelText: 'Senha',
                           prefixIcon: Icon(Icons.lock),
                           suffixIcon: IconButton(
                             icon: Icon(
@@ -149,15 +151,26 @@ class _LoginPageState extends State<LoginPage> {
                           return null;
                         },
                       ),
-                      SizedBox(height: 10),
-                      SwitchListTile(
-                        title: Text('Lembrar-se do login'),
-                        value: _rememberMe,
-                        onChanged: (bool value) {
-                          setState(() {
-                            _rememberMe = value;
-                          });
-                        },
+                      Padding(
+                        padding: const EdgeInsets.only(right: 25, top: 10),
+                        child: Align(
+                          alignment: Alignment.centerRight,
+                          child: RichText(
+                            text: const TextSpan(
+                              style: TextStyle(
+                                color: Colors.grey, fontSize: 14.0),
+                              children: <TextSpan>[
+                                TextSpan(
+                                  text: 'Esqueceu a senha?',
+                                  style: TextStyle(
+                                    color: Color.fromRGBO(57, 99, 156, 1.0),
+                                    decoration: TextDecoration.underline,
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
                       ),
                       SizedBox(height: 10),
                       Container(
@@ -179,7 +192,35 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                       ),
-                      SizedBox(height: 10),
+                      SizedBox(height: 25),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: Container(
+                              height: 1.5,
+                              color: Color.fromRGBO(57, 99, 156, 1.0),
+                              margin: EdgeInsets.symmetric(horizontal: 10),
+                            ),
+                          ),
+                          Text(
+                            "OU", 
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                              color: Color.fromRGBO(57, 99, 156, 1.0),
+                            ),
+                          ),
+                          Expanded(
+                            child: Container(
+                              height: 1.5,
+                              color: Color.fromRGBO(57, 99, 156, 1.0),
+                              margin: EdgeInsets.symmetric(horizontal: 10),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 25), // Adicionei este SizedBox para espaçamento vertical
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -213,6 +254,7 @@ class _LoginPageState extends State<LoginPage> {
                         ],
                       ),
                       Spacer(),
+                      SizedBox(height: 25),
                       TextButton(
                         onPressed: () {
                           Navigator.push(
@@ -220,9 +262,21 @@ class _LoginPageState extends State<LoginPage> {
                             MaterialPageRoute(builder: (context) => RegisterPage()),
                           );
                         },
-                        child: Text(' Não tens uma conta? Registar'),
+                        child: Text.rich(
+                          TextSpan(
+                            text: 'Não tens uma conta? ',
+                            children: <TextSpan>[
+                              TextSpan(
+                                text: 'Registar',
+                                style: TextStyle(
+                                  decoration: TextDecoration.underline,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
-                      SizedBox(height: 20),
+                      SizedBox(height: 30),
                     ],
                   ),
                 ),
