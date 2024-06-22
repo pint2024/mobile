@@ -82,22 +82,21 @@ class _LoginPageState extends State<LoginPage> {
                 child: Form(
                   key: _formKey,
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
-                      Spacer(),
                       Padding(
                         padding: const EdgeInsets.only(
                           left: 10,
-                          bottom: 30,
-                          top: 50,
+                          bottom: 20,
+                          top: 40,
                         ),
                         child: Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
                             'Login',
                             style: TextStyle(
-                              fontSize: 25,
+                              fontSize: 30,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -121,7 +120,7 @@ class _LoginPageState extends State<LoginPage> {
                           return null;
                         },
                       ),
-                      SizedBox(height: 10),
+                      SizedBox(height: 20),
                       TextFormField(
                         controller: _passwordController,
                         obscureText: !_passwordVisible,
@@ -224,36 +223,43 @@ class _LoginPageState extends State<LoginPage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          IconButton(
-                            icon: Transform.scale(
-                              scale: 1.5, // Ajuste o tamanho conforme necessário
-                              child: Icon(
+                          Container(
+                            padding: EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.red, width: 2),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: IconButton(
+                              icon: Icon(
                                 Ionicons.logo_google,
                                 color: Colors.red,
                                 size: 30,
                               ),
+                              onPressed: () {
+                                _handleSignInWithGoogle(context);
+                              },
                             ),
-                            onPressed: () {
-                              _handleSignInWithGoogle(context);
-                            },
                           ),
                           SizedBox(width: 20), // Espaçamento entre os ícones
-                          IconButton(
-                            icon: Transform.scale(
-                              scale: 1.5, // Ajuste o tamanho conforme necessário
-                              child: Icon(
+                          Container(
+                            padding: EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.blue, width: 2),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: IconButton(
+                              icon: Icon(
                                 Ionicons.logo_facebook,
                                 color: Colors.blue,
                                 size: 30,
                               ),
+                              onPressed: () {
+                                _handleSignInWithFacebook(context);
+                              },
                             ),
-                            onPressed: () {
-                              _handleSignInWithFacebook(context);
-                            },
                           ),
                         ],
                       ),
-                      Spacer(),
                       SizedBox(height: 25),
                       TextButton(
                         onPressed: () {
