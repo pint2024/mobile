@@ -88,9 +88,13 @@ class _LoginPageState extends State<LoginPage> {
                     children: <Widget>[
                       Spacer(),
                       Padding(
-                        padding: EdgeInsets.only(bottom: 20.0, right: 10.0),
+                        padding: EdgeInsets.only(
+                          leftt: 10.0,
+                          bottom: 20.0, 
+                          top: 50,
+                          ),
                         child: Text(
-                          'Login in to your Account',
+                          'Login',
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -106,6 +110,7 @@ class _LoginPageState extends State<LoginPage> {
                             borderRadius: BorderRadius.circular(10.0),
                           ),
                           labelText: 'Email',
+                          prefixIcon: Icon(Icons.person),
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -123,6 +128,7 @@ class _LoginPageState extends State<LoginPage> {
                             borderRadius: BorderRadius.circular(10.0),
                           ),
                           labelText: 'Password',
+                          prefixIcon: Icon(Icons.lock),
                           suffixIcon: IconButton(
                             icon: Icon(
                               _passwordVisible
