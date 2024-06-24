@@ -85,8 +85,8 @@ class _LoginPageState extends State<LoginPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.only(
+                      const Padding(
+                        padding: EdgeInsets.only(
                           left: 10,
                           bottom: 20,
                           top: 40,
@@ -268,7 +268,7 @@ class _LoginPageState extends State<LoginPage> {
                             MaterialPageRoute(builder: (context) => RegisterPage()),
                           );
                         },
-                        child: Text.rich(
+                        child: const Text.rich(
                           TextSpan(
                             text: 'Não tens uma conta? ',
                             children: <TextSpan>[
