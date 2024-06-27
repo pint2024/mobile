@@ -13,7 +13,17 @@ class RegisterApp extends StatelessWidget {
   }
 }
 
-class RegisterPage extends StatelessWidget {
+class RegisterPage extends StatefulWidget {
+  @override
+  _RegisterPageState createState() => _RegisterPageState();
+}
+
+class _RegisterPageState extends State<RegisterPage> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
+  bool _passwordVisible = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,34 +69,74 @@ class RegisterPage extends StatelessWidget {
                       ),
                     ),
                   ),
-                  SizedBox(height: 10),
-                  TextField(
+                  SizedBox(height: 20),
+                  TextFormField(
+                    controller: _emailController,
+                    keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.0),
                       ),
                       labelText: 'Email',
+                      prefixIcon: Icon(Icons.person),
                     ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Por favor, informe seu e-mail';
+                      }
+                      return null;
+                    },
                   ),
-                  SizedBox(height: 10),
-                  TextField(
+                  SizedBox(height: 20),
+                  TextFormField(
+                    controller: _passwordController,
+                    obscureText: !_passwordVisible,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      labelText: 'Senha',
+                      prefixIcon: Icon(Icons.lock),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _passwordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _passwordVisible = !_passwordVisible;
+                          });
+                        },
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Por favor, informe sua senha';
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 20),
+                  TextFormField(
+                    controller: _confirmPasswordController,
                     obscureText: true,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.0),
                       ),
-                      labelText: 'Password',
+                      labelText: 'Confirmar Senha',
+                      prefixIcon: Icon(Icons.lock),
                     ),
-                  ),
-                  SizedBox(height: 10),
-                  TextField(
-                    obscureText: true,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      labelText: 'Confirmar Password',
-                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Por favor, confirme sua senha';
+                      }
+                      if (value != _passwordController.text) {
+                        return 'As senhas não coincidem';
+                      }
+                      return null;
+                    },
                   ),
                   SizedBox(height: 20),
                   Container(
@@ -94,6 +144,10 @@ class RegisterPage extends StatelessWidget {
                     child: ElevatedButton(
                       onPressed: () {
                         // Adicione aqui a lógica para registrar o usuário
+                        // Você pode acessar os valores dos controladores assim:
+                        // String email = _emailController.text;
+                        // String password = _passwordController.text;
+                        // String confirmPassword = _confirmPasswordController.text;
                       },
                       child: Text('Registrar'),
                     ),
