@@ -28,6 +28,7 @@ class _LoginPageState extends State<LoginPage> {
   late TextEditingController _emailController = TextEditingController();
   late TextEditingController _passwordController = TextEditingController();
   bool _passwordVisible = false;
+  bool _keepLoggedIn = false;
 
   @override
   void initState() {
@@ -73,217 +74,232 @@ class _LoginPageState extends State<LoginPage> {
           child: Transform.scale(
             scale: 0.9,
             child: Center(
-              child: Container(
-                padding: EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      const Padding(
-                        padding: EdgeInsets.only(
-                          left: 10,
-                          bottom: 20,
-                          top: 40,
-                        ),
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            'Login',
-                            style: TextStyle(
-                              fontSize: 30,
-                              fontWeight: FontWeight.bold,
+              child: SingleChildScrollView( // Adicionei o SingleChildScrollView aqui
+                child: Container(
+                  padding: EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        const Padding(
+                          padding: EdgeInsets.only(
+                            left: 10,
+                            bottom: 20,
+                            top: 40,
+                          ),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              'Login',
+                              style: TextStyle(
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      SizedBox(height: 10),
-                      TextFormField(
-                        controller: _emailController,
-                        keyboardType: TextInputType.emailAddress,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
+                        SizedBox(height: 10),
+                        TextFormField(
+                          controller: _emailController,
+                          keyboardType: TextInputType.emailAddress,
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            labelText: 'Email',
+                            prefixIcon: Icon(Icons.person),
                           ),
-                          labelText: 'Email',
-                          prefixIcon: Icon(Icons.person),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Por favor, informe seu e-mail';
+                            }
+                            return null;
+                          },
                         ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Por favor, informe seu e-mail';
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(height: 20),
-                      TextFormField(
-                        controller: _passwordController,
-                        obscureText: !_passwordVisible,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
+                        SizedBox(height: 20),
+                        TextFormField(
+                          controller: _passwordController,
+                          obscureText: !_passwordVisible,
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            labelText: 'Senha',
+                            prefixIcon: Icon(Icons.lock),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _passwordVisible
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _passwordVisible = !_passwordVisible;
+                                });
+                              },
+                            ),
                           ),
-                          labelText: 'Senha',
-                          prefixIcon: Icon(Icons.lock),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _passwordVisible
-                                  ? Icons.visibility
-                                  : Icons.visibility_off,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Por favor, informe sua senha';
+                            }
+                            return null;
+                          },
+                        ),
+                        Row(
+                          children: [
+                            Checkbox(
+                              value: _keepLoggedIn,
+                              onChanged: (value) {
+                                setState(() {
+                                  _keepLoggedIn = value!;
+                                });
+                              },
+                            ),
+                            Text('Manter-me logado'),
+                          ],
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(right: 25, top: 10),
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: RichText(
+                              text: const TextSpan(
+                                style: TextStyle(
+                                  color: Colors.grey, fontSize: 14.0),
+                                children: <TextSpan>[
+                                  TextSpan(
+                                    text: 'Esqueceu a senha?',
+                                    style: TextStyle(
+                                      color: Color.fromRGBO(57, 99, 156, 1.0),
+                                      decoration: TextDecoration.underline,
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                        Container(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all<Color>(Color.fromRGBO(57, 99, 156, 1.0)),
                             ),
                             onPressed: () {
-                              setState(() {
-                                _passwordVisible = !_passwordVisible;
-                              });
+                              if (_formKey.currentState!.validate()) {
+                                _handleLogin(context);
+                              }
                             },
+                            child: Text(
+                              'Login',
+                              style: TextStyle(
+                                color: Colors.white,
+                              ),
+                            ),
                           ),
                         ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Por favor, informe sua senha';
-                          }
-                          return null;
-                        },
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(right: 25, top: 10),
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: RichText(
-                            text: const TextSpan(
+                        SizedBox(height: 25),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: Container(
+                                height: 1.5,
+                                color: Color.fromRGBO(57, 99, 156, 1.0),
+                                margin: EdgeInsets.symmetric(horizontal: 10),
+                              ),
+                            ),
+                            Text(
+                              "OU", 
                               style: TextStyle(
-                                color: Colors.grey, fontSize: 14.0),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                                color: Color.fromRGBO(57, 99, 156, 1.0),
+                              ),
+                            ),
+                            Expanded(
+                              child: Container(
+                                height: 1.5,
+                                color: Color.fromRGBO(57, 99, 156, 1.0),
+                                margin: EdgeInsets.symmetric(horizontal: 10),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 25), // Adicionei este SizedBox para espaçamento vertical
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              padding: EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Colors.red, width: 2),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: IconButton(
+                                icon: Icon(
+                                  Ionicons.logo_google,
+                                  color: Colors.red,
+                                  size: 30,
+                                ),
+                                onPressed: () {
+                                  _handleSignInWithGoogle(context);
+                                },
+                              ),
+                            ),
+                            SizedBox(width: 20), // Espaçamento entre os ícones
+                            Container(
+                              padding: EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Colors.blue, width: 2),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: IconButton(
+                                icon: Icon(
+                                  Ionicons.logo_facebook,
+                                  color: Colors.blue,
+                                  size: 30,
+                                ),
+                                onPressed: () {
+                                  _handleSignInWithFacebook(context);
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 25),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => RegisterPage()),
+                            );
+                          },
+                          child: const Text.rich(
+                            TextSpan(
+                              text: 'Não tens uma conta? ',
                               children: <TextSpan>[
                                 TextSpan(
-                                  text: 'Esqueceu a senha?',
+                                  text: 'Registar',
                                   style: TextStyle(
-                                    color: Color.fromRGBO(57, 99, 156, 1.0),
                                     decoration: TextDecoration.underline,
                                   ),
-                                )
+                                ),
                               ],
                             ),
                           ),
                         ),
-                      ),
-                      SizedBox(height: 10),
-                      Container(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all<Color>(Color.fromRGBO(57, 99, 156, 1.0)),
-                          ),
-                          onPressed: () {
-                            if (_formKey.currentState!.validate()) {
-                              _handleLogin(context);
-                            }
-                          },
-                          child: Text(
-                            'Login',
-                            style: TextStyle(
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 25),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Expanded(
-                            child: Container(
-                              height: 1.5,
-                              color: Color.fromRGBO(57, 99, 156, 1.0),
-                              margin: EdgeInsets.symmetric(horizontal: 10),
-                            ),
-                          ),
-                          Text(
-                            "OU", 
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                              color: Color.fromRGBO(57, 99, 156, 1.0),
-                            ),
-                          ),
-                          Expanded(
-                            child: Container(
-                              height: 1.5,
-                              color: Color.fromRGBO(57, 99, 156, 1.0),
-                              margin: EdgeInsets.symmetric(horizontal: 10),
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 25), // Adicionei este SizedBox para espaçamento vertical
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            padding: EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.red, width: 2),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: IconButton(
-                              icon: Icon(
-                                Ionicons.logo_google,
-                                color: Colors.red,
-                                size: 30,
-                              ),
-                              onPressed: () {
-                                _handleSignInWithGoogle(context);
-                              },
-                            ),
-                          ),
-                          SizedBox(width: 20), // Espaçamento entre os ícones
-                          Container(
-                            padding: EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.blue, width: 2),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: IconButton(
-                              icon: Icon(
-                                Ionicons.logo_facebook,
-                                color: Colors.blue,
-                                size: 30,
-                              ),
-                              onPressed: () {
-                                _handleSignInWithFacebook(context);
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 25),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => RegisterPage()),
-                          );
-                        },
-                        child: const Text.rich(
-                          TextSpan(
-                            text: 'Não tens uma conta? ',
-                            children: <TextSpan>[
-                              TextSpan(
-                                text: 'Registar',
-                                style: TextStyle(
-                                  decoration: TextDecoration.underline,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 30),
-                    ],
+                        SizedBox(height: 30),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -300,6 +316,7 @@ class _LoginPageState extends State<LoginPage> {
       _showNoInternetDialog(context);
     } else {
       // Lógica de login aqui
+      print('Keep me logged in: $_keepLoggedIn');
     }
   }
 
