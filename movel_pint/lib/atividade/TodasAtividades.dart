@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:movel_pint/widgets/MycardAtividade.dart';
-import 'package:movel_pint/widgets/atividadeCEditar.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
-import 'package:movel_pint/widgets/card.dart';
 import 'package:movel_pint/widgets/customAppBar.dart';
-import 'package:movel_pint/backend/api_service.dart'; // Certifique-se de que o caminho está correto
+import 'package:movel_pint/backend/api_service.dart';
 
 void main() {
   runApp(MyApp());
@@ -27,7 +25,7 @@ class TodasAtividades extends StatefulWidget {
 class _AtividadeState extends State<TodasAtividades> {
   int _selectedIndex = 3;
   PageController _pageController = PageController(initialPage: 0);
-  Map<String, dynamic>? _atividade; // Mapa para armazenar a atividade
+  List<Map<String, dynamic>> _conteudos = []; // Lista para armazenar conteúdos
 
   void _onItemTapped(int index) {
     setState(() {
@@ -61,25 +59,27 @@ class _AtividadeState extends State<TodasAtividades> {
   @override
   void initState() {
     super.initState();
-    _fetchAtividades();
+    _fetchConteudos();
   }
 
-  Future<void> _fetchAtividades() async {
+  Future<void> _fetchConteudos() async {
     try {
       print('Chamando API para buscar dados...');
-      final data = await ApiService.fetchData('conteudo/obter/2');
+      final data = await ApiService.fetchDataFilter('conteudo/listar');
       print('Dados recebidos da API: $data');
       if (data != null) {
         print('Data não é nulo');
         if (data.containsKey('data')) {
           print('Data contém a chave "data"');
-          if (data['data'] is Map) {
-            print('Data["data"] é um mapa');
+          if (data['data'] is List) {
+            print('Data["data"] é uma lista');
             setState(() {
-              _atividade = Map<String, dynamic>.from(data['data']);
+              _conteudos = List<Map<String, dynamic>>.from(data['data'])
+                  .where((conteudo) => conteudo['tipo'] == 2)
+                  .toList();
             });
           } else {
-            print('Data["data"] não é um mapa, é: ${data['data'].runtimeType}');
+            print('Data["data"] não é uma lista, é: ${data['data'].runtimeType}');
           }
         } else {
           print('Data não contém a chave "data"');
@@ -88,7 +88,7 @@ class _AtividadeState extends State<TodasAtividades> {
         print('Nenhum dado encontrado ou dado malformado');
       }
     } catch (e) {
-      print('Erro ao carregar atividades: $e');
+      print('Erro ao carregar conteúdos: $e');
     }
   }
 
@@ -102,7 +102,7 @@ class _AtividadeState extends State<TodasAtividades> {
       nextPage: _nextPage,
       previousPage: _previousPage,
       handleFilterSelection: _handleFilterSelection,
-      atividade: _atividade, // Passando a atividade para o widget VerAtividades
+      conteudos: _conteudos, // Passando a lista de conteúdos para o widget VerAtividades
     );
   }
 }
@@ -114,7 +114,7 @@ class VerAtividades extends StatelessWidget {
   final VoidCallback nextPage;
   final VoidCallback previousPage;
   final Function(String) handleFilterSelection;
-  final Map<String, dynamic>? atividade; // Adicionando um parâmetro para receber a atividade
+  final List<Map<String, dynamic>> conteudos; // Adicionando um parâmetro para receber a lista de conteúdos
 
   const VerAtividades({
     required this.selectedIndex,
@@ -123,7 +123,7 @@ class VerAtividades extends StatelessWidget {
     required this.nextPage,
     required this.previousPage,
     required this.handleFilterSelection,
-    required this.atividade, // Inicializando o parâmetro
+    required this.conteudos, // Inicializando o parâmetro
   });
 
   @override
@@ -174,9 +174,13 @@ class VerAtividades extends StatelessWidget {
                   ],
                 ),
               ),
-              // Verificando se há atividades
-              atividade != null
-                  ? MyCardAtividade(atividade: atividade!)
+              // Verificando se há conteúdos
+              conteudos.isNotEmpty
+                  ? Column(
+                      children: conteudos
+                          .map((conteudo) => MyCardAtividade(atividade: conteudo))
+                          .toList(),
+                    )
                   : const Text('Nenhuma atividade encontrada'),
             ],
           ),
@@ -189,3 +193,4 @@ class VerAtividades extends StatelessWidget {
     );
   }
 }
+
