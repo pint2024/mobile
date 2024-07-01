@@ -38,12 +38,12 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
 
   Future<void> _fetchEventDetails(int eventId) async {
     try {
-      final data = await ApiService.fetchData('conteudo/obter/$eventId');
+      final data = await ApiService.obter('conteudo', eventId);
       print(data);
       if (data != null) {
         setState(() {
-          _eventDetails = data?['data'];
-          _comments = data?['data']['comentario_conteudo'];
+          _eventDetails = data;
+          _comments = data?['comentario_conteudo'];
         });
         print('Dados carregados com sucesso');
       } else {

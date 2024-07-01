@@ -40,12 +40,12 @@ class _RecommendationDetailsPageState extends State<RecommendationDetailsPage> {
   Future<void> _fetchRecommendationDetails(int recommendationId) async {
     try {
       final data =
-          await ApiService.fetchData('conteudo/obter/$recommendationId');
+          await ApiService.obter('conteudo', recommendationId);
       print(data);
       if (data != null) {
         setState(() {
-          _recommendationDetails = data?['data'];
-          _comments = data?['data']['comentario_conteudo'];
+          _recommendationDetails = data;
+          _comments = data?['comentario_conteudo'];
         });
         print('Dados carregados com sucesso');
       } else {

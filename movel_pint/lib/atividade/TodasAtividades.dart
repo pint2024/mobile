@@ -65,24 +65,20 @@ class _AtividadeState extends State<TodasAtividades> {
   Future<void> _fetchConteudos() async {
     try {
       print('Chamando API para buscar dados...');
-      final data = await ApiService.fetchDataFilter('conteudo/listar');
+      final data = await ApiService.listar('conteudo');
+      print("dados recevidos");
       print('Dados recebidos da API: $data');
       if (data != null) {
         print('Data não é nulo');
-        if (data.containsKey('data')) {
-          print('Data contém a chave "data"');
-          if (data['data'] is List) {
-            print('Data["data"] é uma lista');
-            setState(() {
-              _conteudos = List<Map<String, dynamic>>.from(data['data'])
-                  .where((conteudo) => conteudo['tipo'] == 2)
-                  .toList();
-            });
-          } else {
-            print('Data["data"] não é uma lista, é: ${data['data'].runtimeType}');
-          }
+        if (data is List) {
+          print('Data["data"] é uma lista');
+          setState(() {
+            _conteudos = List<Map<String, dynamic>>.from(data)
+                .where((conteudo) => conteudo['tipo'] == 2)
+                .toList();
+          });
         } else {
-          print('Data não contém a chave "data"');
+          print('Data["data"] não é uma lista, é: ${data.runtimeType}');
         }
       } else {
         print('Nenhum dado encontrado ou dado malformado');

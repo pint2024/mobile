@@ -48,10 +48,10 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Future<void> _fetchProfileData(int userId) async {
     try {
-      final data = await ApiService.fetchData('utilizador/obter/$userId');
-      if (data != null && data['data'] != null) {
+      final data = await ApiService.obter('utilizador', userId);
+      if (data != null) {
         setState(() {
-          _profileData = data['data'];
+          _profileData = data;
         });
         print('Perfil carregado com sucesso');
       } else {

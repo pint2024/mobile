@@ -7,6 +7,7 @@ import 'package:movel_pint/evento/TodosEventos.dart';
 import 'package:movel_pint/evento/criarEvento.dart';
 import 'package:movel_pint/recomedacao/TodasRecomendacoes.dart';
 import 'package:movel_pint/recomedacao/criarRecomendacao.dart';
+import 'package:movel_pint/utils/constants.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
 import 'package:movel_pint/widgets/customAppBar.dart';
 import 'package:movel_pint/widgets/minicard.dart'; // Importe o MiniCard aqui
