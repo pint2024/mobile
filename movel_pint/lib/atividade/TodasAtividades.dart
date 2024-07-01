@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movel_pint/widgets/MycardAtividade.dart';
-import 'package:movel_pint/widgets/atividadeCEditar.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
-import 'package:movel_pint/widgets/card.dart';
 import 'package:movel_pint/widgets/customAppBar.dart';
 import 'package:movel_pint/backend/api_service.dart'; // Certifique-se de que o caminho está correto
 
@@ -27,7 +25,7 @@ class TodasAtividades extends StatefulWidget {
 class _AtividadeState extends State<TodasAtividades> {
   int _selectedIndex = 3;
   PageController _pageController = PageController(initialPage: 0);
-  Map<String, dynamic>? _atividade; // Mapa para armazenar a atividade
+  List<Map<String, dynamic>> _atividades = []; // Lista para armazenar as atividades
 
   void _onItemTapped(int index) {
     setState(() {
@@ -67,19 +65,25 @@ class _AtividadeState extends State<TodasAtividades> {
   Future<void> _fetchAtividades() async {
     try {
       print('Chamando API para buscar dados...');
-      final data = await ApiService.fetchData('conteudo/obter/1');
+      var data = await ApiService.fetchData('your_endpoint', body: { 'tipo': 2 });
       print('Dados recebidos da API: $data');
       if (data != null) {
-        print('Data não é nulo');
+        print('Data não é nula');
         if (data.containsKey('data')) {
           print('Data contém a chave "data"');
-          if (data['data'] is Map) {
-            print('Data["data"] é um mapa');
+          if (data['data'] is List) {
+            print('Data["data"] é uma lista');
+            List<Map<String, dynamic>> atividades = [];
+            for (var atividade in data['data']) {
+              if (atividade['tipo'] == 2) {
+                atividades.add(Map<String, dynamic>.from(atividade));
+              }
+            }
             setState(() {
-              _atividade = Map<String, dynamic>.from(data['data']);
+              _atividades = atividades;
             });
           } else {
-            print('Data["data"] não é um mapa, é: ${data['data'].runtimeType}');
+            print('Data["data"] não é uma lista, é: ${data['data'].runtimeType}');
           }
         } else {
           print('Data não contém a chave "data"');
@@ -102,7 +106,7 @@ class _AtividadeState extends State<TodasAtividades> {
       nextPage: _nextPage,
       previousPage: _previousPage,
       handleFilterSelection: _handleFilterSelection,
-      atividade: _atividade, // Passando a atividade para o widget VerAtividades
+      atividades: _atividades, // Passando as atividades para o widget VerAtividades
     );
   }
 }
@@ -114,7 +118,7 @@ class VerAtividades extends StatelessWidget {
   final VoidCallback nextPage;
   final VoidCallback previousPage;
   final Function(String) handleFilterSelection;
-  final Map<String, dynamic>? atividade; // Adicionando um parâmetro para receber a atividade
+  final List<Map<String, dynamic>> atividades; // Lista para receber as atividades
 
   const VerAtividades({
     required this.selectedIndex,
@@ -123,7 +127,7 @@ class VerAtividades extends StatelessWidget {
     required this.nextPage,
     required this.previousPage,
     required this.handleFilterSelection,
-    required this.atividade, // Inicializando o parâmetro
+    required this.atividades, // Inicializando o parâmetro
   });
 
   @override
@@ -175,8 +179,12 @@ class VerAtividades extends StatelessWidget {
                 ),
               ),
               // Verificando se há atividades
-              atividade != null
-                  ? MyCardAtividade(atividade: atividade!)
+              atividades.isNotEmpty
+                  ? Column(
+                      children: atividades.map((atividade) {
+                        return MyCardAtividade(atividade: atividade);
+                      }).toList(),
+                    )
                   : const Text('Nenhuma atividade encontrada'),
             ],
           ),

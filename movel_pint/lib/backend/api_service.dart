@@ -5,19 +5,23 @@ import 'package:movel_pint/utils/constants.dart';
 class ApiService {
     static const String baseUrl = CONSTANTS.API_BASE_URL;
 
-  static Future<dynamic> fetchData(String endpoint, {Map<String, String>? headers}) async {
-    final url = '$baseUrl/$endpoint';
-    try {
-      final response = await http.get(Uri.parse(url), headers: headers);
-      if (response.statusCode == 200) {
-        return jsonDecode(response.body);
-      } else {
-        throw Exception('Failed to load data');
-      }
-    } catch (e) {
-      throw Exception('Failed to connect to server: $e');
+  static Future<dynamic> fetchData(String endpoint, {Map<String, String>? headers, dynamic body}) async {
+  final url = '$baseUrl/$endpoint';
+  try {
+    final response = await http.post(
+      Uri.parse(url),
+      headers: headers,
+      body: jsonEncode(body), // Codifica o corpo da requisição em JSON
+    );
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to load data');
     }
+  } catch (e) {
+    throw Exception('Failed to connect to server: $e');
   }
+}
 
   static Future<dynamic> listar(String endpoint, {Map<String, String>? headers, Map<String, String>? body}) async {
     final url = '$baseUrl/$endpoint';
