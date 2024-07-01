@@ -1,19 +1,31 @@
 import 'package:flutter/material.dart';
-import 'package:movel_pint/atividade/detalhes_atividade.dart'; // Importa a página detalhesEvento.dart
+import 'package:intl/intl.dart';
 
-class MyCardAtividade extends StatelessWidget {
-  final Map<String, dynamic> atividade; // Adicionando um campo para atividade
+class MyCardAtividade extends StatefulWidget {
+  final Map<String, dynamic> atividade;
 
-  MyCardAtividade({required this.atividade}); // Adicionando um construtor para aceitar atividade
+  MyCardAtividade({required this.atividade});
+
+  @override
+  _MyCardAtividadeState createState() => _MyCardAtividadeState();
+}
+
+class _MyCardAtividadeState extends State<MyCardAtividade> {
+  bool _isExpanded = false;
+
+  String formatDateTime(String dateTime) {
+    final DateTime parsedDateTime = DateTime.parse(dateTime);
+    final DateFormat formatter = DateFormat('dd/MM/yyyy HH:mm');
+    return formatter.format(parsedDateTime);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector( // Adiciona um GestureDetector para detectar cliques
+    return GestureDetector(
       onTap: () {
-        Navigator.push( // Navega para a página detalhesEvento.dart quando clicado
-          context,
-          MaterialPageRoute(builder: (context) => ActivityDetailsPage()), // Substitua DetalhesEvento() pela classe correta se necessário
-        );
+        setState(() {
+          _isExpanded = !_isExpanded;
+        });
       },
       child: Card(
         elevation: 3,
@@ -25,25 +37,27 @@ class MyCardAtividade extends StatelessWidget {
             children: [
               ListTile(
                 leading: CircleAvatar(
-                  backgroundImage: atividade['imagem'] != null
-                      ? NetworkImage(atividade['imagem'])
+                  backgroundImage: widget.atividade['imagem'] != null
+                      ? NetworkImage(widget.atividade['imagem'])
                       : AssetImage('assets/Images/logo2.png') as ImageProvider,
                 ),
-                title: Text(atividade['titulo'] ?? 'Título da atividade'),
-                subtitle: Text('${atividade['usuario_nome']} • ${atividade['data']}'),
+                title: Text(widget.atividade['titulo'] ?? 'Título da atividade'),
+                subtitle: Text(
+                  '${widget.atividade['data_evento'] != null ? formatDateTime(widget.atividade['data_evento']) : ''} • ${widget.atividade['endereco'] ?? ''}',
+                ),
                 trailing: Padding(
-                  padding: const EdgeInsets.only(right: 8.0), // Preenchimento à direita
+                  padding: const EdgeInsets.only(right: 8.0),
                 ),
               ),
-              SizedBox(height: 8), // Espaçamento entre o título e a imagem
+              SizedBox(height: 8),
               Center(
                 child: Container(
-                  width: 400, // Largura desejada para a imagem
-                  height: 150, // Altura desejada para a imagem
+                  width: 400,
+                  height: 150,
                   decoration: BoxDecoration(
                     image: DecorationImage(
-                      image: atividade['imagem'] != null
-                          ? NetworkImage(atividade['imagem'])
+                      image: widget.atividade['imagem'] != null
+                          ? NetworkImage(widget.atividade['imagem'])
                           : AssetImage('assets/Images/logo2.png') as ImageProvider,
                       fit: BoxFit.cover,
                     ),
@@ -52,14 +66,22 @@ class MyCardAtividade extends StatelessWidget {
               ),
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 8.0),
-                child: Text(atividade['descricao'] ?? 'Um pouco do texto da atividade'),
+                child: Text(widget.atividade['descricao'] ?? 'Um pouco do texto da atividade'),
               ),
+              if (_isExpanded) ...[
+                Text('Endereço: ${widget.atividade['endereco'] ?? 'Não informado'}'),
+                SizedBox(height: 8),
+                Text('Data do Evento: ${widget.atividade['data_evento'] != null ? formatDateTime(widget.atividade['data_evento']) : 'Não informada'}'),
+                SizedBox(height: 8),
+                Text('Usuário: ${widget.atividade['utilizador'] ?? 'Desconhecido'}'),
+                SizedBox(height: 8),
+              ],
               Row(
-                mainAxisAlignment: MainAxisAlignment.end, // Alinhamento à direita
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  _buildIconWithCount(Icons.photo_library_outlined, atividade['num_photos'].toString() ?? '0'),
-                  SizedBox(width: 20), // Espaçamento entre os ícones
-                  _buildIconWithCount(Icons.comment_outlined, atividade['num_comments'].toString() ?? '0'),
+                  _buildIconWithCount(Icons.photo_library_outlined, widget.atividade['album_conteudo']?.length.toString() ?? '0'),
+                  SizedBox(width: 20),
+                  _buildIconWithCount(Icons.comment_outlined, widget.atividade['comentario_conteudo']?.length.toString() ?? '0'),
                 ],
               ),
             ],
@@ -74,7 +96,7 @@ class MyCardAtividade extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Icon(iconData),
-        SizedBox(width: 3), // Espaçamento entre o ícone e o número
+        SizedBox(width: 3),
         Text(
           count,
           style: TextStyle(fontWeight: FontWeight.bold),
