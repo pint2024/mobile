@@ -27,6 +27,7 @@ class _RecomendacaoState extends State<TodasRecomendacoes> {
   PageController _pageController = PageController(initialPage: 0);
   List<Map<String, dynamic>> _conteudos = []; // Lista para armazenar conteúdos
   bool _isLoading = true; // Variável para controlar o estado de carregamento
+  String? idAtividade; // Variável para armazenar o ID da atividade selecionada
 
   void _onItemTapped(int index) {
     setState(() {
@@ -75,7 +76,7 @@ class _RecomendacaoState extends State<TodasRecomendacoes> {
           print('Data["data"] é uma lista');
           setState(() {
             _conteudos = List<Map<String, dynamic>>.from(data)
-                .where((conteudo) => conteudo['tipo'] == 2)
+                .where((conteudo) => conteudo['tipo'] == 3)
                 .toList();
             _isLoading = false; // Dados carregados, alterar o estado de carregamento
           });
@@ -99,6 +100,13 @@ class _RecomendacaoState extends State<TodasRecomendacoes> {
     }
   }
 
+  void _onCardTap(String id) {
+    setState(() {
+      idAtividade = id;
+    });
+    print('ID da atividade selecionada: $idAtividade');
+  }
+
   @override
   Widget build(BuildContext context) {
     print('Construindo widget VerRecomendacoes...');
@@ -111,6 +119,7 @@ class _RecomendacaoState extends State<TodasRecomendacoes> {
       handleFilterSelection: _handleFilterSelection,
       conteudos: _conteudos, // Passando a lista de conteúdos para o widget VerRecomendacoes
       isLoading: _isLoading, // Passando o estado de carregamento para o widget VerRecomendacoes
+      onCardTap: _onCardTap, // Passando a função para manipular o toque no cartão
     );
   }
 }
@@ -124,6 +133,7 @@ class VerRecomendacoes extends StatelessWidget {
   final Function(String) handleFilterSelection;
   final List<Map<String, dynamic>> conteudos; // Adicionando um parâmetro para receber a lista de conteúdos
   final bool isLoading; // Adicionando o parâmetro isLoading
+  final Function(String) onCardTap; // Adicionando a função de callback
 
   const VerRecomendacoes({
     required this.selectedIndex,
@@ -134,6 +144,7 @@ class VerRecomendacoes extends StatelessWidget {
     required this.handleFilterSelection,
     required this.conteudos, // Inicializando o parâmetro
     required this.isLoading, // Inicializando o parâmetro
+    required this.onCardTap, // Inicializando o parâmetro
   });
 
   @override
@@ -153,7 +164,7 @@ class VerRecomendacoes extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           const Text(
-                            'Recomendacoes',
+                            'Recomendações',
                             style: TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
@@ -190,10 +201,13 @@ class VerRecomendacoes extends StatelessWidget {
                     conteudos.isNotEmpty
                         ? Column(
                             children: conteudos
-                                .map((conteudo) => MyCardAtividade(atividade: conteudo))
+                                .map((conteudo) => MyCardAtividade(
+                                      atividade: conteudo,
+                                      onTap: () => onCardTap(conteudo['id'].toString()),
+                                    ))
                                 .toList(),
                           )
-                        : const Text('Nenhuma recomendacao encontrada'),
+                        : const Text('Nenhuma recomendação encontrada'),
                   ],
                 ),
               ),
