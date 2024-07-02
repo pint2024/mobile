@@ -96,7 +96,7 @@ class _LoginPageState extends State<LoginPage> {
                           child: Align(
                             alignment: Alignment.centerLeft,
                             child: Text(
-                              'Login',
+                              'Iniciar sessão',
                               style: TextStyle(
                                 fontSize: 30,
                                 fontWeight: FontWeight.bold,
