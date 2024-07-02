@@ -38,12 +38,12 @@ class _SpaceDetailsPageState extends State<SpaceDetailsPage> {
 
   Future<void> _fetchConteudoTipo(int userId) async {
     try {
-      final data = await ApiService.fetchData('conteudo/obter/$userId');
+      final data = await ApiService.obter('conteudo', userId);
       print(data);
       if (data != null) {
         setState(() {
-          _conteudoTipo = data?['data'];
-          _comments = data?['data']['comentario_conteudo'];
+          _conteudoTipo = data;
+          _comments = data?['comentario_conteudo'];
         });
         print('Dados carregados com sucesso');
       } else {

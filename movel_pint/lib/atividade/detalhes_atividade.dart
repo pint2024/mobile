@@ -38,12 +38,12 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
 
   Future<void> _fetchActivityDetails(int activityId) async {
     try {
-      final data = await ApiService.fetchData('conteudo/obter/$activityId');
+      final data = await ApiService.obter('conteudo', activityId);
       print(data);
       if (data != null) {
         setState(() {
-          _activityDetails = data?['data'];
-          _comments = data?['data']['comentario_conteudo'];
+          _activityDetails = data;
+          _comments = data?['comentario_conteudo'];
         });
         print('Dados carregados com sucesso');
       } else {

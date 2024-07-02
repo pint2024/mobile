@@ -1,37 +1,41 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:movel_pint/backend/myHttp.dart';
 import 'package:movel_pint/utils/constants.dart';
 
 class ApiService {
-    static const String baseUrl = CONSTANTS.API_BASE_URL;
 
-  static Future<dynamic> fetchData(String endpoint, {Map<String, String>? headers}) async {
-    final url = '$baseUrl/$endpoint';
+  static Future<dynamic> obter(String endpoint, int id, {Map<String, String> headers = const {}}) async {
+    final url = '$endpoint/obter/$id';
     try {
-      final response = await http.get(Uri.parse(url), headers: headers);
-      if (response.statusCode == 200) {
-        return jsonDecode(response.body);
-      } else {
-        throw Exception('Failed to load data');
-      }
+      return await myHttp(url: url, method: "GET", headers: headers);
     } catch (e) {
       throw Exception('Failed to connect to server: $e');
     }
   }
 
-  static Future<dynamic> listar(String endpoint, {Map<String, String>? headers, Map<String, String>? body}) async {
-    final url = '$baseUrl/$endpoint';
+  static Future<dynamic> listar(String endpoint, {Map<String, String> headers = const {}, dynamic data}) async {
+    final url = '$endpoint/listar';
     try {
-      final response = await http.post(Uri.parse(url), headers: headers, body: body);
-      if (response.statusCode == 200) {
-        return jsonDecode(response.body);
-      } else {
-        throw Exception('Failed to load data');
-      }
+      return await myHttp(url: url, method: "POST", headers: headers, data: jsonEncode(data));
     } catch (e) {
       throw Exception('Failed to connect to server: $e');
     }
   }
+
+  static Future<dynamic> criar(String endpoint, {Map<String, String> headers = const {}, dynamic data}) async {
+    final url = '$endpoint/criar';
+    try {
+      return await myHttp(url: url, method: "POST", headers: headers, data: jsonEncode(data));
+    } catch (e) {
+      throw Exception('Failed to connect to server: $e');
+    }
+  }
+
+
+  static Future<dynamic> atualizar(String endpoint, int id, {Map<String, String>? headers, dynamic data}) async {}
+  static Future<dynamic> remover(String endpoint, int id, {Map<String, String>? headers}) async {}
+
 
     static Future<Map<String, dynamic>?> postData(String endpoint, Map<String, dynamic> data) async {
     try {
