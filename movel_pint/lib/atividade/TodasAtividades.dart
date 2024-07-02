@@ -25,7 +25,8 @@ class TodasAtividades extends StatefulWidget {
 class _AtividadeState extends State<TodasAtividades> {
   int _selectedIndex = 3;
   PageController _pageController = PageController(initialPage: 0);
-  List<Map<String, dynamic>> _conteudos = []; // Lista para armazenar conteúdos
+  List<Map<String, dynamic>> _conteudos = [];
+  bool _isLoading = true; // Variável para controlar o estado de carregamento
 
   void _onItemTapped(int index) {
     setState(() {
@@ -52,7 +53,6 @@ class _AtividadeState extends State<TodasAtividades> {
   }
 
   void _handleFilterSelection(String value) {
-    // Aqui você pode adicionar lógica para aplicar o filtro selecionado
     print('Filtro selecionado: $value');
   }
 
@@ -76,15 +76,22 @@ class _AtividadeState extends State<TodasAtividades> {
             _conteudos = List<Map<String, dynamic>>.from(data)
                 .where((conteudo) => conteudo['tipo'] == 2)
                 .toList();
+            _isLoading = false; // Dados carregados, alterar o estado de carregamento
           });
         } else {
           print('Data["data"] não é uma lista, é: ${data.runtimeType}');
         }
       } else {
         print('Nenhum dado encontrado ou dado malformado');
+        setState(() {
+          _isLoading = false; // Falha ao carregar dados, alterar o estado de carregamento
+        });
       }
     } catch (e) {
       print('Erro ao carregar conteúdos: $e');
+      setState(() {
+        _isLoading = false; // Erro ao carregar dados, alterar o estado de carregamento
+      });
     }
   }
 
@@ -98,7 +105,8 @@ class _AtividadeState extends State<TodasAtividades> {
       nextPage: _nextPage,
       previousPage: _previousPage,
       handleFilterSelection: _handleFilterSelection,
-      conteudos: _conteudos, // Passando a lista de conteúdos para o widget VerAtividades
+      conteudos: _conteudos,
+      isLoading: _isLoading, // Passando o estado de carregamento para o widget VerAtividades
     );
   }
 }
@@ -110,7 +118,8 @@ class VerAtividades extends StatelessWidget {
   final VoidCallback nextPage;
   final VoidCallback previousPage;
   final Function(String) handleFilterSelection;
-  final List<Map<String, dynamic>> conteudos; // Adicionando um parâmetro para receber a lista de conteúdos
+  final List<Map<String, dynamic>> conteudos;
+  final bool isLoading; // Adicionando o parâmetro isLoading
 
   const VerAtividades({
     required this.selectedIndex,
@@ -119,7 +128,8 @@ class VerAtividades extends StatelessWidget {
     required this.nextPage,
     required this.previousPage,
     required this.handleFilterSelection,
-    required this.conteudos, // Inicializando o parâmetro
+    required this.conteudos,
+    required this.isLoading, // Inicializando o parâmetro
   });
 
   @override
@@ -127,61 +137,62 @@ class VerAtividades extends StatelessWidget {
     print('Construindo VerAtividades...');
     return Scaffold(
       appBar: CustomAppBar(),
-      body: SingleChildScrollView(
-        child: Center(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: isLoading
+          ? Center(child: CircularProgressIndicator()) // Exibindo a rodinha de carregamento
+          : SingleChildScrollView(
+              child: Center(
+                child: Column(
                   children: [
-                    const Text(
-                      'Atividades',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            'Atividades',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          PopupMenuButton<String>(
+                            icon: const Icon(Icons.filter_list),
+                            onSelected: (String value) {
+                              handleFilterSelection(value);
+                            },
+                            itemBuilder: (BuildContext context) => const <PopupMenuEntry<String>>[
+                              PopupMenuItem<String>(
+                                value: 'Mais recentes',
+                                child: Text('Mais recentes'),
+                              ),
+                              PopupMenuItem<String>(
+                                value: 'Mais antigas',
+                                child: Text('Mais antigas'),
+                              ),
+                              PopupMenuItem<String>(
+                                value: 'A-Z',
+                                child: Text('A-Z'),
+                              ),
+                              PopupMenuItem<String>(
+                                value: 'Z-A',
+                                child: Text('Z-A'),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
-                    PopupMenuButton<String>(
-                      icon: const Icon(Icons.filter_list),
-                      onSelected: (String value) {
-                        handleFilterSelection(value);
-                      },
-                      itemBuilder: (BuildContext context) => const <PopupMenuEntry<String>>[
-                        PopupMenuItem<String>(
-                          value: 'Mais recentes',
-                          child: Text('Mais recentes'),
-                        ),
-                        PopupMenuItem<String>(
-                          value: 'Mais antigas',
-                          child: Text('Mais antigas'),
-                        ),
-                        PopupMenuItem<String>(
-                          value: 'A-Z',
-                          child: Text('A-Z'),
-                        ),
-                        PopupMenuItem<String>(
-                          value: 'Z-A',
-                          child: Text('Z-A'),
-                        ),
-                      ],
-                    ),
+                    conteudos.isNotEmpty
+                        ? Column(
+                            children: conteudos
+                                .map((conteudo) => MyCardAtividade(atividade: conteudo))
+                                .toList(),
+                          )
+                        : const Text('Nenhuma atividade encontrada'),
                   ],
                 ),
               ),
-              // Verificando se há conteúdos
-              conteudos.isNotEmpty
-                  ? Column(
-                      children: conteudos
-                          .map((conteudo) => MyCardAtividade(atividade: conteudo))
-                          .toList(),
-                    )
-                  : const Text('Nenhuma atividade encontrada'),
-            ],
-          ),
-        ),
-      ),
+            ),
       bottomNavigationBar: CustomBottomNavigationBar(
         selectedIndex: selectedIndex,
         onItemTapped: onItemTapped,
@@ -189,4 +200,3 @@ class VerAtividades extends StatelessWidget {
     );
   }
 }
-

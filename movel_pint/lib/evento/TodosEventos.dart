@@ -1,23 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:movel_pint/widgets/MycardEvento.dart';
-import 'package:movel_pint/widgets/atividadeCEditar.dart';
+import 'package:movel_pint/widgets/MycardAtividade.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
-import 'package:movel_pint/widgets/card.dart';
 import 'package:movel_pint/widgets/customAppBar.dart';
-
+import 'package:movel_pint/backend/api_service.dart';
 
 void main() {
-  runApp(TodosEventos());
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: TodosEventos(),
+    );
+  }
 }
 
 class TodosEventos extends StatefulWidget {
   @override
-  _EventosState createState() => _EventosState();
+  _EventoState createState() => _EventoState();
 }
 
-class _EventosState extends State<TodosEventos> {
+class _EventoState extends State<TodosEventos> {
   int _selectedIndex = 3;
   PageController _pageController = PageController(initialPage: 0);
+  List<Map<String, dynamic>> _conteudos = []; // Lista para armazenar conteúdos
+  bool _isLoading = true; // Variável para controlar o estado de carregamento
 
   void _onItemTapped(int index) {
     setState(() {
@@ -28,7 +37,7 @@ class _EventosState extends State<TodosEventos> {
   void _nextPage() {
     if (_pageController.page! < 2) {
       _pageController.nextPage(
-        duration: Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 300),
         curve: Curves.ease,
       );
     }
@@ -37,7 +46,7 @@ class _EventosState extends State<TodosEventos> {
   void _previousPage() {
     if (_pageController.page! > 0) {
       _pageController.previousPage(
-        duration: Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 300),
         curve: Curves.ease,
       );
     }
@@ -49,9 +58,59 @@ class _EventosState extends State<TodosEventos> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _fetchConteudos();
+  }
+
+  Future<void> _fetchConteudos() async {
+    try {
+      print('Chamando API para buscar dados...');
+      final data = await ApiService.listar('conteudo');
+      print("dados recevidos");
+      print('Dados recebidos da API: $data');
+      if (data != null) {
+        print('Data não é nulo');
+        if (data is List) {
+          print('Data["data"] é uma lista');
+          setState(() {
+            _conteudos = List<Map<String, dynamic>>.from(data)
+                .where((conteudo) => conteudo['tipo'] == 1)
+                .toList();
+            _isLoading = false; // Dados carregados, alterar o estado de carregamento
+          });
+        } else {
+          print('Data["data"] não é uma lista, é: ${data.runtimeType}');
+          setState(() {
+            _isLoading = false; // Dados carregados (ou falha), alterar o estado de carregamento
+          });
+        }
+      } else {
+        print('Nenhum dado encontrado ou dado malformado');
+        setState(() {
+          _isLoading = false; // Dados malformados, alterar o estado de carregamento
+        });
+      }
+    } catch (e) {
+      print('Erro ao carregar conteúdos: $e');
+      setState(() {
+        _isLoading = false; // Erro ao carregar dados, alterar o estado de carregamento
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: VerEventos(_selectedIndex, _onItemTapped, _pageController, _nextPage, _previousPage, _handleFilterSelection),
+    print('Construindo widget VerEventos...');
+    return VerEventos(
+      selectedIndex: _selectedIndex,
+      onItemTapped: _onItemTapped,
+      pageController: _pageController,
+      nextPage: _nextPage,
+      previousPage: _previousPage,
+      handleFilterSelection: _handleFilterSelection,
+      conteudos: _conteudos, // Passando a lista de conteúdos para o widget VerEventos
+      isLoading: _isLoading, // Passando o estado de carregamento para o widget VerEventos
     );
   }
 }
@@ -60,79 +119,88 @@ class VerEventos extends StatelessWidget {
   final int selectedIndex;
   final Function(int) onItemTapped;
   final PageController pageController;
-  final Function() nextPage;
-  final Function() previousPage;
+  final VoidCallback nextPage;
+  final VoidCallback previousPage;
   final Function(String) handleFilterSelection;
+  final List<Map<String, dynamic>> conteudos; // Adicionando um parâmetro para receber a lista de conteúdos
+  final bool isLoading; // Adicionando o parâmetro isLoading
 
-  VerEventos(this.selectedIndex, this.onItemTapped, this.pageController, this.nextPage, this.previousPage, this.handleFilterSelection);
+  const VerEventos({
+    required this.selectedIndex,
+    required this.onItemTapped,
+    required this.pageController,
+    required this.nextPage,
+    required this.previousPage,
+    required this.handleFilterSelection,
+    required this.conteudos, // Inicializando o parâmetro
+    required this.isLoading, // Inicializando o parâmetro
+  });
 
   @override
   Widget build(BuildContext context) {
+    print('Construindo VerEventos...');
     return Scaffold(
       appBar: CustomAppBar(),
-      body: SingleChildScrollView(
-        child: Center(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: isLoading
+          ? Center(child: CircularProgressIndicator()) // Exibindo a rodinha de carregamento
+          : SingleChildScrollView(
+              child: Center(
+                child: Column(
                   children: [
-                    Text(
-                      'Eventos',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            'Eventos',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          PopupMenuButton<String>(
+                            icon: const Icon(Icons.filter_list),
+                            onSelected: (String value) {
+                              handleFilterSelection(value);
+                            },
+                            itemBuilder: (BuildContext context) => const <PopupMenuEntry<String>>[
+                              PopupMenuItem<String>(
+                                value: 'Mais recentes',
+                                child: Text('Mais recentes'),
+                              ),
+                              PopupMenuItem<String>(
+                                value: 'Mais antigas',
+                                child: Text('Mais antigas'),
+                              ),
+                              PopupMenuItem<String>(
+                                value: 'A-Z',
+                                child: Text('A-Z'),
+                              ),
+                              PopupMenuItem<String>(
+                                value: 'Z-A',
+                                child: Text('Z-A'),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
-                    PopupMenuButton<String>(
-                      icon: Icon(Icons.filter_list),
-                      onSelected: (String value) {
-                        handleFilterSelection(value);
-                      },
-                      itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                        const PopupMenuItem<String>(
-                          value: 'Mais recentes',
-                          child: Text('Mais recentes'),
-                        ),
-                        const PopupMenuItem<String>(
-                          value: 'Mais antigas',
-                          child: Text('Mais antigas'),
-                        ),
-                        const PopupMenuItem<String>(
-                          value: 'A-Z',
-                          child: Text('A-Z'),
-                        ),
-                        const PopupMenuItem<String>(
-                          value: 'Z-A',
-                          child: Text('Z-A'),
-                        ),
-                      ],
-                    ),
+                    // Verificando se há conteúdos
+                    conteudos.isNotEmpty
+                        ? Column(
+                            children: conteudos
+                                .map((conteudo) => MyCardAtividade(atividade: conteudo))
+                                .toList(),
+                          )
+                        : const Text('Nenhum evento encontrado'),
                   ],
                 ),
               ),
-              MyCardEvento(),
-              MyCardEvento(),
-              MyCardEvento(),
-              MyCardEvento(),
-              MyCardEvento(),
-              MyCardEvento(),
-              MyCardEvento(),
-              MyCardEvento(),
-            ],
-          ),
-        ),
-      ),
-      bottomNavigationBar: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          CustomBottomNavigationBar(
-            selectedIndex: selectedIndex,
-            onItemTapped: onItemTapped,
-          ),
-        ],
+            ),
+      bottomNavigationBar: CustomBottomNavigationBar(
+        selectedIndex: selectedIndex,
+        onItemTapped: onItemTapped,
       ),
     );
   }

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:movel_pint/atividade/TodasAtividades.dart';
 import 'package:movel_pint/atividade/criarAtividade.dart';
+import 'package:movel_pint/espa%C3%A7o/TodosEspacos.dart';
 import 'package:movel_pint/espaço/criarespaço.dart';
-import 'package:movel_pint/espaço/todosEspacos.dart'; // Importe a página TodosEspacos aqui
 import 'package:movel_pint/evento/TodosEventos.dart';
 import 'package:movel_pint/evento/criarEvento.dart';
 import 'package:movel_pint/recomedacao/TodasRecomendacoes.dart';
@@ -10,7 +10,8 @@ import 'package:movel_pint/recomedacao/criarRecomendacao.dart';
 import 'package:movel_pint/utils/constants.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
 import 'package:movel_pint/widgets/customAppBar.dart';
-import 'package:movel_pint/widgets/minicard.dart'; // Importe o MiniCard aqui
+import 'package:movel_pint/widgets/minicard.dart';
+import 'package:movel_pint/backend/api_service.dart';
 
 void main() {
   runApp(MyApp());
@@ -33,8 +34,54 @@ class ForumPage extends StatefulWidget {
 class _HomePageState extends State<ForumPage> {
   int _selectedIndex = 3;
   final PageController _pageController = PageController();
+  List<Map<String, dynamic>> _atividades = [];
+  List<Map<String, dynamic>> _eventos = [];
+  List<Map<String, dynamic>> _recomendacoes = [];
+  List<Map<String, dynamic>> _espacos = [];
+  bool _isLoading = true;
 
-  String _selectedOption = ''; // Estado para armazenar a opção selecionada
+  @override
+  void initState() {
+    super.initState();
+    _fetchConteudos();
+  }
+
+  Future<void> _fetchConteudos() async {
+    try {
+      print('Chamando API para buscar dados...');
+      final data = await ApiService.listar('conteudo');
+      print("dados recebidos");
+      print('Dados recebidos da API: $data');
+      if (data != null) {
+        print('Data não é nulo');
+        if (data is List) {
+          print('Data["data"] é uma lista');
+          setState(() {
+            _atividades = List<Map<String, dynamic>>.from(data).where((conteudo) => conteudo['tipo'] == 2).toList();
+            _eventos = List<Map<String, dynamic>>.from(data).where((conteudo) => conteudo['tipo'] == 1).toList();
+            _recomendacoes = List<Map<String, dynamic>>.from(data).where((conteudo) => conteudo['tipo'] == 3).toList();
+            _espacos = List<Map<String, dynamic>>.from(data).where((conteudo) => conteudo['tipo'] == 4).toList();
+            _isLoading = false; // Dados carregados, alterar o estado de carregamento
+          });
+        } else {
+          print('Data["data"] não é uma lista, é: ${data.runtimeType}');
+          setState(() {
+            _isLoading = false; // Dados carregados (ou falha), alterar o estado de carregamento
+          });
+        }
+      } else {
+        print('Nenhum dado encontrado ou dado malformado');
+        setState(() {
+          _isLoading = false; // Dados malformados, alterar o estado de carregamento
+        });
+      }
+    } catch (e) {
+      print('Erro ao carregar conteúdos: $e');
+      setState(() {
+        _isLoading = false; // Erro ao carregar dados, alterar o estado de carregamento
+      });
+    }
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -47,17 +94,19 @@ class _HomePageState extends State<ForumPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(),
-      body: PageView(
-        controller: _pageController,
-        onPageChanged: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
-        children: [
-          buildHomePage(context),
-        ],
-      ),
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator())
+          : PageView(
+              controller: _pageController,
+              onPageChanged: (index) {
+                setState(() {
+                  _selectedIndex = index;
+                });
+              },
+              children: [
+                buildHomePage(context),
+              ],
+            ),
       bottomNavigationBar: CustomBottomNavigationBar(
         selectedIndex: _selectedIndex,
         onItemTapped: _onItemTapped,
@@ -83,15 +132,15 @@ class _HomePageState extends State<ForumPage> {
           ],
         ),
         SizedBox(height: 20.0), // Espaço entre o botão e a seção de atividades
-        buildSection('Atividades', Icons.sports_soccer, context),
-        buildSection('Eventos', Icons.event, context),
-        buildSection('Recomendações', Icons.thumb_up, context),
-        buildSection('Espaços', Icons.location_city, context),
+        buildSection('Atividades', _atividades, context),
+        buildSection('Eventos', _eventos, context),
+        buildSection('Recomendações', _recomendacoes, context),
+        buildSection('Espaços', _espacos, context),
       ],
     );
   }
 
-  Widget buildSection(String title, IconData iconData, BuildContext context) {
+  Widget buildSection(String title, List<Map<String, dynamic>> conteudos, BuildContext context) {
     final ScrollController scrollController = ScrollController(); // Adicione o ScrollController
 
     return Column(
@@ -125,7 +174,7 @@ class _HomePageState extends State<ForumPage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => TodosEspacos(), // Navegue para TodosEspacos quando o título for "Espaços"
+                  builder: (context) => TodasEspacos(), // Navegue para TodosEspacos quando o título for "Espaços"
                 ),
               );
             }
@@ -143,13 +192,14 @@ class _HomePageState extends State<ForumPage> {
                   child: ListView.builder(
                     controller: scrollController, // Passe o ScrollController aqui também
                     scrollDirection: Axis.horizontal,
-                    itemCount: 6, // Número de itens, ajuste conforme necessário
+                    itemCount: conteudos.take(6).length, // Número de itens baseado nos conteúdos
                     itemBuilder: (context, index) {
+                      final conteudo = conteudos[index];
                       return Padding(
                         padding: const EdgeInsets.only(right: 8.0),
                         child: MiniCard(
-                          imageUrl: 'assets/Images/logo2.png',
-                          title: '$title $index',
+                          imageUrl: conteudo['imagem'] ?? 'assets/Images/logo2.png', // Ajuste conforme sua estrutura de dados
+                          title: conteudo['titulo'] ?? 'Título',
                         ),
                       );
                     },
@@ -204,7 +254,7 @@ class _HomePageState extends State<ForumPage> {
                   leading: Icon(Icons.sports_soccer),
                   title: Text('Atividades'),
                   onTap: () {
-                    Navigator.pop(context); 
+                    Navigator.pop(context);
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -217,7 +267,7 @@ class _HomePageState extends State<ForumPage> {
                   leading: Icon(Icons.event),
                   title: Text('Eventos'),
                   onTap: () {
-                    Navigator.pop(context); 
+                    Navigator.pop(context);
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -260,9 +310,11 @@ class _HomePageState extends State<ForumPage> {
     );
   }
 
+    String _selectedOption = ''; // Estado para armazenar a opção selecionada
+
   void _selectOption(String option) {
     setState(() {
-      _selectedOption = option; 
+      _selectedOption = option;
     });
   }
 }
@@ -293,3 +345,5 @@ class SectionTitle extends StatelessWidget {
     );
   }
 }
+
+

@@ -16,7 +16,7 @@ class MiniCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 140.0,
+            width: 180.0,
             height: 140.0,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10.0),
@@ -39,7 +39,7 @@ class MiniCard extends StatelessWidget {
   }
 
   String _truncateTitle(String title) {
-    const maxLength = 14; // Defina o comprimento máximo do título
+    const maxLength = 19; // Defina o comprimento máximo do título
     if (title.length <= maxLength) {
       return title;
     } else {
