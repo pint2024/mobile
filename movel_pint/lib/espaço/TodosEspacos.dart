@@ -27,6 +27,7 @@ class _EspacoState extends State<TodasEspacos> {
   PageController _pageController = PageController(initialPage: 0);
   List<Map<String, dynamic>> _conteudos = [];
   bool _isLoading = true; // Variável para controlar o estado de carregamento
+  String? idAtividade; // Variável para armazenar o ID da atividade selecionada
 
   void _onItemTapped(int index) {
     setState(() {
@@ -99,6 +100,13 @@ class _EspacoState extends State<TodasEspacos> {
     }
   }
 
+  void _onCardTap(String id) {
+    setState(() {
+      idAtividade = id;
+    });
+    print('ID da atividade selecionada: $idAtividade');
+  }
+
   @override
   Widget build(BuildContext context) {
     print('Construindo widget VerEspacos...');
@@ -111,6 +119,7 @@ class _EspacoState extends State<TodasEspacos> {
       handleFilterSelection: _handleFilterSelection,
       conteudos: _conteudos,
       isLoading: _isLoading, // Passando o estado de carregamento para o widget VerEspacos
+      onCardTap: _onCardTap, // Passando a função para manipular o toque no cartão
     );
   }
 }
@@ -124,6 +133,7 @@ class VerEspacos extends StatelessWidget {
   final Function(String) handleFilterSelection;
   final List<Map<String, dynamic>> conteudos;
   final bool isLoading; // Adicionando o parâmetro isLoading
+  final Function(String) onCardTap; // Adicionando a função de callback
 
   const VerEspacos({
     required this.selectedIndex,
@@ -134,6 +144,7 @@ class VerEspacos extends StatelessWidget {
     required this.handleFilterSelection,
     required this.conteudos,
     required this.isLoading, // Inicializando o parâmetro
+    required this.onCardTap, // Inicializando o parâmetro
   });
 
   @override
@@ -153,7 +164,7 @@ class VerEspacos extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           const Text(
-                            'Espacos',
+                            'Espaços',
                             style: TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
@@ -190,10 +201,13 @@ class VerEspacos extends StatelessWidget {
                     conteudos.isNotEmpty
                         ? Column(
                             children: conteudos
-                                .map((conteudo) => MyCardAtividade(atividade: conteudo))
+                                .map((conteudo) => MyCardAtividade(
+                                      atividade: conteudo,
+                                      onTap: () => onCardTap(conteudo['id'].toString()),
+                                    ))
                                 .toList(),
                           )
-                        : const Text('Nenhum Espaco encontrada'),
+                        : const Text('Nenhum Espaço encontrado'),
                   ],
                 ),
               ),
