@@ -4,13 +4,11 @@ import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
 import 'package:movel_pint/widgets/customAppBar.dart';
 import 'package:movel_pint/backend/api_service.dart';
 
-void main() {
-  runApp(MaterialApp(
-    home: ActivityDetailsPage(),
-  ));
-}
-
 class ActivityDetailsPage extends StatefulWidget {
+  final int activityId;
+
+  ActivityDetailsPage({required this.activityId});
+
   @override
   _ActivityDetailsPageState createState() => _ActivityDetailsPageState();
 }
@@ -20,7 +18,6 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
   Map<String, dynamic>? _activityDetails;
   List<dynamic>? _comments;
   bool _showAllComments = false;
-  final int activityId = 2;
 
   TextEditingController _commentController = TextEditingController();
 
@@ -33,7 +30,7 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
   @override
   void initState() {
     super.initState();
-    _fetchActivityDetails(activityId);
+    _fetchActivityDetails(widget.activityId);
   }
 
   Future<void> _fetchActivityDetails(int activityId) async {
@@ -57,7 +54,7 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
   Future<Map<String, dynamic>?> _postComment() async {
     Map<String, dynamic> commentData = {
       'comentario': _commentController.text,
-      'conteudo': activityId,
+      'conteudo': widget.activityId,
       'utilizador': 1, // ID do usuário estático
     };
 
@@ -90,7 +87,6 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
     try {
       final response = await ApiService.postData('classificacao/obter/$commentId', rateData);
       print(response);
-      // Atualizar localmente a classificação do comentário
       setState(() {
         var commentToUpdate = _comments!.firstWhere((comment) => comment['id'] == commentId);
         commentToUpdate['classificacao_comentario'] = rating;
@@ -107,7 +103,6 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
   }
 
   Future<void> _confirmDeleteComment(int commentId) async {
-    // Mostrar um diálogo de confirmação
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -118,14 +113,14 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
             TextButton(
               child: Text("Cancelar"),
               onPressed: () {
-                Navigator.of(context).pop(); // Fechar o diálogo
+                Navigator.of(context).pop();
               },
             ),
             TextButton(
               child: Text("Excluir"),
               onPressed: () {
                 _deleteComment(commentId);
-                Navigator.of(context).pop(); // Fechar o diálogo
+                Navigator.of(context).pop();
               },
             ),
           ],
@@ -392,7 +387,7 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
           onPressed: () {
             _postComment().then((_) {
               setState(() {
-                _fetchActivityDetails(activityId); // Atualiza os comentários após enviar um novo
+                _fetchActivityDetails(widget.activityId); // Atualiza os comentários após enviar um novo
                 _commentController.clear();
               });
             });

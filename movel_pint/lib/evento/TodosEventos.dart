@@ -27,6 +27,7 @@ class _EventoState extends State<TodosEventos> {
   PageController _pageController = PageController(initialPage: 0);
   List<Map<String, dynamic>> _conteudos = []; // Lista para armazenar conteúdos
   bool _isLoading = true; // Variável para controlar o estado de carregamento
+  String? idAtividade; // Variável para armazenar o ID da atividade selecionada
 
   void _onItemTapped(int index) {
     setState(() {
@@ -99,6 +100,13 @@ class _EventoState extends State<TodosEventos> {
     }
   }
 
+  void _onCardTap(String id) {
+    setState(() {
+      idAtividade = id;
+    });
+    print('ID da atividade selecionada: $idAtividade');
+  }
+
   @override
   Widget build(BuildContext context) {
     print('Construindo widget VerEventos...');
@@ -111,6 +119,7 @@ class _EventoState extends State<TodosEventos> {
       handleFilterSelection: _handleFilterSelection,
       conteudos: _conteudos, // Passando a lista de conteúdos para o widget VerEventos
       isLoading: _isLoading, // Passando o estado de carregamento para o widget VerEventos
+      onCardTap: _onCardTap, // Passando a função para manipular o toque no cartão
     );
   }
 }
@@ -124,6 +133,7 @@ class VerEventos extends StatelessWidget {
   final Function(String) handleFilterSelection;
   final List<Map<String, dynamic>> conteudos; // Adicionando um parâmetro para receber a lista de conteúdos
   final bool isLoading; // Adicionando o parâmetro isLoading
+  final Function(String) onCardTap; // Adicionando a função de callback
 
   const VerEventos({
     required this.selectedIndex,
@@ -134,6 +144,7 @@ class VerEventos extends StatelessWidget {
     required this.handleFilterSelection,
     required this.conteudos, // Inicializando o parâmetro
     required this.isLoading, // Inicializando o parâmetro
+    required this.onCardTap, // Inicializando o parâmetro
   });
 
   @override
@@ -190,7 +201,10 @@ class VerEventos extends StatelessWidget {
                     conteudos.isNotEmpty
                         ? Column(
                             children: conteudos
-                                .map((conteudo) => MyCardAtividade(atividade: conteudo))
+                                .map((conteudo) => MyCardAtividade(
+                                      atividade: conteudo,
+                                      onTap: () => onCardTap(conteudo['id'].toString()),
+                                    ))
                                 .toList(),
                           )
                         : const Text('Nenhum evento encontrado'),

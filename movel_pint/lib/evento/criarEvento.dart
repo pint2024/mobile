@@ -1,14 +1,15 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:movel_pint/backend/api_service.dart';
+import 'package:movel_pint/utils/constants.dart';
 import 'package:movel_pint/widgets/customAppBar.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
 import 'package:movel_pint/Forum/Forum.dart';
 
 void main() {
-  runApp(MaterialApp(
-    home: EventFormPage(),
-  ));
+  runApp(MaterialApp(home: EventFormPage()));
 }
 
 class EventFormPage extends StatefulWidget {
@@ -18,9 +19,9 @@ class EventFormPage extends StatefulWidget {
 
 class _EventFormPageState extends State<EventFormPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _locationController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _tituloController = TextEditingController();
+  final TextEditingController _enderecoController = TextEditingController();
+  final TextEditingController _descricaonController = TextEditingController();
 
   File? _image;
   DateTime? _selectedDate;
@@ -28,15 +29,73 @@ class _EventFormPageState extends State<EventFormPage> {
   String? _selectedSubtopic;
   int _selectedIndex = 3;
 
-  final List<String> _subtopics = [
-    'Tecnologia',
-    'Ciência',
-    'Artes',
-    'Negócios',
-    'Entretenimento',
-    'Saúde',
-    'Esportes',
-  ];
+  List<dynamic> _subtopics = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSubtopics();
+  }
+
+  Future<void> _loadSubtopics() async {
+    try {
+      final response = await ApiService.listar("subtopico");
+      if (response != null) {
+        setState(() {
+          _subtopics = response;
+        });
+      }
+    } catch (e) {
+      print("Error loading subtopics: $e");
+    }
+  }
+
+  Future<void> _createEvento() async {
+  if (_formKey.currentState!.validate()) {
+    String name = _tituloController.text;
+    String location = _enderecoController.text;
+    String description = _descricaonController.text;
+    String subtopic = _selectedSubtopic!;
+    
+    DateTime? dateTime;
+    if (_selectedDate != null && _selectedTime != null) {
+      dateTime = DateTime(
+        _selectedDate!.year,
+        _selectedDate!.month,
+        _selectedDate!.day,
+        _selectedTime!.hour,
+        _selectedTime!.minute,
+      );
+    }
+    
+    Map<String, dynamic> data = {
+      'titulo': name,
+      'descricao': description,
+      'imagem': _image,
+      'endereco': location,
+      'data_evento': dateTime?.toIso8601String(),
+      'utilizador': 1,
+      'subtopico': subtopic,
+      'tipo': CONSTANTS.valores['EVENTO']?['ID'],
+    };
+
+    print(data);
+    
+    try {
+      final response = await ApiService.criarFormData("evento", data: data, fileKey: "imagem");
+      if (response != null) {
+        print(response);
+      }
+    } catch (e) {
+      print("Error creating evento: $e");
+    }
+  }
+}
+
+
+  Future<void> createEvento() async {
+    //await ApiService.criarFormData();
+  }
 
   Future<void> _getImage() async {
     final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
@@ -107,6 +166,18 @@ class _EventFormPageState extends State<EventFormPage> {
     );
   }
 
+  List<DropdownMenuItem<String>> extrairAreas() {
+    return _subtopics.map((item) {
+      int? id = item['id'];
+      String? subtopico = item['area'];
+      String? topico = item['subtopico_topico']['topico'];
+      return DropdownMenuItem(
+        value: id.toString(),
+        child: Text("$subtopico ($topico)"),
+      );
+    }).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -149,9 +220,9 @@ class _EventFormPageState extends State<EventFormPage> {
                     ),
                     SizedBox(height: 10),
                     TextFormField(
-                      controller: _nameController,
+                      controller: _tituloController,
                       decoration: InputDecoration(
-                        labelText: 'Nome do Evento',
+                        labelText: 'Título',
                         border: OutlineInputBorder(),
                       ),
                       validator: (value) {
@@ -163,7 +234,7 @@ class _EventFormPageState extends State<EventFormPage> {
                     ),
                     SizedBox(height: 10),
                     TextFormField(
-                      controller: _locationController,
+                      controller: _enderecoController,
                       decoration: InputDecoration(
                         labelText: 'Local',
                         border: OutlineInputBorder(),
@@ -177,7 +248,7 @@ class _EventFormPageState extends State<EventFormPage> {
                     ),
                     SizedBox(height: 10),
                     TextFormField(
-                      controller: _descriptionController,
+                      controller: _descricaonController,
                       decoration: InputDecoration(
                         labelText: 'Descrição',
                         border: OutlineInputBorder(),
@@ -191,12 +262,7 @@ class _EventFormPageState extends State<EventFormPage> {
                         labelText: 'Subtópico',
                         border: OutlineInputBorder(),
                       ),
-                      items: _subtopics.map((String subtopic) {
-                        return DropdownMenuItem<String>(
-                          value: subtopic,
-                          child: Text(subtopic),
-                        );
-                      }).toList(),
+                      items: extrairAreas(),
                       onChanged: (newValue) {
                         setState(() {
                           _selectedSubtopic = newValue;
@@ -275,47 +341,7 @@ class _EventFormPageState extends State<EventFormPage> {
                           child: const Text('Cancelar'),
                         ),
                         ElevatedButton(
-                          onPressed: () {
-                            if (_formKey.currentState!.validate()) {
-                              String name = _nameController.text;
-                              String location = _locationController.text;
-                              String description = _descriptionController.text;
-                              String subtopic = _selectedSubtopic!;
-
-                              DateTime? dateTime;
-                              if (_selectedDate != null && _selectedTime != null) {
-                                dateTime = DateTime(
-                                  _selectedDate!.year,
-                                  _selectedDate!.month,
-                                  _selectedDate!.day,
-                                  _selectedTime!.hour,
-                                  _selectedTime!.minute,
-                                );
-                              }
-
-                              // Exemplo de uso dos dados (pode ser enviado para um serviço, etc.)
-                              print('Nome do Evento: $name');
-                              print('Local: $location');
-                              print('Descrição: $description');
-                              print('Subtópico: $subtopic');
-                              if (dateTime != null) {
-                                print('Data e Hora: $dateTime');
-                              }
-
-                              // Limpar formulário após envio
-                              _nameController.clear();
-                              _locationController.clear();
-                              _descriptionController.clear();
-                              setState(() {
-                                _selectedDate = null;
-                                _selectedTime = null;
-                                _image = null;
-                                _selectedSubtopic = null;
-                              });
-
-                              // Pode adicionar lógica para enviar os dados para um serviço ou API aqui
-                            }
-                          },
+                          onPressed: () => _createEvento(),
                           child: const Text('Criar evento'),
                         ),
                       ],

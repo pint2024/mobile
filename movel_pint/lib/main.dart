@@ -113,7 +113,7 @@ void _goToDetalheEventoPage() {
   void _goToDetalheAtividadePage() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => ActivityDetailsPage()),
+      MaterialPageRoute(builder: (context) => ActivityDetailsPage(activityId: 1,)),
     );
   }
 
