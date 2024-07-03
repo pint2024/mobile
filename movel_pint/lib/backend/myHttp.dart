@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:movel_pint/utils/constants.dart';
 
-const String baseUrl = CONSTANTS.API_BASE_URL;
+const String baseUrl = CONSTANTS.API_MOBILE_BASE_URL;
 
 Future<dynamic> myHttp({
   required String url,
