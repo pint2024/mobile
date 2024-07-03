@@ -202,13 +202,21 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
           isDescription: true,
         ),
         SizedBox(height: 16),
-        _buildDetailItemLabel('Data do Evento'),
-        _buildDetailItemWithLabel(
-          item['data_evento'] != null
-              ? _formatDateTime(item['data_evento'])
-              : 'Data do evento não disponível',
-        ),
+        if (item['data_evento'] != null)
+          _buildDetailItemWithLabel(
+            _formatDateTime(item['data_evento']),
+          ),
         SizedBox(height: 16),
+        if (item['preco'] != null) ...[
+          _buildDetailItemLabel('Preço'),
+          _buildDetailItemWithLabel('${item['preco']} €'),
+          SizedBox(height: 16),
+        ],
+        if (item['classificacao'] != null) ...[
+          _buildDetailItemLabel('Classificação'),
+          _buildStarRating(item['classificacao']),
+          SizedBox(height: 16),
+        ],
         _buildDetailItemLabel('Criado por'),
         _buildDetailItemWithLabel(
           "${item['conteudo_utilizador']['nome']} ${item['conteudo_utilizador']['sobrenome']} em ${_formatDateTime(item['data_criacao'])}",
@@ -407,6 +415,18 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildStarRating(int rating) {
+    return Row(
+      children: List.generate(
+        5,
+        (index) => Icon(
+          index < rating ? Icons.star : Icons.star_border,
+          color: Colors.yellow,
+        ),
+      ),
     );
   }
 }

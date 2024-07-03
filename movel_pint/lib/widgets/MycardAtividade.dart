@@ -78,13 +78,13 @@ class MyCardAtividade extends StatelessWidget {
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        '${atividade['data_evento'] != null ? formatDateTime(atividade['data_evento']) : ''}',
-                      ),
+                      if (atividade['data_evento'] != null)
+                        Text(
+                          formatDateTime(atividade['data_evento']),
+                        ),
                       Text(
                         '${atividade['endereco'] ?? ''}',
                       ),
-                      
                     ],
                   ),
                   trailing: SizedBox.shrink(),
