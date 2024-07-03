@@ -16,7 +16,7 @@ class ProfileApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: ProfilePage(userId: 1), // Passando o ID padrão para testes
+      home: ProfilePage(userId: 1), // Ensure userId is an int
     );
   }
 }
@@ -43,7 +43,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
-    _fetchProfileData(widget.userId); // Usando o ID passado pelo widget
+    _fetchProfileData(widget.userId);
   }
 
   Future<void> _fetchProfileData(int userId) async {
