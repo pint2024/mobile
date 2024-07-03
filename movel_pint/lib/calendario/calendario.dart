@@ -1,37 +1,67 @@
 import 'package:flutter/material.dart';
-import 'package:table_calendar/table_calendar.dart';
+import 'package:movel_pint/atividade/detalhes_atividade.dart';
+import 'package:movel_pint/perfil/profile.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
-import 'package:movel_pint/widgets/customAppBar.dart';
-
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: CalendarScreen(),
-    );
-  }
-}
+import 'package:table_calendar/table_calendar.dart';
+import 'package:intl/intl.dart';
+import 'package:movel_pint/backend/api_service.dart';
 
 class CalendarScreen extends StatefulWidget {
   @override
-  _CalendarScreenState createState() => _CalendarScreenState();
+  _EventCalendarPageState createState() => _EventCalendarPageState();
 }
 
-class _CalendarScreenState extends State<CalendarScreen> {
-  CalendarFormat _calendarFormat = CalendarFormat.month;
+class _EventCalendarPageState extends State<CalendarScreen> {
+  Map<DateTime, List<Map<String, dynamic>>> _events = {};
+  List<Map<String, dynamic>> _selectedEvents = [];
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
+  int _selectedIndex = 1; // Índice inicial da bottom navigation bar
 
-  int _selectedIndex = 1;
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+  @override
+  void initState() {
+    super.initState();
+    _fetchEventsForUser();
+  }
+
+  Future<void> _fetchEventsForUser() async {
+    try {
+      final data = await ApiService.listar('participante');
+      if (data != null && data is List<dynamic>) {
+        Map<DateTime, List<Map<String, dynamic>>> events = {};
+
+        for (var eventData in data) {
+          if (eventData['utilizador'] == 1) {
+            DateTime eventDate = DateTime.parse(eventData['participante_conteudo']['data_evento']).toLocal();
+            DateTime eventDay = DateTime(eventDate.year, eventDate.month, eventDate.day);
+            if (!events.containsKey(eventDay)) {
+              events[eventDay] = [];
+            }
+            events[eventDay]!.add({
+              'id': eventData['conteudo'],
+              'titulo': eventData['participante_conteudo']['titulo'],
+              'hora': DateFormat.Hm().format(eventDate),
+              'descricao': eventData['participante_conteudo']['descricao'],
+            });
+          }
+        }
+
+        setState(() {
+          _events = events;
+          _selectedDay = _focusedDay;
+          _selectedEvents = _getEventsForDay(_focusedDay);
+        });
+      } else {
+        print('Dados não encontrados ou inválidos');
+      }
+    } catch (e) {
+      print('Erro ao carregar dados: $e');
+    }
+  }
+
+  List<Map<String, dynamic>> _getEventsForDay(DateTime day) {
+    return _events[DateTime(day.year, day.month, day.day)] ?? [];
   }
 
   @override
@@ -39,67 +69,66 @@ class _CalendarScreenState extends State<CalendarScreen> {
     return Scaffold(
       appBar: CustomAppBar(),
       body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          TableCalendar(
-            firstDay: DateTime.utc(2020, 01, 01),
-            lastDay: DateTime.utc(2030, 12, 31),
-            focusedDay: _focusedDay,
-            calendarFormat: _calendarFormat,
-            availableCalendarFormats: const {
-              CalendarFormat.month: 'Mês',
-            },
-            onFormatChanged: (format) {
-              setState(() {
-                _calendarFormat = format;
-              });
-            },
-            onDaySelected: (selectedDay, focusedDay) {
-              setState(() {
-                _selectedDay = selectedDay;
-                _focusedDay = focusedDay;
-              });
-            },
-            selectedDayPredicate: (day) {
-              return isSameDay(_selectedDay, day);
-            },
-          ),
-          Expanded(
-            child: Container(
-              padding: EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey),
-                borderRadius: BorderRadius.circular(10),
+          Container(
+            color: Colors.grey.shade200, // Cor de fundo do calendário
+            child: TableCalendar(
+              firstDay: DateTime.utc(2020, 1, 1),
+              lastDay: DateTime.utc(2030, 12, 31),
+              focusedDay: _focusedDay,
+              selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+              onDaySelected: (selectedDay, focusedDay) {
+                setState(() {
+                  _selectedDay = selectedDay;
+                  _focusedDay = focusedDay;
+                  _selectedEvents = _getEventsForDay(selectedDay);
+                });
+              },
+              eventLoader: _getEventsForDay,
+              calendarStyle: CalendarStyle(
+                todayDecoration: BoxDecoration(
+                  color: Colors.grey,
+                  shape: BoxShape.circle,
+                ),
+                selectedDecoration: BoxDecoration(
+                  color: Colors.grey,
+                  shape: BoxShape.circle,
+                ),
+                markerDecoration: BoxDecoration(
+                  color: Colors.red,
+                  shape: BoxShape.circle,
+                ),
               ),
-              child: const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Evento 1',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    '14:00',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blue,
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    'Descrição do evento 1',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ],
+              headerStyle: HeaderStyle(
+                formatButtonVisible: false,
+                titleCentered: true,
+              ),
+              calendarBuilders: CalendarBuilders(
+                markerBuilder: (context, date, events) {
+                  if (events.isNotEmpty) {
+                    return Positioned(
+                      right: 1,
+                      bottom: 1,
+                      child: _buildEventsMarker(date, events),
+                    );
+                  }
+                  return SizedBox();
+                },
+                defaultBuilder: (context, date, _) {
+                  if (_events.containsKey(DateTime(date.year, date.month, date.day))) {
+                    return _buildHighlightedDay(date);
+                  }
+                  return null;
+                },
               ),
             ),
           ),
+          const SizedBox(height: 8.0),
+          Expanded(
+            child: _buildEventList(),
+          ),
         ],
+        
       ),
       bottomNavigationBar: CustomBottomNavigationBar(
         selectedIndex: _selectedIndex,
@@ -107,4 +136,89 @@ class _CalendarScreenState extends State<CalendarScreen> {
       ),
     );
   }
+
+  Widget _buildEventsMarker(DateTime date, List<dynamic> events) {
+    return Container(
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Colors.blue,
+      ),
+      width: 16.0,
+      height: 16.0,
+      child: Center(
+        child: Text(
+          '${events.length}',
+          style: TextStyle().copyWith(
+            color: Colors.white,
+            fontSize: 12.0,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHighlightedDay(DateTime date) {
+    return Container(
+      margin: const EdgeInsets.all(6.0),
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: Colors.lightBlueAccent,
+        borderRadius: BorderRadius.circular(8.0),
+      ),
+      child: Text(
+        '${date.day}',
+        style: TextStyle(
+          color: Colors.white,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEventList() {
+    if (_selectedEvents.isEmpty) {
+      return Center(child: Text('Nenhum evento para este dia.'));
+    }
+    return ListView.builder(
+      itemCount: _selectedEvents.length,
+      itemBuilder: (context, index) {
+        final event = _selectedEvents[index];
+        return GestureDetector(
+          onTap: () {
+            _navigateToEventDetails(event['id']); // Redireciona para a página de detalhes com o id do evento
+          },
+          child: Card(
+            child: ListTile(
+              title: Text(event['titulo'], style: TextStyle(fontWeight: FontWeight.bold)),
+              subtitle: Text('${event['hora']}\n${event['descricao']}'),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _navigateToEventDetails(int eventId) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ActivityDetailsPage(activityId: eventId),
+      ),
+    );
+  }
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+}
+
+void main() {
+  runApp(MaterialApp(
+    home: CalendarScreen(),
+    theme: ThemeData(
+      primarySwatch: Colors.blue,
+      visualDensity: VisualDensity.adaptivePlatformDensity,
+    ),
+  ));
+}
 }

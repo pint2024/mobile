@@ -5,15 +5,15 @@ import 'package:movel_pint/widgets/card.dart';
 import 'package:movel_pint/widgets/customAppBar.dart';
 
 void main() {
-  runApp(MyAtividadeprofile());
+  runApp(asMinhasAtividades());
 }
 
-class MyAtividadeprofile extends StatefulWidget {
+class asMinhasAtividades extends StatefulWidget {
   @override
   _AtividadeState createState() => _AtividadeState();
 }
 
-class _AtividadeState extends State<MyAtividadeprofile> {
+class _AtividadeState extends State<asMinhasAtividades> {
   int _selectedIndex = 3;
   PageController _pageController = PageController(initialPage: 0);
 

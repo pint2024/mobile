@@ -32,7 +32,7 @@ class ForumPage extends StatefulWidget {
 }
 
 class _HomePageState extends State<ForumPage> {
-  int _selectedIndex = 3;
+  int _selectedIndex = 2;
   final PageController _pageController = PageController();
   List<Map<String, dynamic>> _atividades = [];
   List<Map<String, dynamic>> _eventos = [];
