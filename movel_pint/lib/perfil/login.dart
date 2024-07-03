@@ -311,12 +311,13 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _handleLogin(BuildContext context) async {
+    final email = _emailController.text;
+    final password = _passwordController.text;
     var connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult == ConnectivityResult.none) {
       _showNoInternetDialog(context);
     } else {
-      // Lógica de login aqui
-      print('Keep me logged in: $_keepLoggedIn');
+      print('email $email password: $password');
     }
   }
 
