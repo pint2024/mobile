@@ -57,7 +57,7 @@ class _HomePageState extends State<HomePage> {
   void _goToLoginPerfilPage() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => LoginPage()),
+      MaterialPageRoute(builder: (context) => EventFormPage()),
     );
   }
 
@@ -120,7 +120,7 @@ void _goToDetalheEventoPage() {
     void _goToRegisterPage() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => LoginApp()),
+      MaterialPageRoute(builder: (context) => RegisterPage()),
     );
   }
   
