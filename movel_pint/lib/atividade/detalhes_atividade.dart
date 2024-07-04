@@ -50,14 +50,28 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
       print('Erro ao carregar dados: $e');
     }
   }
+  
+  Future<void> _postParticipation(int activityId, int userId) async {
+  Map<String, dynamic> participationData = {
+    'utilizador': userId,
+    'conteudo': activityId,
+  };
+
+  try {
+    final response = await ApiService.postData('participante/criar', participationData);
+    print(response);
+  } catch (e) {
+    print('Erro ao registrar participação: $e');
+  }
+}
+
 
   Future<Map<String, dynamic>?> _postComment() async {
     Map<String, dynamic> commentData = {
       'comentario': _commentController.text,
       'conteudo': widget.activityId,
-      'utilizador': 1, // ID do usuário estático
+      'utilizador': 1, 
     };
-
     try {
       final response = await ApiService.postData('comentario/criar', commentData);
       print(response);
@@ -129,6 +143,34 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
     );
   }
 
+void _confirmParticipation() {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text("Confirmação"),
+        content: Text("Tem certeza que deseja participar desta atividade?"),
+        actions: <Widget>[
+          TextButton(
+            child: Text("Cancelar"),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          TextButton(
+            child: Text("Participar"),
+            onPressed: () {
+              Navigator.of(context).pop(); 
+
+              _postParticipation(widget.activityId, 1); 
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -157,74 +199,107 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
     );
   }
 
-  Widget _buildActivityItem(Map<String, dynamic> item) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        _buildDetailItemWithLabel(
-          item['titulo'] ?? 'Título não encontrado',
-          isTitle: true,
-        ),
-        SizedBox(height: 12),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            _buildTag(item['conteudo_tipo']['tipo']), // Tipo de conteúdo
-            SizedBox(width: 8),
-            _buildTag(item['conteudo_subtopico']['area']), // Área do subtopico
-            SizedBox(width: 8),
-            _buildTag(item['conteudo_subtopico']['subtopico_topico']['topico']), // Tópico
-          ],
-        ),
-        SizedBox(height: 8),
-        Container(
-          height: 160,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            image: DecorationImage(
-              image: item['imagem'] != null
-                  ? (item['imagem'].startsWith('http')
-                      ? NetworkImage(item['imagem'])
-                      : AssetImage('assets/Images/${item['imagem']}')) as ImageProvider
-                  : AssetImage('assets/Images/jauzim.jpg'),
-              fit: BoxFit.cover,
+Widget _buildActivityItem(Map<String, dynamic> item) {
+  print(item['conteudo_tipo']); // Print para depuração
+
+  // Verifica se o tipo de conteúdo é 1 ou 2 para mostrar o botão Participar
+  bool isTypeValid = item['conteudo_tipo']['tipo'] == "Atividade" || item['conteudo_tipo']['tipo'] == "Evento";
+
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: _buildDetailItemWithLabel(
+              item['titulo'] ?? 'Título não encontrado',
+              isTitle: true,
             ),
           ),
-        ),
-        SizedBox(height: 16),
-        _buildDetailItemWithLabel(
-          item['endereco'] ?? 'Endereço não encontrado',
-        ),
-        SizedBox(height: 16),
-        _buildDetailItemLabel('Descrição'),
-        _buildDetailItemWithLabel(
-          item['descricao'] ?? 'Descrição não encontrada',
-          isDescription: true,
-        ),
-        SizedBox(height: 16),
-        if (item['data_evento'] != null)
-          _buildDetailItemWithLabel(
-            _formatDateTime(item['data_evento']),
+          if (isTypeValid)
+            ElevatedButton(
+              onPressed: () {
+                _confirmParticipation();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: Text(
+                'Participar',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+        ],
+      ),
+      SizedBox(height: 12),
+      Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          _buildTag(item['conteudo_tipo']['tipo']), // Tipo de conteúdo
+          SizedBox(width: 8),
+          _buildTag(item['conteudo_subtopico']['area']), // Área do subtopico
+          SizedBox(width: 8),
+          _buildTag(item['conteudo_subtopico']['subtopico_topico']['topico']), // Tópico
+        ],
+      ),
+      SizedBox(height: 8),
+      Container(
+        height: 160,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          image: DecorationImage(
+            image: item['imagem'] != null
+                ? (item['imagem'].startsWith('http')
+                    ? NetworkImage(item['imagem'])
+                    : AssetImage('assets/Images/${item['imagem']}')) as ImageProvider
+                : AssetImage('assets/Images/jauzim.jpg'),
+            fit: BoxFit.cover,
           ),
-        SizedBox(height: 16),
-        if (item['preco'] != null) ...[
-          _buildDetailItemLabel('Preço'),
-          _buildDetailItemWithLabel('${item['preco']} €'),
-          SizedBox(height: 16),
-        ],
-        if (item['classificacao'] != null) ...[
-          _buildDetailItemLabel('Classificação'),
-          _buildStarRating(item['classificacao']),
-          SizedBox(height: 16),
-        ],
-        _buildDetailItemLabel('Criado por'),
-        _buildDetailItemWithLabel(
-          "${item['conteudo_utilizador']['nome']} ${item['conteudo_utilizador']['sobrenome']} em ${_formatDateTime(item['data_criacao'])}",
-          isDescription: true,
         ),
+      ),
+      SizedBox(height: 16),
+      _buildDetailItemWithLabel(
+        item['endereco'] ?? 'Endereço não encontrado',
+      ),
+      SizedBox(height: 16),
+      _buildDetailItemLabel('Descrição'),
+      _buildDetailItemWithLabel(
+        item['descricao'] ?? 'Descrição não encontrada',
+        isDescription: true,
+      ),
+      SizedBox(height: 16),
+      if (item['data_evento'] != null)
+        _buildDetailItemWithLabel(
+          _formatDateTime(item['data_evento']),
+        ),
+      SizedBox(height: 16),
+      if (item['preco'] != null) ...[
+        _buildDetailItemLabel('Preço'),
+        _buildDetailItemWithLabel('${item['preco']} €'),
+        SizedBox(height: 16),
       ],
-    );
-  }
+      if (item['classificacao'] != null) ...[
+        _buildDetailItemLabel('Classificação'),
+        _buildStarRating(item['classificacao']),
+        SizedBox(height: 16),
+      ],
+      _buildDetailItemLabel('Criado por'),
+      _buildDetailItemWithLabel(
+        "${item['conteudo_utilizador']['nome']} ${item['conteudo_utilizador']['sobrenome']} em ${_formatDateTime(item['data_criacao'])}",
+        isDescription: true,
+      ),
+    ],
+  );
+}
+
 
   Widget _buildCommentsSection(List<dynamic>? comments) {
     if (comments == null || comments.isEmpty) {
@@ -259,13 +334,7 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
                   _showAllComments = !_showAllComments;
                 });
               },
-              child: Text(
-                _showAllComments ? 'Mostrar menos' : 'Mostrar mais',
-                style: TextStyle(
-                  color: Colors.blue,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              child: Text(_showAllComments ? 'Ver menos' : 'Ver mais'),
             ),
         ],
       ),
