@@ -18,6 +18,8 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
   Map<String, dynamic>? _activityDetails;
   List<dynamic>? _comments;
   bool _showAllComments = false;
+  bool _isParticipating = false; // Variável para controlar se o usuário está participando
+  int? _userParticipationId; // ID da participação do usuário
 
   TextEditingController _commentController = TextEditingController();
 
@@ -31,6 +33,7 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
   void initState() {
     super.initState();
     _fetchActivityDetails(widget.activityId);
+    _fetchEventsForUser(); // Verifica se o usuário já está inscrito ao iniciar a página
   }
 
   Future<void> _fetchActivityDetails(int activityId) async {
@@ -50,27 +53,43 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
       print('Erro ao carregar dados: $e');
     }
   }
-  
-  Future<void> _postParticipation(int activityId, int userId) async {
-  Map<String, dynamic> participationData = {
-    'utilizador': userId,
-    'conteudo': activityId,
-  };
 
-  try {
-    final response = await ApiService.postData('participante/criar', participationData);
-    print(response);
-  } catch (e) {
-    print('Erro ao registrar participação: $e');
+  Future<void> _fetchEventsForUser() async {
+    try {
+      final participants = await ApiService.listar('participante', data: {'utilizador': '1'});
+      setState(() {
+        _isParticipating = participants.any((participant) => participant['conteudo'] == widget.activityId);
+        if (_isParticipating) {
+          _userParticipationId = participants.firstWhere((participant) => participant['conteudo'] == widget.activityId)['id'];
+        } else {
+          _userParticipationId = null;
+        }
+      });
+    } catch (e) {
+      print('Erro ao carregar dados: $e');
+    }
   }
-}
 
+  Future<void> _postParticipation(int activityId, int userId) async {
+    Map<String, dynamic> participationData = {
+      'utilizador': userId,
+      'conteudo': activityId,
+    };
+
+    try {
+      final response = await ApiService.postData('participante/criar', participationData);
+      print(response);
+      _fetchEventsForUser(); // Atualiza a lista de participações após a inscrição
+    } catch (e) {
+      print('Erro ao registrar participação: $e');
+    }
+  }
 
   Future<Map<String, dynamic>?> _postComment() async {
     Map<String, dynamic> commentData = {
       'comentario': _commentController.text,
       'conteudo': widget.activityId,
-      'utilizador': 1, 
+      'utilizador': 1, // Substitua pelo ID real do usuário
     };
     try {
       final response = await ApiService.postData('comentario/criar', commentData);
@@ -90,6 +109,18 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
       });
     } catch (e) {
       print('Erro ao remover comentário: $e');
+    }
+  }
+
+  Future<void> _deleteInscricao(int participacaoID) async {
+    try {
+      await ApiService.deleteData('participante/remover/$participacaoID');
+      setState(() {
+        _isParticipating = false;
+        _userParticipationId = null;
+      });
+    } catch (e) {
+      print('Erro ao remover participação: $e');
     }
   }
 
@@ -143,33 +174,59 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
     );
   }
 
-void _confirmParticipation() {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text("Confirmação"),
-        content: Text("Tem certeza que deseja participar desta atividade?"),
-        actions: <Widget>[
-          TextButton(
-            child: Text("Cancelar"),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-          TextButton(
-            child: Text("Participar"),
-            onPressed: () {
-              Navigator.of(context).pop(); 
+  void _confirmParticipation() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Confirmação"),
+          content: Text("Tem certeza que deseja participar desta atividade?"),
+          actions: <Widget>[
+            TextButton(
+              child: Text("Cancelar"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text("Participar"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                _postParticipation(widget.activityId, 1); // Substitua 1 pelo ID real do usuário
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
-              _postParticipation(widget.activityId, 1); 
-            },
-          ),
-        ],
-      );
-    },
-  );
-}
+  void _confirmCancelParticipation() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Confirmação"),
+          content: Text("Tem certeza que deseja cancelar sua participação nesta atividade?"),
+          actions: <Widget>[
+            TextButton(
+              child: Text("Cancelar"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text("Cancelar participação"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                _deleteInscricao(_userParticipationId!); // _userParticipationId não deve ser null aqui
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -199,107 +256,109 @@ void _confirmParticipation() {
     );
   }
 
-Widget _buildActivityItem(Map<String, dynamic> item) {
-  print(item['conteudo_tipo']); // Print para depuração
+  Widget _buildActivityItem(Map<String, dynamic> item) {
+    print(item['conteudo_tipo']); // Print para depuração
 
-  // Verifica se o tipo de conteúdo é 1 ou 2 para mostrar o botão Participar
-  bool isTypeValid = item['conteudo_tipo']['tipo'] == "Atividade" || item['conteudo_tipo']['tipo'] == "Evento";
+    // Verifica se o tipo de conteúdo é "Atividade" ou "Evento" para mostrar o botão Participar
+    bool isTypeValid = item['conteudo_tipo']['tipo'] == "Atividade" || item['conteudo_tipo']['tipo'] == "Evento";
 
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            child: _buildDetailItemWithLabel(
-              item['titulo'] ?? 'Título não encontrado',
-              isTitle: true,
-            ),
-          ),
-          if (isTypeValid)
-            ElevatedButton(
-              onPressed: () {
-                _confirmParticipation();
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: Text(
-                'Participar',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: _buildDetailItemWithLabel(
+                item['titulo'] ?? 'Título não encontrado',
+                isTitle: true,
               ),
             ),
-        ],
-      ),
-      SizedBox(height: 12),
-      Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          _buildTag(item['conteudo_tipo']['tipo']), // Tipo de conteúdo
-          SizedBox(width: 8),
-          _buildTag(item['conteudo_subtopico']['area']), // Área do subtopico
-          SizedBox(width: 8),
-          _buildTag(item['conteudo_subtopico']['subtopico_topico']['topico']), // Tópico
-        ],
-      ),
-      SizedBox(height: 8),
-      Container(
-        height: 160,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
-          image: DecorationImage(
-            image: item['imagem'] != null
-                ? (item['imagem'].startsWith('http')
-                    ? NetworkImage(item['imagem'])
-                    : AssetImage('assets/Images/${item['imagem']}')) as ImageProvider
-                : AssetImage('assets/Images/jauzim.jpg'),
-            fit: BoxFit.cover,
+            if (isTypeValid && !_isParticipating)
+              ElevatedButton(
+                onPressed: _confirmParticipation,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: Text(
+                  'Participar',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            if (isTypeValid && _isParticipating)
+              ElevatedButton(
+                onPressed: _confirmCancelParticipation,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: Text(
+                  'Inscrito',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+          ],
+        ),
+        SizedBox(height: 8),
+        Container(
+          height: 160,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            image: DecorationImage(
+              image: item['imagem'] != null
+                  ? (item['imagem'].startsWith('http')
+                      ? NetworkImage(item['imagem'])
+                      : AssetImage('assets/Images/${item['imagem']}')) as ImageProvider
+                  : AssetImage('assets/Images/jauzim.jpg'),
+              fit: BoxFit.cover,
+            ),
           ),
         ),
-      ),
-      SizedBox(height: 16),
-      _buildDetailItemWithLabel(
-        item['endereco'] ?? 'Endereço não encontrado',
-      ),
-      SizedBox(height: 16),
-      _buildDetailItemLabel('Descrição'),
-      _buildDetailItemWithLabel(
-        item['descricao'] ?? 'Descrição não encontrada',
-        isDescription: true,
-      ),
-      SizedBox(height: 16),
-      if (item['data_evento'] != null)
+        SizedBox(height: 16),
         _buildDetailItemWithLabel(
-          _formatDateTime(item['data_evento']),
+          item['endereco'] ?? 'Endereço não encontrado',
         ),
-      SizedBox(height: 16),
-      if (item['preco'] != null) ...[
-        _buildDetailItemLabel('Preço'),
-        _buildDetailItemWithLabel('${item['preco']} €'),
         SizedBox(height: 16),
-      ],
-      if (item['classificacao'] != null) ...[
-        _buildDetailItemLabel('Classificação'),
-        _buildStarRating(item['classificacao']),
+        _buildDetailItemLabel('Descrição'),
+        _buildDetailItemWithLabel(
+          item['descricao'] ?? 'Descrição não encontrada',
+          isDescription: true,
+        ),
         SizedBox(height: 16),
+        if (item['data_evento'] != null)
+          _buildDetailItemWithLabel(
+            _formatDateTime(item['data_evento']),
+          ),
+        SizedBox(height: 16),
+        if (item['preco'] != null) ...[
+          _buildDetailItemLabel('Preço'),
+          _buildDetailItemWithLabel('${item['preco']} €'),
+          SizedBox(height: 16),
+        ],
+        if (item['classificacao'] != null) ...[
+          _buildDetailItemLabel('Classificação'),
+          _buildStarRating(item['classificacao']),
+          SizedBox(height: 16),
+        ],
+        _buildDetailItemLabel('Criado por'),
+        _buildDetailItemWithLabel(
+          "${item['conteudo_utilizador']['nome']} ${item['conteudo_utilizador']['sobrenome']} em ${_formatDateTime(item['data_criacao'])}",
+          isDescription: true,
+        ),
       ],
-      _buildDetailItemLabel('Criado por'),
-      _buildDetailItemWithLabel(
-        "${item['conteudo_utilizador']['nome']} ${item['conteudo_utilizador']['sobrenome']} em ${_formatDateTime(item['data_criacao'])}",
-        isDescription: true,
-      ),
-    ],
-  );
-}
-
+    );
+  }
 
   Widget _buildCommentsSection(List<dynamic>? comments) {
     if (comments == null || comments.isEmpty) {
