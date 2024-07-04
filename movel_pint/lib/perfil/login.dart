@@ -1,8 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:movel_pint/backend/api_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'registo.dart'; // Importe o arquivo registo.dart
 
 void main() {
@@ -313,11 +317,23 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _handleLogin(BuildContext context) async {
     final email = _emailController.text;
     final password = _passwordController.text;
+    Map<String,String> data = {'login':email, 'senha': password};
+    
     var connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult == ConnectivityResult.none) {
       _showNoInternetDialog(context);
     } else {
-      print('email $email password: $password');
+      final response = await ApiService.postData('autenticacao/entrar', data);
+      if(response?['success']){
+        final token = response?['data']?['token'];
+        final SharedPreferences preferences = await SharedPreferences.getInstance();
+        await preferences.setString('auth_token',token);        
+
+      }
+      else{
+        print('Não foi possivel guardar os dados');
+      }
+
     }
   }
 
