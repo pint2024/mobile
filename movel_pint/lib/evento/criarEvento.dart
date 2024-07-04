@@ -1,7 +1,7 @@
 import 'dart:convert';
-import 'dart:io';
+import 'dart:typed_data';
+import 'dart:html' as html;
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:movel_pint/backend/api_service.dart';
 import 'package:movel_pint/utils/constants.dart';
 import 'package:movel_pint/widgets/customAppBar.dart';
@@ -21,9 +21,10 @@ class _EventFormPageState extends State<EventFormPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _tituloController = TextEditingController();
   final TextEditingController _enderecoController = TextEditingController();
-  final TextEditingController _descricaonController = TextEditingController();
+  final TextEditingController _descricaoController = TextEditingController();
 
-  File? _image;
+  Uint8List? _imageData;
+  String? _imageBase64;
   DateTime? _selectedDate;
   TimeOfDay? _selectedTime;
   String? _selectedSubtopic;
@@ -51,59 +52,73 @@ class _EventFormPageState extends State<EventFormPage> {
   }
 
   Future<void> _createEvento() async {
-  if (_formKey.currentState!.validate()) {
-    String name = _tituloController.text;
-    String location = _enderecoController.text;
-    String description = _descricaonController.text;
-    String subtopic = _selectedSubtopic!;
-    
-    DateTime? dateTime;
-    if (_selectedDate != null && _selectedTime != null) {
-      dateTime = DateTime(
-        _selectedDate!.year,
-        _selectedDate!.month,
-        _selectedDate!.day,
-        _selectedTime!.hour,
-        _selectedTime!.minute,
-      );
-    }
-    
-    Map<String, dynamic> data = {
-      'titulo': name,
-      'descricao': description,
-      'imagem': _image,
-      'endereco': location,
-      'data_evento': dateTime?.toIso8601String(),
-      'utilizador': 1,
-      'subtopico': subtopic,
-      'tipo': CONSTANTS.valores['EVENTO']?['ID'],
-    };
+    print("a");
+    if (_formKey.currentState!.validate()) {
+      print("b");
+      String name = _tituloController.text;
+      String location = _enderecoController.text;
+      String description = _descricaoController.text;
+      String subtopic = _selectedSubtopic!;
+      
+      print("$name $location $description $subtopic");
 
-    print(data);
-    
-    try {
-      final response = await ApiService.criarFormData("evento", data: data, fileKey: "imagem");
-      if (response != null) {
-        print(response);
+      DateTime? dateTime;
+      if (_selectedDate != null && _selectedTime != null) {
+        dateTime = DateTime(
+          _selectedDate!.year,
+          _selectedDate!.month,
+          _selectedDate!.day,
+          _selectedTime!.hour,
+          _selectedTime!.minute,
+        );
       }
-    } catch (e) {
-      print("Error creating evento: $e");
+      
+      Map<String, dynamic> data = {
+        'titulo': name,
+        'descricao': description,
+        'imagem': html.Blob([_imageData!]),
+        'endereco': location,
+        'data_evento': dateTime?.toIso8601String(),
+        'utilizador': 1,
+        'subtopico': subtopic,
+        'tipo': CONSTANTS.valores['EVENTO']?['ID'],
+      };
+
+      try {
+        print(data);
+        final response = await ApiService.criarFormData("conteudo", data: data, fileKey: "imagem");
+        
+        if (response != null) {
+          print("joao paneleiro");
+        } else {
+          print("Erro ao criar evento: Resposta nula");
+        }
+      } catch (e) {
+        print("Error creating evento: $e");
+      }
     }
   }
-}
 
-
-  Future<void> createEvento() async {
-    //await ApiService.criarFormData();
-  }
 
   Future<void> _getImage() async {
-    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      setState(() {
-        _image = File(pickedFile.path);
-      });
-    }
+    html.FileUploadInputElement uploadInput = html.FileUploadInputElement();
+    uploadInput.accept = 'image/*';
+    uploadInput.click();
+
+    uploadInput.onChange.listen((e) {
+      final files = uploadInput.files;
+      if (files!.isNotEmpty) {
+        final reader = html.FileReader();
+        reader.readAsArrayBuffer(files[0]);
+
+        reader.onLoadEnd.listen((e) {
+          setState(() {
+            _imageData = reader.result as Uint8List?;
+            _imageBase64 = base64Encode(_imageData!);
+          });
+        });
+      }
+    });
   }
 
   Future<void> _selectDate() async {
@@ -166,16 +181,36 @@ class _EventFormPageState extends State<EventFormPage> {
     );
   }
 
+  Map<String, List<String>> organizarSubtopicos() {
+    Map<String, List<String>> categorias = {};
+
+    // Agrupar subtopicos por categoria
+    _subtopics.forEach((subtopico) {
+      String topico = subtopico['subtopico_topico']['topico'];
+      String area = subtopico['area'];
+
+      if (!categorias.containsKey(topico)) {
+        categorias[topico] = [];
+      }
+
+      categorias[topico]!.add(area);
+    });
+
+    return categorias;
+  }
+
   List<DropdownMenuItem<String>> extrairAreas() {
-    return _subtopics.map((item) {
-      int? id = item['id'];
-      String? subtopico = item['area'];
-      String? topico = item['subtopico_topico']['topico'];
-      return DropdownMenuItem(
+    List<DropdownMenuItem<String>> items = [];
+    _subtopics.forEach((subtopico) {
+      final area = subtopico['area'];
+      final id = subtopico['id'];
+
+      items.add(DropdownMenuItem<String>(
         value: id.toString(),
-        child: Text("$subtopico ($topico)"),
-      );
-    }).toList();
+        child: Text(area),
+      ));
+    });
+    return items;
   }
 
   @override
@@ -201,15 +236,15 @@ class _EventFormPageState extends State<EventFormPage> {
                 key: _formKey,
                 child: Column(
                   children: [
-                    if (_image != null)
+                    if (_imageData != null)
                       Container(
                         width: double.infinity,
                         height: 200,
                         decoration: BoxDecoration(
                           border: Border.all(color: Colors.grey),
                         ),
-                        child: Image.file(
-                          _image!,
+                        child: Image.memory(
+                          _imageData!,
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -248,7 +283,7 @@ class _EventFormPageState extends State<EventFormPage> {
                     ),
                     SizedBox(height: 10),
                     TextFormField(
-                      controller: _descricaonController,
+                      controller: _descricaoController,
                       decoration: InputDecoration(
                         labelText: 'Descrição',
                         border: OutlineInputBorder(),

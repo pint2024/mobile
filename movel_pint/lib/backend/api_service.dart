@@ -1,10 +1,17 @@
 import 'dart:convert';
+import 'dart:html';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import 'package:movel_pint/backend/myHttp.dart';
 import 'package:movel_pint/utils/constants.dart';
+import 'dart:html' as html; // Importa 'dart:html' para usar Blob
+
+
+const String baseUrl = CONSTANTS.API_BASE_URL;
 
 class ApiService {
+
   // Método para obter um recurso específico
   static Future<dynamic> obter(String endpoint, int id, {Map<String, String> headers = const {}}) async {
     final url = '$endpoint/obter/$id';
@@ -25,34 +32,49 @@ class ApiService {
     }
   }
 
-  static Future<http.Response> criarFormData(String endpoint, {Map<String, dynamic> data = const {}, String fileKey = "", Map<String, dynamic> headers = const {}}) async {
-    try {
-      var url = Uri.parse('/$endpoint/criar');
+  
+static Future<http.Response> criarFormData(String endpoint, {Map<String, dynamic> data = const {}, String fileKey = "", Map<String, dynamic> headers = const {}}) async {
+  try {
+    var url = Uri.parse('$baseUrl/$endpoint/criar');
+    var request = http.MultipartRequest('POST', url);
 
-      var request = http.MultipartRequest('POST', url);
-      
-      data.forEach((key, value) {
-        if (key != fileKey) {
-          request.fields[key] = value.toString();
-        }
-      });
-      
-      List<File> files = List<File>.from(data[fileKey]);
-      for (var file in files) {
-        var stream = http.ByteStream(file.openRead());
-        var length = await file.length();
-        var multipartFile = http.MultipartFile(fileKey, stream, length, filename: file.path.split('/').last);
-        request.files.add(multipartFile);
+    data.forEach((key, value) {
+      if (key != fileKey) {
+        request.fields[key] = value.toString();
       }
-      
-      var response = await http.Response.fromStream(await request.send());
-      
-      return response;
-    } catch (error) {
-      throw error;
-    }
-  }
+    });
 
+    if (data.containsKey(fileKey) && data[fileKey] != null) {
+      Uint8List imageBytes = await blobToUint8List(data[fileKey]);
+
+      var arquivoMultipart = http.MultipartFile.fromBytes(
+        fileKey,
+        imageBytes,
+        filename: 'upload.jpg',
+      );
+      
+      request.files.add(arquivoMultipart);
+    }
+
+    var response = await http.Response.fromStream(await request.send());
+
+    return response;
+  } catch (error) {
+    throw error;
+  }
+}
+
+// Função para converter Blob em Uint8List
+static Future<Uint8List> blobToUint8List(html.Blob blob) async {
+  // Usa FileReader para ler os dados do Blob
+  final reader = html.FileReader();
+  reader.readAsArrayBuffer(blob);
+
+  await reader.onLoadEnd.first; // Espera o carregamento completo
+
+  // Obtém os dados como Uint8List
+  return reader.result as Uint8List;
+}
 
   // Método para criar um recurso
   static Future<dynamic> criar(String endpoint, {Map<String, String> headers = const {}, dynamic data}) async {
