@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
@@ -7,7 +6,9 @@ import 'package:ionicons/ionicons.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:movel_pint/backend/api_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/gestures.dart'; // Para o TapGestureRecognizer
 import 'registo.dart'; // Importe o arquivo registo.dart
+import 'recuperar_senha.dart'; // Importe o arquivo recuperar_senha.dart
 
 void main() {
   runApp(LoginApp());
@@ -37,7 +38,6 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-
     _emailController = TextEditingController();
     _passwordController = TextEditingController();
     _passwordVisible = false;
@@ -78,7 +78,7 @@ class _LoginPageState extends State<LoginPage> {
           child: Transform.scale(
             scale: 0.9,
             child: Center(
-              child: SingleChildScrollView( // Adicionei o SingleChildScrollView aqui
+              child: SingleChildScrollView(
                 child: Container(
                   padding: EdgeInsets.all(10),
                   decoration: BoxDecoration(
@@ -174,7 +174,7 @@ class _LoginPageState extends State<LoginPage> {
                           child: Align(
                             alignment: Alignment.centerRight,
                             child: RichText(
-                              text: const TextSpan(
+                              text: TextSpan(
                                 style: TextStyle(
                                   color: Colors.grey, fontSize: 14.0),
                                 children: <TextSpan>[
@@ -184,7 +184,16 @@ class _LoginPageState extends State<LoginPage> {
                                       color: Color.fromRGBO(57, 99, 156, 1.0),
                                       decoration: TextDecoration.underline,
                                     ),
-                                  )
+                                    recognizer: TapGestureRecognizer()
+                                      ..onTap = () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => RecuperarSenha(),
+                                          ),
+                                        );
+                                      },
+                                  ),
                                 ],
                               ),
                             ),
@@ -238,7 +247,7 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ],
                         ),
-                        SizedBox(height: 25), // Adicionei este SizedBox para espaçamento vertical
+                        SizedBox(height: 25),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -326,6 +335,9 @@ class _LoginPageState extends State<LoginPage> {
       final response = await ApiService.postData('autenticacao/entrar', data);
       if(response?['success']){
         final token = response?['data']?['token'];
+        print('ola sou francis burro');
+        print(token);
+        print('1');
         final SharedPreferences preferences = await SharedPreferences.getInstance();
         await preferences.setString('auth_token',token);        
 
