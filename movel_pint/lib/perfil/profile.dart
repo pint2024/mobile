@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:movel_pint/perfil/AtividadesCriadas.dart';
 import 'package:movel_pint/perfil/asMinhasAtividades.dart';
+import 'package:movel_pint/perfil/asMinhasInscricoes.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
 import 'package:movel_pint/backend/api_service.dart';
 import 'package:movel_pint/notificacoes/Notifications.dart';
@@ -180,11 +181,9 @@ class _ProfilePageState extends State<ProfilePage> {
                         Expanded(
                           child: ElevatedButton(
                             onPressed: () {
-                              // Adicione a navegação para a tela de "Inscrito" aqui
-                              // Exemplo de navegação fictícia:
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => asMinhasAtividades()),
+                                MaterialPageRoute(builder: (context) => MinhasInscricoesPage()),
                               );
                             },
                             style: ElevatedButton.styleFrom(

@@ -18,8 +18,8 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
   Map<String, dynamic>? _activityDetails;
   List<dynamic>? _comments;
   bool _showAllComments = false;
-  bool _isParticipating = false; // Variável para controlar se o usuário está participando
-  int? _userParticipationId; // ID da participação do usuário
+  bool _isParticipating = false;
+  int? _userParticipationId;
 
   TextEditingController _commentController = TextEditingController();
 
@@ -33,13 +33,12 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
   void initState() {
     super.initState();
     _fetchActivityDetails(widget.activityId);
-    _fetchEventsForUser(); // Verifica se o usuário já está inscrito ao iniciar a página
+    _fetchEventsForUser();
   }
 
   Future<void> _fetchActivityDetails(int activityId) async {
     try {
       final data = await ApiService.obter('conteudo', activityId);
-      print(data);
       if (data != null) {
         setState(() {
           _activityDetails = data;
@@ -79,9 +78,40 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
     try {
       final response = await ApiService.postData('participante/criar', participationData);
       print(response);
-      _fetchEventsForUser(); // Atualiza a lista de participações após a inscrição
+      _fetchEventsForUser();
     } catch (e) {
       print('Erro ao registrar participação: $e');
+    }
+  }
+
+  Future<void> _deleteComment(int commentId) async {
+    try {
+      var commentToDelete = _comments!.firstWhere((comment) => comment['id'] == commentId);
+      var userIdOfComment = commentToDelete['utilizador'];
+      var currentUserId = 1;
+
+      if (userIdOfComment == currentUserId) {
+        await ApiService.deleteData('comentario/remover/$commentId');
+        setState(() {
+          _comments!.removeWhere((comment) => comment['id'] == commentId);
+        });
+      } else {
+        print('Você não pode excluir este comentário.');
+      }
+    } catch (e) {
+      print('Erro ao remover comentário: $e');
+    }
+  }
+
+  Future<void> _deleteInscricao(int participacaoID) async {
+    try {
+      await ApiService.deleteData('participante/remover/$participacaoID');
+      setState(() {
+        _isParticipating = false;
+        _userParticipationId = null;
+      });
+    } catch (e) {
+      print('Erro ao cancelar inscrição: $e');
     }
   }
 
@@ -101,45 +131,31 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
     }
   }
 
-  Future<void> _deleteComment(int commentId) async {
-    try {
-      await ApiService.deleteData('comentario/remover/$commentId');
-      setState(() {
-        _comments!.removeWhere((comment) => comment['id'] == commentId);
-      });
-    } catch (e) {
-      print('Erro ao remover comentário: $e');
-    }
-  }
+Future<void> _rateComment(int commentId, int rating) async {
 
-  Future<void> _deleteInscricao(int participacaoID) async {
-    try {
-      await ApiService.deleteData('participante/remover/$participacaoID');
-      setState(() {
-        _isParticipating = false;
-        _userParticipationId = null;
-      });
-    } catch (e) {
-      print('Erro ao remover participação: $e');
-    }
-  }
+  Map<String, dynamic> rateData = {
+    'comentario': commentId,
+    'conteudo': null,
+    'utilizador': 1, // Substitua pelo ID real do usuário logado
+    'classificacao': rating,
+  };
 
-  Future<void> _rateComment(int commentId, int rating) async {
-    Map<String, dynamic> rateData = {
-      'classificacao_comentario': rating,
-    };
+  try {
+    final response = await ApiService.postData('classificacao/criar', rateData);
+    print(response);
 
-    try {
-      final response = await ApiService.postData('classificacao/obter/$commentId', rateData);
-      print(response);
-      setState(() {
-        var commentToUpdate = _comments!.firstWhere((comment) => comment['id'] == commentId);
-        commentToUpdate['classificacao_comentario'] = rating;
-      });
-    } catch (e) {
-      print('Erro ao classificar comentário: $e');
-    }
+    // Atualiza localmente o rating do comentário
+    setState(() {
+      var index = _comments!.indexWhere((comment) => comment['id'] == commentId);
+      if (index != -1) {
+        _comments![index]['classificacao_comentario'] = rating;
+      }
+    });
+  } catch (e) {
+    print('Erro ao classificar comentário: $e');
   }
+}
+
 
   String _formatDateTime(String dateTime) {
     final DateTime parsedDateTime = DateTime.parse(dateTime);
@@ -153,7 +169,7 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text("Confirmação"),
-          content: Text("Tem certeza que deseja excluir este comentário?"),
+          content: Text("Tem certeza que deseja apagar o comentário?"),
           actions: <Widget>[
             TextButton(
               child: Text("Cancelar"),
@@ -162,7 +178,7 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
               },
             ),
             TextButton(
-              child: Text("Excluir"),
+              child: Text("Apagar"),
               onPressed: () {
                 _deleteComment(commentId);
                 Navigator.of(context).pop();
@@ -257,9 +273,6 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
   }
 
   Widget _buildActivityItem(Map<String, dynamic> item) {
-    print(item['conteudo_tipo']); // Print para depuração
-
-    // Verifica se o tipo de conteúdo é "Atividade" ou "Evento" para mostrar o botão Participar
     bool isTypeValid = item['conteudo_tipo']['tipo'] == "Atividade" || item['conteudo_tipo']['tipo'] == "Evento";
 
     return Column(
@@ -402,6 +415,9 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
 
   Widget _buildCommentItem(Map<String, dynamic> comment) {
     int rating = comment['classificacao_comentario'] ?? 0;
+    var currentUserId = 1; // Substitua pelo ID real do usuário logado
+
+    bool isCurrentUserComment = comment['utilizador'] == currentUserId;
 
     return Container(
       padding: EdgeInsets.all(12),
@@ -429,15 +445,17 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
                       color: Colors.yellow,
                     ),
                     onPressed: () {
-                      _rateComment(comment['id'], index + 1);
+                      _rateComment(comment['id'], index + 1); 
+                      print(comment['id']);
                     },
                   ),
                 ),
               ),
-              IconButton(
-                icon: Icon(Icons.delete),
-                onPressed: () => _confirmDeleteComment(comment['id']),
-              ),
+              if (isCurrentUserComment)
+                IconButton(
+                  icon: Icon(Icons.delete),
+                  onPressed: () => _confirmDeleteComment(comment['id']),
+                ),
             ],
           ),
           SizedBox(height: 4),
@@ -456,14 +474,14 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
   }
 
   Widget _buildDetailItemWithLabel(String value,
-      {bool isTitle = false, bool isSubtopic = false, bool isDescription = false}) {
+      {bool isTitle = false, bool isDescription = false}) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 6.0),
       child: Text(
         value,
         style: TextStyle(
-          fontSize: isTitle ? 18 : isSubtopic ? 14 : isDescription ? 12 : 14,
-          fontWeight: isTitle || isSubtopic ? FontWeight.bold : FontWeight.normal,
+          fontSize: isTitle ? 18 : isDescription ? 12 : 14,
+          fontWeight: isTitle ? FontWeight.bold : FontWeight.normal,
         ),
       ),
     );
@@ -477,24 +495,6 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
         style: TextStyle(
           fontWeight: FontWeight.bold,
           fontSize: 14,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTag(String text) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),
-      decoration: BoxDecoration(
-        color: Colors.blue,
-        borderRadius: BorderRadius.circular(12.0),
-      ),
-      child: Text(
-        text,
-        style: TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.bold,
-          fontSize: 12,
         ),
       ),
     );
@@ -523,7 +523,7 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
           onPressed: () {
             _postComment().then((_) {
               setState(() {
-                _fetchActivityDetails(widget.activityId); // Atualiza os comentários após enviar um novo
+                _fetchActivityDetails(widget.activityId);
                 _commentController.clear();
               });
             });
