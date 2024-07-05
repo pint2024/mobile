@@ -38,6 +38,14 @@ class _EventFormPageState extends State<EventFormPage> {
     _loadSubtopics();
   }
 
+  void _showSnackbar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+      ),
+    );
+  }
+
   Future<void> _loadSubtopics() async {
     try {
       final response = await ApiService.listar("subtopico");
@@ -52,15 +60,16 @@ class _EventFormPageState extends State<EventFormPage> {
   }
 
   Future<void> _createEvento() async {
-    print("a");
     if (_formKey.currentState!.validate()) {
-      print("b");
+      if (_imageData == null) {
+        _showSnackbar("Por favor, selecione uma imagem.");
+        return;
+      }
+
       String name = _tituloController.text;
       String location = _enderecoController.text;
       String description = _descricaoController.text;
       String subtopic = _selectedSubtopic!;
-      
-      print("$name $location $description $subtopic");
 
       DateTime? dateTime;
       if (_selectedDate != null && _selectedTime != null) {
@@ -72,7 +81,7 @@ class _EventFormPageState extends State<EventFormPage> {
           _selectedTime!.minute,
         );
       }
-      
+
       Map<String, dynamic> data = {
         'titulo': name,
         'descricao': description,
@@ -85,20 +94,18 @@ class _EventFormPageState extends State<EventFormPage> {
       };
 
       try {
-        print(data);
         final response = await ApiService.criarFormData("conteudo", data: data, fileKey: "imagem");
-        
+
         if (response != null) {
-          print("joao paneleiro");
+          _showSnackbar("Evento criado com sucesso, pode a ver na página dos Eventos");
         } else {
-          print("Erro ao criar evento: Resposta nula");
+          print("Erro ao criar atividade: Resposta nula");
         }
       } catch (e) {
-        print("Error creating evento: $e");
+        print("Error creating atividade: $e");
       }
     }
   }
-
 
   Future<void> _getImage() async {
     html.FileUploadInputElement uploadInput = html.FileUploadInputElement();
@@ -184,7 +191,6 @@ class _EventFormPageState extends State<EventFormPage> {
   Map<String, List<String>> organizarSubtopicos() {
     Map<String, List<String>> categorias = {};
 
-    // Agrupar subtopicos por categoria
     _subtopics.forEach((subtopico) {
       String topico = subtopico['subtopico_topico']['topico'];
       String area = subtopico['area'];

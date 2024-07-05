@@ -13,6 +13,8 @@ void main() {
   ));
 }
 
+
+
 class RecommendationFormPage extends StatefulWidget {
   @override
   _RecommendationFormPageState createState() => _RecommendationFormPageState();
@@ -26,17 +28,10 @@ class _RecommendationFormPageState extends State<RecommendationFormPage> {
   final TextEditingController _priceController = TextEditingController();
   int _selectedIndex = 3;
 
+  List<dynamic> _subtopics = [];
   File? _image;
   String? _selectedSubtopic;
   double _rating = 0;
-
-  final List<String> _subtopics = [
-    'Restaurantes',
-    'Hotéis',
-    'Lazer',
-    'Compras',
-    'Serviços',
-  ];
 
   Future<void> _getImage() async {
     final pickedFile =
@@ -46,6 +41,38 @@ class _RecommendationFormPageState extends State<RecommendationFormPage> {
         _image = File(pickedFile.path);
       });
     }
+  }
+
+  Map<String, List<String>> organizarSubtopicos() {
+    Map<String, List<String>> categorias = {};
+
+    // Agrupar subtopicos por categoria
+    _subtopics.forEach((subtopico) {
+      String topico = subtopico['subtopico_topico']['topico'];
+      String area = subtopico['area'];
+
+      if (!categorias.containsKey(topico)) {
+        categorias[topico] = [];
+      }
+
+      categorias[topico]!.add(area);
+    });
+
+    return categorias;
+  }
+
+  List<DropdownMenuItem<String>> extrairAreas() {
+    List<DropdownMenuItem<String>> items = [];
+    _subtopics.forEach((subtopico) {
+      final area = subtopico['area'];
+      final id = subtopico['id'];
+
+      items.add(DropdownMenuItem<String>(
+        value: id.toString(),
+        child: Text(area),
+      ));
+    });
+    return items;
   }
 
   void _onItemTapped(int index) {
@@ -164,12 +191,7 @@ class _RecommendationFormPageState extends State<RecommendationFormPage> {
                         labelText: 'Subtópico',
                         border: OutlineInputBorder(),
                       ),
-                      items: _subtopics.map((String subtopic) {
-                        return DropdownMenuItem<String>(
-                          value: subtopic,
-                          child: Text(subtopic),
-                        );
-                      }).toList(),
+                      items: extrairAreas(),
                       onChanged: (newValue) {
                         setState(() {
                           _selectedSubtopic = newValue;
