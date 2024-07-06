@@ -78,7 +78,7 @@ class _HomePageState extends State<HomePage> {
   void _goToCreateRecomendacaoPage() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => RecommendationFormPage()),
+      MaterialPageRoute(builder: (context) => RecomendationFormPage()),
     );
   }
 

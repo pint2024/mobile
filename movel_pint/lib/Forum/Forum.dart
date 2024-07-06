@@ -284,7 +284,7 @@ class _HomePageState extends State<ForumPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => RecommendationFormPage(),
+                        builder: (context) => RecomendationFormPage(),
                       ),
                     );
                   },
