@@ -28,6 +28,14 @@ class _RecuperarSenhaState extends State<RecuperarSenha> {
       appBar: AppBar(
         backgroundColor: const Color.fromRGBO(57, 99, 156, 1.0),
         title: Text('Recuperar Senha'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.close),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+        ],
       ),
       body: Container(
         color: const Color.fromRGBO(57, 99, 156, 1.0),
@@ -111,15 +119,32 @@ class _RecuperarSenhaState extends State<RecuperarSenha> {
 
   Future<void> _handlePasswordRecovery() async {
     final email = _emailController.text;
-    // Implementar lógica de recuperação de senha
-    print('Email para recuperação de senha: $email');
+    // Simulando o envio do email e verificação
+    await Future.delayed(Duration(seconds: 2));
 
-    // Navegar para a página CodigoVerificacaoPage
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => CodigoVerificacaoPage(email: email),
-      ),
+    // Exibir o pop-up informando que o código foi enviado
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Código de Verificação Enviado'),
+          content: Text('Um código de verificação foi enviado para o email $email.'),
+          actions: <Widget>[
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CodigoVerificacaoPage(email: email),
+                  ),
+                );
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }
