@@ -1,14 +1,16 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:movel_pint/backend/api_service.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/gestures.dart'; // Para o TapGestureRecognizer
+import 'package:movel_pint/main.dart';
 import 'registo.dart'; // Importe o arquivo registo.dart
+import 'package:movel_pint/utils/user_preferences.dart';
 import 'recuperar_senha.dart'; // Importe o arquivo recuperar_senha.dart
+import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(LoginApp());
@@ -332,15 +334,22 @@ class _LoginPageState extends State<LoginPage> {
     if (connectivityResult == ConnectivityResult.none) {
       _showNoInternetDialog(context);
     } else {
+     
       final response = await ApiService.postData('autenticacao/entrar', data);
       if(response?['success']){
-        final token = response?['data']?['token'];
-        print('ola sou francis burro');
-        print(token);
-        print('1');
-        final SharedPreferences preferences = await SharedPreferences.getInstance();
-        await preferences.setString('auth_token',token);        
+        final SharedPreferences _prefs = await SharedPreferences.getInstance();
 
+        final token = response?['data']?['token'];
+        if(token != null){
+
+          final decoded = JwtDecoder.decode(token);
+          final userPreferences = UserPreferences.fromMap(decoded,_prefs);
+          userPreferences.authToken = token;    
+          Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => HomePage()),
+        );  
+        }
       }
       else{
         print('Não foi possivel guardar os dados');
