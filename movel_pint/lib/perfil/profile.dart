@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:movel_pint/perfil/asMinhasAtividades.dart';
 import 'package:movel_pint/perfil/asMinhasInscricoes.dart';
@@ -34,7 +35,9 @@ class _ProfilePageState extends State<ProfilePage> {
   bool _isLoading = false;
   List<String> _meusInteresses = [];
   List<String> _selectedInteresses = []; // Lista para armazenar os interesses selecionados
+  List<int> _selectedInteresseIds = []; // Lista para armazenar os IDs dos interesses selecionados
   List<MultiSelectItem<String>> _allAreas = [];
+  Map<String, int> _areaToIdMap = {}; // Mapeamento de área para ID
 
   @override
   void initState() {
@@ -78,6 +81,7 @@ class _ProfilePageState extends State<ProfilePage> {
       setState(() {
         _meusInteresses = interesses.map((item) => item['interesse_subtopico']['area'] as String).toList();
         _selectedInteresses = List.from(_meusInteresses); // Inicializa com os interesses existentes
+        _selectedInteresseIds = interesses.map((item) => item['interesse_subtopico']['id'] as int).toList(); // Inicializa os IDs
       });
       print(_meusInteresses);
     } else {
@@ -91,6 +95,7 @@ class _ProfilePageState extends State<ProfilePage> {
       List<dynamic> subtopicos = response as List<dynamic>;
       setState(() {
         _allAreas = subtopicos.map((item) => MultiSelectItem<String>(item['area'] as String, item['area'] as String)).toList();
+        _areaToIdMap = Map.fromEntries(subtopicos.map((item) => MapEntry(item['area'] as String, item['id'] as int)));
       });
       print(_allAreas);
     } else {
@@ -115,11 +120,30 @@ class _ProfilePageState extends State<ProfilePage> {
     setState(() {
       if (_selectedInteresses.contains(area)) {
         _selectedInteresses.remove(area);
+        _selectedInteresseIds.remove(_areaToIdMap[area]);
       } else {
         _selectedInteresses.add(area);
+        _selectedInteresseIds.add(_areaToIdMap[area]!);
       }
       print('Interesses selecionados: $_selectedInteresses');
+      print('IDs dos interesses selecionados: $_selectedInteresseIds');
     });
+  }
+
+  Future<void> _enviarInteresses() async {
+    try {
+      final response = await ApiService.criar(
+        'interesse',
+        headers: {'Content-Type': 'application/json'},
+        data: {
+          'subtopico': _selectedInteresseIds,
+          'utilizador': widget.userId,
+        },
+      );
+      print('Resposta da API: $response');
+    } catch (e) {
+      print('Erro ao enviar interesses: $e');
+    }
   }
 
   @override
@@ -178,14 +202,20 @@ class _ProfilePageState extends State<ProfilePage> {
                       onConfirm: (results) {
                         setState(() {
                           _selectedInteresses = List<String>.from(results);
+                          _selectedInteresseIds = results.map((item) => _areaToIdMap[item]!).toList();
                         });
                         print('Interesses selecionados: $_selectedInteresses');
+                        print('IDs dos interesses selecionados: $_selectedInteresseIds');
+                        _enviarInteresses(); // Chama a função para enviar os interesses selecionados
                       },
                       chipDisplay: MultiSelectChipDisplay(
                         onTap: (item) {
                           setState(() {
                             _selectedInteresses.remove(item);
+                            _selectedInteresseIds.remove(_areaToIdMap[item]);
                           });
+                          print('Interesses selecionados: $_selectedInteresses');
+                          print('IDs dos interesses selecionados: $_selectedInteresseIds');
                         },
                       ),
                     ),
