@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:movel_pint/atividade/detalhes_atividade.dart';
 import 'package:movel_pint/perfil/profile.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
+import 'package:movel_pint/widgets/customAppBar.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 import 'package:movel_pint/backend/api_service.dart';

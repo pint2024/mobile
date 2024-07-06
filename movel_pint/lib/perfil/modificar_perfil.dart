@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:movel_pint/perfil/profile.dart'; // Certifique-se de ajustar o import conforme necessário
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
 import 'package:movel_pint/backend/api_service.dart';
+import 'package:movel_pint/widgets/customAppBar.dart';
 
 class ProfileEditScreen extends StatefulWidget {
   final Map<String, dynamic> profileData; // Dados iniciais do perfil

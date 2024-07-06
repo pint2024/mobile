@@ -19,6 +19,7 @@ Future<dynamic> myHttp({
     if (method == 'GET') {
       response = await http.get(Uri.parse(url), headers: headers);
     } else if (method == 'POST') {
+      print("oi $data ${data.runtimeType}");
       response = await http.post(Uri.parse(url), headers: headers, body: data);
     } else if (method == 'PUT') {
       response = await http.put(Uri.parse(url), headers: headers, body: data);

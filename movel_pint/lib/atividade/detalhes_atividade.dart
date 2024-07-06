@@ -19,6 +19,7 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
   List<dynamic>? _comments;
   bool _showAllComments = false;
   bool _isParticipating = false;
+  bool _isLoadingComments = false;
   int? _userParticipationId;
 
   TextEditingController _commentController = TextEditingController();
@@ -36,22 +37,37 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
     _fetchEventsForUser();
   }
 
-  Future<void> _fetchActivityDetails(int activityId) async {
-    try {
-      final data = await ApiService.obter('conteudo', activityId);
-      if (data != null) {
-        setState(() {
-          _activityDetails = data;
-          _comments = data?['comentario_conteudo'];
-        });
-        print('Dados carregados com sucesso');
-      } else {
-        print('Dados não encontrados ou inválidos');
-      }
-    } catch (e) {
-      print('Erro ao carregar dados: $e');
+Map<int, String>? _userMap;
+
+Future<void> _fetchActivityDetails(int activityId) async {
+  try {
+    final data = await ApiService.obter('conteudo', activityId);
+    final users = await _fetchUsers();
+    if (data != null) {
+      setState(() {
+        _activityDetails = data;
+        _comments = data['comentario_conteudo'];
+        _userMap = users;
+      });
+      print('Dados carregados com sucesso');
+    } else {
+      print('Dados não encontrados ou inválidos');
     }
+  } catch (e) {
+    print('Erro ao carregar dados: $e');
   }
+}
+
+  Future<Map<int, String>> _fetchUsers() async {
+  try {
+    final users = await ApiService.listar('utilizador');
+    return Map.fromIterable(users, key: (user) => user['id'], value: (user) => '${user['nome']} ${user['sobrenome']}');
+  } catch (e) {
+    print('Erro ao carregar dados dos utilizadores: $e');
+    return {};
+  }
+}
+
 
   Future<void> _fetchEventsForUser() async {
     try {
@@ -115,21 +131,33 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
     }
   }
 
-  Future<Map<String, dynamic>?> _postComment() async {
-    Map<String, dynamic> commentData = {
-      'comentario': _commentController.text,
-      'conteudo': widget.activityId,
-      'utilizador': 1, // Substitua pelo ID real do usuário
-    };
-    try {
-      final response = await ApiService.postData('comentario/criar', commentData);
-      print(response);
-      return response;
-    } catch (e) {
-      print('Erro ao enviar comentário: $e');
-      return null;
-    }
+ Future<Map<String, dynamic>?> _postComment() async {
+  setState(() {
+    _isLoadingComments = true;
+  });
+
+  Map<String, dynamic> commentData = {
+    'comentario': _commentController.text,
+    'conteudo': widget.activityId,
+    'utilizador': 1, // Substitua pelo ID real do usuário
+  };
+
+  try {
+    final response = await ApiService.postData('comentario/criar', commentData);
+    print(response);
+    await _fetchActivityDetails(widget.activityId);
+    return response;
+  } catch (e) {
+    print('Erro ao enviar comentário: $e');
+    return null;
+  } finally {
+    setState(() {
+      _isLoadingComments = false;
+      _commentController.clear();
+    });
   }
+}
+
 
 Future<void> _rateComment(int commentId, int rating) async {
 
@@ -373,105 +401,116 @@ Future<void> _rateComment(int commentId, int rating) async {
     );
   }
 
-  Widget _buildCommentsSection(List<dynamic>? comments) {
-    if (comments == null || comments.isEmpty) {
-      return SizedBox.shrink();
-    }
-
-    List<dynamic> visibleComments = _showAllComments ? comments : [comments.first];
-
-    return Container(
-      padding: EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.grey[200],
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          _buildDetailItemLabel('Comentários'),
-          SizedBox(height: 8),
-          ListView.builder(
-            shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
-            itemCount: visibleComments.length,
-            itemBuilder: (context, index) {
-              return _buildCommentItem(visibleComments[index]);
-            },
-          ),
-          if (comments.length > 1)
-            TextButton(
-              onPressed: () {
-                setState(() {
-                  _showAllComments = !_showAllComments;
-                });
-              },
-              child: Text(_showAllComments ? 'Ver menos' : 'Ver mais'),
-            ),
-        ],
-      ),
+Widget _buildCommentsSection(List<dynamic>? comments) {
+  if (_isLoadingComments) {
+    return Center(
+      child: CircularProgressIndicator(),
     );
   }
+
+  if (comments == null || comments.isEmpty) {
+    return SizedBox.shrink();
+  }
+
+  List<dynamic> visibleComments = _showAllComments ? comments : [comments.first];
+
+  return Container(
+    padding: EdgeInsets.all(12),
+    decoration: BoxDecoration(
+      color: Colors.grey[200],
+      borderRadius: BorderRadius.circular(8),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _buildDetailItemLabel('Comentários'),
+        SizedBox(height: 8),
+        ListView.builder(
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          itemCount: visibleComments.length,
+          itemBuilder: (context, index) {
+            return _buildCommentItem(visibleComments[index]);
+          },
+        ),
+        if (comments.length > 1)
+          TextButton(
+            onPressed: () {
+              setState(() {
+                _showAllComments = !_showAllComments;
+              });
+            },
+            child: Text(_showAllComments ? 'Ver menos' : 'Ver mais'),
+          ),
+      ],
+    ),
+  );
+}
+
 
   Widget _buildCommentItem(Map<String, dynamic> comment) {
-    int rating = comment['classificacao_comentario'] ?? 0;
-    var currentUserId = 1; // Substitua pelo ID real do usuário logado
+  int rating = comment['classificacao_comentario'] ?? 0;
+  var currentUserId = 1; // Substitua pelo ID real do usuário logado
 
-    bool isCurrentUserComment = comment['utilizador'] == currentUserId;
+  bool isCurrentUserComment = comment['utilizador'] == currentUserId;
+  String userName = _userMap != null && _userMap!.containsKey(comment['utilizador'])
+      ? _userMap![comment['utilizador']]!
+      : 'Utilizador desconhecido';
 
-    return Container(
-      padding: EdgeInsets.all(12),
-      margin: EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: Colors.grey[300],
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                '${comment['utilizador']}',
-                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-              ),
-              Row(
-                children: List.generate(
-                  5,
-                  (index) => IconButton(
-                    icon: Icon(
-                      index < rating ? Icons.star : Icons.star_border,
-                      color: Colors.yellow,
-                    ),
-                    onPressed: () {
-                      _rateComment(comment['id'], index + 1); 
-                      print(comment['id']);
-                    },
+  return Container(
+    padding: EdgeInsets.all(12),
+    margin: EdgeInsets.only(bottom: 12),
+    decoration: BoxDecoration(
+      color: Colors.grey[300],
+      borderRadius: BorderRadius.circular(8),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              userName,
+              style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+            ),
+            Row(
+              children: List.generate(
+                5,
+                (index) => IconButton(
+                  icon: Icon(
+                    index < rating ? Icons.star : Icons.star_border,
+                    color: Colors.yellow,
                   ),
+                  onPressed: () {
+                    _rateComment(comment['id'], index + 1); 
+                    print(comment['id']);
+                  },
                 ),
               ),
-              if (isCurrentUserComment)
-                IconButton(
-                  icon: Icon(Icons.delete),
-                  onPressed: () => _confirmDeleteComment(comment['id']),
-                ),
-            ],
-          ),
-          SizedBox(height: 4),
-          Text(
-            '${_formatDateTime(comment['data_criacao'])}',
-            style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
-          ),
-          SizedBox(height: 8),
-          Text(
-            comment['comentario'] ?? 'Comentário não disponível',
-            style: TextStyle(fontSize: 14),
-          ),
-        ],
-      ),
-    );
-  }
+            ),
+            if (isCurrentUserComment)
+              IconButton(
+                icon: Icon(Icons.delete),
+                onPressed: () => _confirmDeleteComment(comment['id']),
+              ),
+          ],
+        ),
+        SizedBox(height: 4),
+        Text(
+          '${_formatDateTime(comment['data_criacao'])}',
+          style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
+        ),
+        SizedBox(height: 8),
+        Text(
+          comment['comentario'] ?? 'Comentário não disponível',
+          style: TextStyle(fontSize: 14),
+        ),
+      ],
+    ),
+  );
+}
+
 
   Widget _buildDetailItemWithLabel(String value,
       {bool isTitle = false, bool isDescription = false}) {

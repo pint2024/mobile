@@ -1,14 +1,10 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:movel_pint/perfil/AtividadesCriadas.dart';
 import 'package:movel_pint/perfil/asMinhasAtividades.dart';
 import 'package:movel_pint/perfil/asMinhasInscricoes.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
 import 'package:movel_pint/backend/api_service.dart';
-import 'package:movel_pint/notificacoes/Notifications.dart';
-import 'package:movel_pint/calendario/calendario.dart';
-import 'package:movel_pint/main.dart';
-import 'package:movel_pint/perfil/modificar_perfil.dart';
+import 'package:movel_pint/widgets/customAppBar.dart';
+import 'package:multi_select_flutter/multi_select_flutter.dart';
 
 void main() {
   runApp(ProfileApp());
@@ -36,17 +32,16 @@ class _ProfilePageState extends State<ProfilePage> {
   int _selectedIndex = 0;
   Map<String, dynamic>? _profileData;
   bool _isLoading = false;
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
+  List<String> _meusInteresses = [];
+  List<String> _selectedInteresses = []; // Lista para armazenar os interesses selecionados
+  List<MultiSelectItem<String>> _allAreas = [];
 
   @override
   void initState() {
     super.initState();
     _fetchProfileData(widget.userId);
+    _buscarMeusInteresses();
+    _buscarsubtopicos();
   }
 
   Future<void> _fetchProfileData(int userId) async {
@@ -76,9 +71,54 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
+  Future<void> _buscarMeusInteresses() async {
+    var response = await ApiService.listar('interesse', headers: {'Content-Type': 'application/json'}, data: {'utilizador': widget.userId});
+    if (response != null) {
+      List<dynamic> interesses = response as List<dynamic>;
+      setState(() {
+        _meusInteresses = interesses.map((item) => item['interesse_subtopico']['area'] as String).toList();
+        _selectedInteresses = List.from(_meusInteresses); // Inicializa com os interesses existentes
+      });
+      print(_meusInteresses);
+    } else {
+      print('Erro ao buscar interesses');
+    }
+  }
+
+  Future<void> _buscarsubtopicos() async {
+    var response = await ApiService.listar('subtopico');
+    if (response != null) {
+      List<dynamic> subtopicos = response as List<dynamic>;
+      setState(() {
+        _allAreas = subtopicos.map((item) => MultiSelectItem<String>(item['area'] as String, item['area'] as String)).toList();
+      });
+      print(_allAreas);
+    } else {
+      print('Erro ao buscar subtópicos');
+    }
+  }
+
   void updateUserId(int newUserId) {
     setState(() {
       _fetchProfileData(newUserId);
+      _buscarMeusInteresses();
+    });
+  }
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  void _toggleSelected(String area) {
+    setState(() {
+      if (_selectedInteresses.contains(area)) {
+        _selectedInteresses.remove(area);
+      } else {
+        _selectedInteresses.add(area);
+      }
+      print('Interesses selecionados: $_selectedInteresses');
     });
   }
 
@@ -126,36 +166,33 @@ class _ProfilePageState extends State<ProfilePage> {
                       _buildProfileItem(Icons.facebook, 'Facebook', _profileData!['facebook']),
                     if (_profileData != null && _profileData!['instagram'] != null)
                       _buildProfileItem(Icons.camera_alt, 'Instagram', _profileData!['instagram']),
-                    _buildProfileItem(Icons.location_city, 'Centro',
-                        _profileData != null ? _profileData!['utilizador_centro']['centro'] ?? 'Centro não encontrado' : 'Centro não encontrado'),
-                    _buildProfileItem(Icons.person, 'Perfil',
-                        _profileData != null ? _profileData!['utilizador_perfil']['perfil'] ?? 'Perfil não encontrado' : 'Perfil não encontrado'),
+                    _buildProfileItem(Icons.location_city, 'Centro', _profileData != null ? _profileData!['utilizador_centro']['centro'] ?? 'Centro não encontrado' : 'Centro não encontrado'),
+                    _buildProfileItem(Icons.person, 'Perfil', _profileData != null ? _profileData!['utilizador_perfil']['perfil'] ?? 'Perfil não encontrado' : 'Perfil não encontrado'),
+                    SizedBox(height: 16),
+                    MultiSelectDialogField(
+                      items: _allAreas,
+                      initialValue: _selectedInteresses,
+                      title: Text('Escolha os seus Interesses'),
+                      selectedColor: Colors.blue,
+                      buttonText: Text('Escolha os seus interesses'),
+                      onConfirm: (results) {
+                        setState(() {
+                          _selectedInteresses = List<String>.from(results);
+                        });
+                        print('Interesses selecionados: $_selectedInteresses');
+                      },
+                      chipDisplay: MultiSelectChipDisplay(
+                        onTap: (item) {
+                          setState(() {
+                            _selectedInteresses.remove(item);
+                          });
+                        },
+                      ),
+                    ),
                     SizedBox(height: 16),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => ProfileEditScreen(profileData: {})),
-                              );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color.fromRGBO(57, 99, 156, 1.0),
-                              padding: EdgeInsets.symmetric(vertical: 12),
-                            ),
-                            child: const Text(
-                              'Editar perfil',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 8),
                         Expanded(
                           child: ElevatedButton(
                             onPressed: () {
@@ -239,39 +276,6 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
             ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
-  @override
-  Size get preferredSize => Size.fromHeight(60);
-
-  @override
-  Widget build(BuildContext context) {
-    return AppBar(
-      backgroundColor: const Color.fromRGBO(57, 99, 156, 1.0),
-      title: Row(
-        children: [
-          Padding(
-            padding: EdgeInsets.only(left: 16),
-            child: Image.asset(
-              'assets/Images/logo.png',
-              width: 40,
-              height: 40,
-            ),
-          ),
-          Expanded(
-            child: Align(
-              alignment: Alignment.centerRight,
-              child: IconButton(
-                icon: Icon(Icons.account_circle, color: Colors.white),
-                onPressed: () {},
-              ),
-            ),
           ),
         ],
       ),
