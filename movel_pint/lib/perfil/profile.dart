@@ -34,10 +34,10 @@ class _ProfilePageState extends State<ProfilePage> {
   Map<String, dynamic>? _profileData;
   bool _isLoading = false;
   List<String> _meusInteresses = [];
-  List<String> _selectedInteresses = []; // Lista para armazenar os interesses selecionados
-  List<int> _selectedInteresseIds = []; // Lista para armazenar os IDs dos interesses selecionados
+  List<String> _selectedInteresses = []; 
+  List<int> _selectedInteresseIds = []; 
   List<MultiSelectItem<String>> _allAreas = [];
-  Map<String, int> _areaToIdMap = {}; // Mapeamento de área para ID
+  Map<String, int> _areaToIdMap = {}; 
 
   @override
   void initState() {
@@ -80,7 +80,7 @@ class _ProfilePageState extends State<ProfilePage> {
       List<dynamic> interesses = response as List<dynamic>;
       setState(() {
         _meusInteresses = interesses.map((item) => item['interesse_subtopico']['area'] as String).toList();
-        _selectedInteresses = List.from(_meusInteresses); // Inicializa com os interesses existentes
+        _selectedInteresses = List.from(_meusInteresses); 
         _selectedInteresseIds = interesses.map((item) => item['interesse_subtopico']['id'] as int).toList(); // Inicializa os IDs
       });
       print(_meusInteresses);
@@ -206,7 +206,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         });
                         print('Interesses selecionados: $_selectedInteresses');
                         print('IDs dos interesses selecionados: $_selectedInteresseIds');
-                        _enviarInteresses(); // Chama a função para enviar os interesses selecionados
+                        _enviarInteresses(); 
                       },
                       chipDisplay: MultiSelectChipDisplay(
                         onTap: (item) {
