@@ -28,7 +28,7 @@ class _CreateActivityPageState extends State<CreateActivityPage> {
   DateTime? _selectedDate;
   TimeOfDay? _selectedTime;
   String? _selectedSubtopic;
-  int _selectedIndex = 3;
+  int _selectedIndex = 2;
 
   List<dynamic> _subtopics = [];
 

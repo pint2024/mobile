@@ -23,7 +23,7 @@ class TodasRecomendacoes extends StatefulWidget {
 }
 
 class _RecomendacaoState extends State<TodasRecomendacoes> {
-  int _selectedIndex = 3;
+  int _selectedIndex = 2;
   PageController _pageController = PageController(initialPage: 0);
   List<Map<String, dynamic>> _conteudos = []; // Lista para armazenar conteúdos
   bool _isLoading = true; // Variável para controlar o estado de carregamento

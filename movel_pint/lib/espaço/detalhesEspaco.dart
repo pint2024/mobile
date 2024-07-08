@@ -16,7 +16,7 @@ class SpaceDetailsPage extends StatefulWidget {
 }
 
 class _SpaceDetailsPageState extends State<SpaceDetailsPage> {
-  int _selectedIndex = 3;
+  int _selectedIndex = 2;
   Map<String, dynamic>? _conteudoTipo;
   List<dynamic>? _comments;
   bool _showAllComments = false;
