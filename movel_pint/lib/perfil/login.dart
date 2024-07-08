@@ -343,7 +343,10 @@ class _LoginPageState extends State<LoginPage> {
         if(token != null){
 
           final decoded = JwtDecoder.decode(token);
-          final userPreferences = UserPreferences.fromMap(decoded,_prefs);
+          final headers = {'Authorization': 'Bearer $token', 'Content-Type': 'application/json'};
+          final userDataResponse = await ApiService.obter('autenticacao', '', headers: headers);
+          userDataResponse.addAll(decoded);
+          final userPreferences = UserPreferences.fromMap(userDataResponse,_prefs);
           userPreferences.authToken = token;    
           Navigator.push(
           context,

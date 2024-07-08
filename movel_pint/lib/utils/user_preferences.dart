@@ -10,6 +10,7 @@ class UserPreferences {
   static const _imageKey = 'image';
   static const _iatKey = 'iat';
   static const _expKey = 'exp';
+  static const _idKey = 'id';
 
   final SharedPreferences _prefs;
 
@@ -23,6 +24,7 @@ class UserPreferences {
     _prefs.setString(_imageKey, map['imagem']);
     _prefs.setInt(_iatKey, map['iat']);
     _prefs.setInt(_expKey, map['exp']);
+    _prefs.setInt(_idKey, map['id']);
   }
 
   set authToken(String? token) {
@@ -40,4 +42,6 @@ class UserPreferences {
   String? get image => _prefs.getString(_imageKey);
   int? get iat => _prefs.getInt(_iatKey);
   int? get exp => _prefs.getInt(_expKey);
+  int? get id => _prefs.getInt(_idKey);
+
 }

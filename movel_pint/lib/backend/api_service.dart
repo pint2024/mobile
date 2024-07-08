@@ -5,7 +5,7 @@ import 'package:movel_pint/utils/constants.dart';
 
 class ApiService {
 
-  static Future<dynamic> obter(String endpoint, int id, {Map<String, String> headers = const {}}) async {
+  static Future<dynamic> obter(String endpoint, dynamic id, {Map<String, String> headers = const {}}) async {
     final url = '$endpoint/obter/$id';
     try {
       return await myHttp(url: url, method: "GET", headers: headers);

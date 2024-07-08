@@ -14,7 +14,6 @@ import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
 import 'package:movel_pint/widgets/card.dart';
 import 'package:movel_pint/widgets/customAppBar.dart'; // Certifique-se que o caminho está correto
 import 'package:movel_pint/calendario/calendario.dart'; // Importe o arquivo de calendar
-import 'package:movel_pint/utils/user_preferences.dart';
 
 void main() {
   runApp(MyApp());
@@ -23,8 +22,7 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // final userPreferences = UserPreferences.
-    // if()
+
     return MaterialApp(
       home: HomePage(initialIndex: 0), // Índice inicial para HomePage
     );
