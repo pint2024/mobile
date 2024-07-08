@@ -30,7 +30,7 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  int _selectedIndex = 0;
+  int _selectedIndex = 2;
   Map<String, dynamic>? _profileData;
   bool _isLoading = false;
   List<String> _meusInteresses = [];
@@ -38,6 +38,7 @@ class _ProfilePageState extends State<ProfilePage> {
   List<int> _selectedInteresseIds = []; 
   List<MultiSelectItem<String>> _allAreas = [];
   Map<String, int> _areaToIdMap = {}; 
+
 
   @override
   void initState() {
@@ -53,7 +54,7 @@ class _ProfilePageState extends State<ProfilePage> {
     });
 
     try {
-      final data = await ApiService.obter('utilizador', userId);
+      final data = await ApiService.obter('utilizador/simples', userId);
       if (data != null) {
         setState(() {
           _profileData = data;

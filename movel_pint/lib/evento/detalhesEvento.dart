@@ -16,7 +16,7 @@ class EventDetailsPage extends StatefulWidget {
 }
 
 class _EventDetailsPageState extends State<EventDetailsPage> {
-  int _selectedIndex = 3;
+  int _selectedIndex = 2;
   Map<String, dynamic>? _eventDetails;
   List<dynamic>? _comments;
   bool _showAllComments = false;

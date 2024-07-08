@@ -29,22 +29,17 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
         BottomNavigationBarItem(
           icon: Icon(Icons.home),
           label: 'Home',
-          selectedIconTheme: IconThemeData(),
+          //selectedIconTheme: IconThemeData(),
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.calendar_month),
           label: 'Calendário',
-         selectedIconTheme: IconThemeData(),
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.person_outline),
-          label: 'Perfil',
-         selectedIconTheme: IconThemeData(),
+         //selectedIconTheme: IconThemeData(),
         ),
         BottomNavigationBarItem(
           icon: Icon(Ionicons.grid_outline),
           label: 'Forum',
-          selectedIconTheme: IconThemeData(),
+          //selectedIconTheme: IconThemeData(),
         ),
       ],
       currentIndex: widget.selectedIndex,
@@ -54,7 +49,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
         if (index == 0) {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => HomePage()),
+            MaterialPageRoute(builder: (context) => HomePage1()),
           );
         } else if (index == 1) {
           Navigator.push(
@@ -64,13 +59,11 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
         } else if (index == 2) {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => NotificationsPage()),
-          );
-        } else if (index == 3) {
-          Navigator.push(
-            context,
             MaterialPageRoute(builder: (context) => ForumPage()),
           );
+        } else if (index == 4) {
+          print("ndada");
+          
         }
         // Atualiza o estado do índice selecionado
         widget.onItemTapped(index);

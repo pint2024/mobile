@@ -17,7 +17,7 @@ class RecommendationDetailsPage extends StatefulWidget {
 }
 
 class _RecommendationDetailsPageState extends State<RecommendationDetailsPage> {
-  int _selectedIndex = 3;
+  int _selectedIndex = 2;
   Map<String, dynamic>? _recommendationDetails;
   List<dynamic>? _comments;
   bool _showAllComments = false;

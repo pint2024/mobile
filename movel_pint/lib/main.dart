@@ -14,6 +14,7 @@ import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
 import 'package:movel_pint/widgets/card.dart';
 import 'package:movel_pint/widgets/customAppBar.dart'; // Certifique-se que o caminho está correto
 import 'package:movel_pint/calendario/calendario.dart'; // Importe o arquivo de calendar
+import 'package:movel_pint/home/homepage.dart';
 
 void main() {
   runApp(MyApp());
@@ -23,20 +24,20 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: HomePage(initialIndex: 0), // Índice inicial para HomePage
+      home: HomePage1(initialIndex: 0), // Índice inicial para HomePage
     );
   }
 }
 
-class HomePage extends StatefulWidget {
+class HomePage1 extends StatefulWidget {
   final int initialIndex; // Índice inicial para a BottomNavigationBar
-  HomePage({Key? key, this.initialIndex = 0}) : super(key: key);
+  HomePage1({Key? key, this.initialIndex = 0}) : super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage1> {
   int _selectedIndex = 0;
   PageController _pageController = PageController(initialPage: 0);
 
@@ -121,6 +122,12 @@ void _goToDetalheEventoPage() {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => RegisterPage()),
+    );
+  }
+    void _goToHomePage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => HomePageMain()),
     );
   }
   
@@ -236,6 +243,10 @@ void _goToDetalheEventoPage() {
           ElevatedButton(
             onPressed: _goToRegisterPage,
             child: Text('Registar'),
+          ),
+          ElevatedButton(
+            onPressed: _goToHomePage,
+            child: Text('Homepage'),
           ),
           CustomBottomNavigationBar(
             selectedIndex: _selectedIndex,

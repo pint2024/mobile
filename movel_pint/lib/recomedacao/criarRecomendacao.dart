@@ -30,7 +30,7 @@ class _RecomendationFormPageState extends State<RecomendationFormPage> {
   Uint8List? _imageData;
   String? _imageBase64;
   String? _selectedSubtopic;
-  int _selectedIndex = 3;
+  int _selectedIndex = 2;
   double _rating = 0;
   int preco = 0;
   String? _selectedLocation;
