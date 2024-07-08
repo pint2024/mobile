@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:movel_pint/atividade/slideralbuns.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
 import 'package:movel_pint/widgets/customAppBar.dart';
 import 'package:movel_pint/backend/api_service.dart';
+import 'package:share/share.dart';
 
 class ActivityDetailsPage extends StatefulWidget {
   final int activityId;
@@ -19,10 +22,11 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
   List<dynamic>? _comments;
   bool _showAllComments = false;
   bool _isParticipating = false;
-  bool _isLoadingDetails = false; 
+  bool _isLoadingDetails = false;
   int? _userParticipationId;
   Set<int> _ratedCommentIds = Set<int>();
   Map<int, int> _userRatings = {};
+  Map<int, String>? _userMap;
 
   TextEditingController _commentController = TextEditingController();
 
@@ -39,7 +43,15 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
     _fetchEventsForUser();
   }
 
-  Map<int, String>? _userMap;
+  void _navigateToAlbumSliderPage() async {
+    List<String> albumImages = await _fetchAlbums();
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AlbumSliderPage(albumImages: albumImages),
+      ),
+    );
+  }
 
   Future<void> _fetchActivityDetails(int activityId) async {
     setState(() {
@@ -74,7 +86,8 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
     try {
       final users = await ApiService.listar('utilizador');
       return Map.fromIterable(users,
-          key: (user) => user['id'], value: (user) => '${user['nome']} ${user['sobrenome']}');
+          key: (user) => user['id'],
+          value: (user) => '${user['nome']} ${user['sobrenome']}');
     } catch (e) {
       print('Erro ao carregar dados dos utilizadores: $e');
       return {};
@@ -83,24 +96,50 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
 
   Future<Map<int, int>> _fetchUserRatings() async {
     try {
-      final ratings = await ApiService.listar('classificacao', data: {'utilizador': '1'});
+      final ratings =
+          await ApiService.listar('classificacao', data: {'utilizador': '1'});
       return Map.fromIterable(ratings,
-          key: (rating) => rating['comentario'], value: (rating) => (rating['classificacao'] ?? 0) as int);
+          key: (rating) => rating['comentario'],
+          value: (rating) => (rating['classificacao'] ?? 0) as int);
     } catch (e) {
       print('Erro ao carregar classificações do usuário: $e');
       return {};
     }
   }
 
+  Future<List<String>> _fetchAlbums() async {
+    List<String> albumImages = [];
+
+    try {
+      final albums = await ApiService.listar('album');
+      if (albums != null) {
+        for (var album in albums) {
+          if (album['conteudo'] == widget.activityId &&
+              album['imagem'] != null) {
+            albumImages.add(album['imagem']);
+          }
+        }
+        print('Imagens dos álbuns carregadas com sucesso: $albumImages');
+      } else {
+        print('Nenhum álbum encontrado para este conteúdo');
+      }
+    } catch (e) {
+      print('Erro ao carregar imagens dos álbuns: $e');
+    }
+
+    return albumImages;
+  }
+
   Future<void> _fetchEventsForUser() async {
     try {
-      final participants = await ApiService.listar('participante', data: {'utilizador': '1'});
+      final participants =
+          await ApiService.listar('participante', data: {'utilizador': '1'});
       setState(() {
-        _isParticipating =
-            participants.any((participant) => participant['conteudo'] == widget.activityId);
+        _isParticipating = participants
+            .any((participant) => participant['conteudo'] == widget.activityId);
         if (_isParticipating) {
-          _userParticipationId =
-              participants.firstWhere((participant) => participant['conteudo'] == widget.activityId)['id'];
+          _userParticipationId = participants.firstWhere((participant) =>
+              participant['conteudo'] == widget.activityId)['id'];
         } else {
           _userParticipationId = null;
         }
@@ -117,7 +156,8 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
     };
 
     try {
-      final response = await ApiService.postData('participante/criar', participationData);
+      final response =
+          await ApiService.postData('participante/criar', participationData);
       print(response);
       _fetchEventsForUser();
     } catch (e) {
@@ -127,7 +167,8 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
 
   Future<void> _deleteComment(int commentId) async {
     try {
-      var commentToDelete = _comments!.firstWhere((comment) => comment['id'] == commentId);
+      var commentToDelete =
+          _comments!.firstWhere((comment) => comment['id'] == commentId);
       var userIdOfComment = commentToDelete['utilizador'];
       var currentUserId = 1;
 
@@ -168,7 +209,8 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
     };
 
     try {
-      final response = await ApiService.postData('comentario/criar', commentData);
+      final response =
+          await ApiService.postData('comentario/criar', commentData);
       print(response);
       await _fetchActivityDetails(widget.activityId);
       return response;
@@ -177,7 +219,7 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
       return null;
     } finally {
       setState(() {
-        _isLoadingDetails = false; 
+        _isLoadingDetails = false;
         _commentController.clear();
       });
     }
@@ -201,11 +243,13 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
     };
 
     try {
-      final response = await ApiService.postData('classificacao/criar', rateData);
+      final response =
+          await ApiService.postData('classificacao/criar', rateData);
       print(response);
 
       setState(() {
-        var index = _comments!.indexWhere((comment) => comment['id'] == commentId);
+        var index =
+            _comments!.indexWhere((comment) => comment['id'] == commentId);
         if (index != -1) {
           _comments![index]['classificacao_comentario'] = rating;
           _ratedCommentIds.add(commentId);
@@ -267,7 +311,8 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
               child: Text("Participar"),
               onPressed: () {
                 Navigator.of(context).pop();
-                _postParticipation(widget.activityId, 1); // Substitua 1 pelo ID real do usuário
+                _postParticipation(widget.activityId,
+                    1); // Substitua 1 pelo ID real do usuário
               },
             ),
           ],
@@ -282,7 +327,8 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text("Confirmação"),
-          content: Text("Tem certeza que deseja cancelar sua participação nesta atividade?"),
+          content: Text(
+              "Tem certeza que deseja cancelar sua participação nesta atividade?"),
           actions: <Widget>[
             TextButton(
               child: Text("Cancelar"),
@@ -302,6 +348,36 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
       },
     );
   }
+
+  Future<void> _rateContent(int contentId, int rating) async {
+    Map<String, dynamic> rateData = {
+      'comentario': null,
+      'conteudo': contentId,
+      'utilizador': 1,
+      'classificacao': rating,
+    };
+
+    try {
+      final response =
+          await ApiService.postData('classificacao/criar', rateData);
+      print(response);
+
+      setState(() {
+        if (_activityDetails != null) {
+          _activityDetails!['classificacao'] = rating;
+        }
+      });
+    } catch (e) {
+      print('Erro ao classificar conteúdo: $e');
+    }
+  }
+
+void _shareContent() {
+  Clipboard.setData(ClipboardData(text: 'http://localhost:8000/conteudos/${widget.activityId}'));
+
+  Share.share('http://localhost:8000/conteudos/${widget.activityId}');
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -336,8 +412,8 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
   }
 
   Widget _buildActivityItem(Map<String, dynamic> item) {
-    bool isTypeValid =
-        item['conteudo_tipo']['tipo'] == "Atividade" || item['conteudo_tipo']['tipo'] == "Evento";
+    bool isTypeValid = item['conteudo_tipo']['tipo'] == "Atividade" ||
+        item['conteudo_tipo']['tipo'] == "Evento";
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -395,8 +471,9 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
             image: DecorationImage(
               image: item['imagem'] != null
                   ? (item['imagem'].startsWith('http')
-                      ? NetworkImage(item['imagem'])
-                      : AssetImage('assets/Images/${item['imagem']}')) as ImageProvider
+                          ? NetworkImage(item['imagem'])
+                          : AssetImage('assets/Images/${item['imagem']}'))
+                      as ImageProvider
                   : AssetImage('assets/Images/jauzim.jpg'),
               fit: BoxFit.cover,
             ),
@@ -423,16 +500,73 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
           _buildDetailItemWithLabel('${item['preco']} €'),
           SizedBox(height: 16),
         ],
-        if (item['classificacao'] != null) ...[
-          _buildDetailItemLabel('Classificação'),
-          _buildStarRating(item['classificacao']),
-          SizedBox(height: 16),
-        ],
         _buildDetailItemLabel('Criado por'),
         _buildDetailItemWithLabel(
           "${item['conteudo_utilizador']['nome']} ${item['conteudo_utilizador']['sobrenome']} em ${_formatDateTime(item['data_criacao'])}",
           isDescription: true,
         ),
+        SizedBox(height: 16),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Column(
+              children: [
+                IconButton(
+                  icon: Icon(Icons.image),
+                  onPressed: () {
+                    _navigateToAlbumSliderPage();
+                  },
+                ),
+                SizedBox(height: 4),
+                Text(
+                  'Álbum',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 12),
+                ),
+              ],
+            ),
+            Column(
+              children: [
+                IconButton(
+                  icon: Icon(Icons.share),
+                  onPressed: () {
+                    _shareContent();
+                  },
+                ),
+                SizedBox(height: 4),
+                Text(
+                  'Partilhar',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 12),
+                ),
+              ],
+            ),
+          ],
+        ),
+        SizedBox(height: 16),
+        if (item['conteudo_tipo']['tipo'] == "Recomendação" ||
+            item['conteudo_tipo']['tipo'] == "Atividade" ||
+            item['conteudo_tipo']['tipo'] == "Evento" ||
+            item['conteudo_tipo']['tipo'] == "Espaço") ...[
+          _buildDetailItemLabel('Dê também a sua classificação:'),
+          Row(
+            children: List.generate(
+              5,
+              (index) => IconButton(
+                icon: Icon(
+                  index < (item['classificacao'] ?? 0)
+                      ? Icons.star
+                      : Icons.star_border,
+                  color: Colors.yellow,
+                ),
+                onPressed: () {
+                  _rateContent(widget.activityId, index + 1);
+                },
+              ),
+            ),
+          ),
+          SizedBox(height: 16),
+        ],
       ],
     );
   }
@@ -442,7 +576,8 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
       return SizedBox.shrink();
     }
 
-    List<dynamic> visibleComments = _showAllComments ? comments : [comments.first];
+    List<dynamic> visibleComments =
+        _showAllComments ? comments : [comments.first];
 
     return Container(
       padding: EdgeInsets.all(12),
@@ -482,10 +617,11 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
     var currentUserId = 1; // Substitua pelo ID real do usuário logado
 
     bool isCurrentUserComment = comment['utilizador'] == currentUserId;
-    String userName = _userMap != null && _userMap!.containsKey(comment['utilizador'])
-        ? _userMap![comment['utilizador']]!
-        : 'Utilizador desconhecido';
-    int userRating = (_userRatings[commentId] ?? 0).toInt(); 
+    String userName =
+        _userMap != null && _userMap!.containsKey(comment['utilizador'])
+            ? _userMap![comment['utilizador']]!
+            : 'Utilizador desconhecido';
+    int userRating = (_userRatings[commentId] ?? 0).toInt();
 
     return Container(
       padding: EdgeInsets.all(12),
@@ -513,7 +649,7 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
                       color: Colors.yellow,
                     ),
                     onPressed: () {
-                      _rateComment(commentId, index + 1); 
+                      _rateComment(commentId, index + 1);
                       print(commentId);
                     },
                   ),
@@ -548,7 +684,11 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
       child: Text(
         value,
         style: TextStyle(
-          fontSize: isTitle ? 18 : isDescription ? 12 : 14,
+          fontSize: isTitle
+              ? 18
+              : isDescription
+                  ? 12
+                  : 14,
           fontWeight: isTitle ? FontWeight.bold : FontWeight.normal,
         ),
       ),

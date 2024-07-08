@@ -108,6 +108,50 @@ static Future<Uint8List> blobToUint8List(html.Blob blob) async {
     }
   }
 
+//
+//
+//
+//
+//
+// funcao para atualizar a imagem do perfil
+static Future<http.Response> sendProfilePic(String endpoint, {required Map<String, dynamic> data, required String fileKey, Map<String, String> headers = const {}}) async {
+  try {
+    var url = Uri.parse('$baseUrl/$endpoint');
+    var request = http.MultipartRequest('PUT', url);
+
+    data.forEach((key, value) {
+      if (key != fileKey) {
+        request.fields[key] = value.toString();
+        print('Field: $key = ${value.toString()}');
+      }
+    });
+
+    if (data.containsKey(fileKey) && data[fileKey] != null) {
+      Uint8List imageBytes = await blobToUint8List(data[fileKey]);
+      var arquivoMultipart = http.MultipartFile.fromBytes(
+        fileKey,
+        imageBytes,
+        filename: 'upload.jpg',
+      );
+
+      request.files.add(arquivoMultipart);
+      print('File added: $fileKey');
+    }
+
+    headers.forEach((key, value) {
+      request.headers[key] = value;
+    });
+
+    var streamedResponse = await request.send();
+    var response = await http.Response.fromStream(streamedResponse);
+
+    return response;
+  } catch (error) {
+    throw error;
+  }
+}
+
+
   // Método para remover um recurso
   static Future<void> remover(String endpoint, int id, {Map<String, String>? headers}) async {
     final url = '$endpoint/remover/$id';

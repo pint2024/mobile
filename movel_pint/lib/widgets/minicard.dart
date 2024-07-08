@@ -39,13 +39,11 @@ class MiniCard extends StatelessWidget {
   }
 
   String _truncateTitle(String title) {
-    const maxLength = 19; // Defina o comprimento máximo do título
+    const maxLength = 19; 
     if (title.length <= maxLength) {
       return title;
     } else {
-      // Encontra o último espaço dentro do limite de caracteres
       int lastSpaceIndex = title.substring(0, maxLength).lastIndexOf(' ');
-      // Retorna o título cortado até o último espaço encontrado
       return '${title.substring(0, lastSpaceIndex)}...';
     }
   }

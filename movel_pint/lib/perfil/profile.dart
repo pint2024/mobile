@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:movel_pint/perfil/asMinhasAtividades.dart';
 import 'package:movel_pint/perfil/asMinhasInscricoes.dart';
+import 'package:movel_pint/perfil/modificar_perfil.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
 import 'package:movel_pint/backend/api_service.dart';
 import 'package:movel_pint/widgets/customAppBar.dart';
@@ -34,10 +35,10 @@ class _ProfilePageState extends State<ProfilePage> {
   Map<String, dynamic>? _profileData;
   bool _isLoading = false;
   List<String> _meusInteresses = [];
-  List<String> _selectedInteresses = []; 
-  List<int> _selectedInteresseIds = []; 
+  List<String> _selectedInteresses = [];
+  List<int> _selectedInteresseIds = [];
   List<MultiSelectItem<String>> _allAreas = [];
-  Map<String, int> _areaToIdMap = {}; 
+  Map<String, int> _areaToIdMap = {};
 
   @override
   void initState() {
@@ -53,7 +54,7 @@ class _ProfilePageState extends State<ProfilePage> {
     });
 
     try {
-      final data = await ApiService.obter('utilizador', userId);
+      final data = await ApiService.obter('utilizador/simples', userId);
       if (data != null) {
         setState(() {
           _profileData = data;
@@ -75,13 +76,19 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _buscarMeusInteresses() async {
-    var response = await ApiService.listar('interesse', headers: {'Content-Type': 'application/json'}, data: {'utilizador': widget.userId});
+    var response = await ApiService.listar('interesse',
+        headers: {'Content-Type': 'application/json'},
+        data: {'utilizador': widget.userId});
     if (response != null) {
       List<dynamic> interesses = response as List<dynamic>;
       setState(() {
-        _meusInteresses = interesses.map((item) => item['interesse_subtopico']['area'] as String).toList();
-        _selectedInteresses = List.from(_meusInteresses); 
-        _selectedInteresseIds = interesses.map((item) => item['interesse_subtopico']['id'] as int).toList(); // Inicializa os IDs
+        _meusInteresses = interesses
+            .map((item) => item['interesse_subtopico']['area'] as String)
+            .toList();
+        _selectedInteresses = List.from(_meusInteresses);
+        _selectedInteresseIds = interesses
+            .map((item) => item['interesse_subtopico']['id'] as int)
+            .toList(); // Inicializa os IDs
       });
       print(_meusInteresses);
     } else {
@@ -94,8 +101,12 @@ class _ProfilePageState extends State<ProfilePage> {
     if (response != null) {
       List<dynamic> subtopicos = response as List<dynamic>;
       setState(() {
-        _allAreas = subtopicos.map((item) => MultiSelectItem<String>(item['area'] as String, item['area'] as String)).toList();
-        _areaToIdMap = Map.fromEntries(subtopicos.map((item) => MapEntry(item['area'] as String, item['id'] as int)));
+        _allAreas = subtopicos
+            .map((item) => MultiSelectItem<String>(
+                item['area'] as String, item['area'] as String))
+            .toList();
+        _areaToIdMap = Map.fromEntries(subtopicos.map(
+            (item) => MapEntry(item['area'] as String, item['id'] as int)));
       });
       print(_allAreas);
     } else {
@@ -167,31 +178,63 @@ class _ProfilePageState extends State<ProfilePage> {
                   children: [
                     CircleAvatar(
                       radius: 50,
-                      backgroundImage: _profileData != null && _profileData!['imagem'] != null
+                      backgroundImage: _profileData != null &&
+                              _profileData!['imagem'] != null
                           ? (_profileData!['imagem'].startsWith('http')
-                              ? NetworkImage(_profileData!['imagem'])
-                              : AssetImage(_profileData!['imagem'])) as ImageProvider
+                                  ? NetworkImage(_profileData!['imagem'])
+                                  : AssetImage(_profileData!['imagem']))
+                              as ImageProvider
                           : AssetImage('assets/Images/jauzim.jpg'),
                     ),
                     SizedBox(height: 16),
                     Text(
-                      _profileData != null ? _profileData!['nome'] ?? 'Nome não encontrado' : 'Nome não encontrado',
+                      _profileData != null
+                          ? '${_profileData!['nome'] ?? 'Nome não encontrado'} ${_profileData!['sobrenome'] ?? ''}'
+                          : 'Nome não encontrado',
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     SizedBox(height: 8),
-                    _buildProfileItem(Icons.tag, 'Tag', _profileData != null ? _profileData!['tag'] ?? 'Tag não encontrada' : 'Tag não encontrada'),
-                    _buildProfileItem(Icons.email, 'Email', _profileData != null ? _profileData!['email'] ?? 'Email não encontrado' : 'Email não encontrado'),
-                    if (_profileData != null && _profileData!['linkedin'] != null)
-                      _buildProfileItem(Icons.link, 'LinkedIn', _profileData!['linkedin']),
-                    if (_profileData != null && _profileData!['facebook'] != null)
-                      _buildProfileItem(Icons.facebook, 'Facebook', _profileData!['facebook']),
-                    if (_profileData != null && _profileData!['instagram'] != null)
-                      _buildProfileItem(Icons.camera_alt, 'Instagram', _profileData!['instagram']),
-                    _buildProfileItem(Icons.location_city, 'Centro', _profileData != null ? _profileData!['utilizador_centro']['centro'] ?? 'Centro não encontrado' : 'Centro não encontrado'),
-                    _buildProfileItem(Icons.person, 'Perfil', _profileData != null ? _profileData!['utilizador_perfil']['perfil'] ?? 'Perfil não encontrado' : 'Perfil não encontrado'),
+                    _buildProfileItem(
+                        Icons.tag,
+                        'Tag',
+                        _profileData != null
+                            ? _profileData!['tag'] ?? 'Tag não encontrada'
+                            : 'Tag não encontrada'),
+                    _buildProfileItem(
+                        Icons.email,
+                        'Email',
+                        _profileData != null
+                            ? _profileData!['email'] ?? 'Email não encontrado'
+                            : 'Email não encontrado'),
+                    if (_profileData != null &&
+                        _profileData!['linkedin'] != null)
+                      _buildProfileItem(
+                          Icons.link, 'LinkedIn', _profileData!['linkedin']),
+                    if (_profileData != null &&
+                        _profileData!['facebook'] != null)
+                      _buildProfileItem(Icons.facebook, 'Facebook',
+                          _profileData!['facebook']),
+                    if (_profileData != null &&
+                        _profileData!['instagram'] != null)
+                      _buildProfileItem(Icons.camera_alt, 'Instagram',
+                          _profileData!['instagram']),
+                    _buildProfileItem(
+                        Icons.location_city,
+                        'Centro',
+                        _profileData != null
+                            ? _profileData!['utilizador_centro']['centro'] ??
+                                'Centro não encontrado'
+                            : 'Centro não encontrado'),
+                    _buildProfileItem(
+                        Icons.person,
+                        'Perfil',
+                        _profileData != null
+                            ? _profileData!['utilizador_perfil']['perfil'] ??
+                                'Perfil não encontrado'
+                            : 'Perfil não encontrado'),
                     SizedBox(height: 16),
                     MultiSelectDialogField(
                       items: _allAreas,
@@ -202,11 +245,14 @@ class _ProfilePageState extends State<ProfilePage> {
                       onConfirm: (results) {
                         setState(() {
                           _selectedInteresses = List<String>.from(results);
-                          _selectedInteresseIds = results.map((item) => _areaToIdMap[item]!).toList();
+                          _selectedInteresseIds = results
+                              .map((item) => _areaToIdMap[item]!)
+                              .toList();
                         });
                         print('Interesses selecionados: $_selectedInteresses');
-                        print('IDs dos interesses selecionados: $_selectedInteresseIds');
-                        _enviarInteresses(); 
+                        print(
+                            'IDs dos interesses selecionados: $_selectedInteresseIds');
+                        _enviarInteresses();
                       },
                       chipDisplay: MultiSelectChipDisplay(
                         onTap: (item) {
@@ -214,8 +260,10 @@ class _ProfilePageState extends State<ProfilePage> {
                             _selectedInteresses.remove(item);
                             _selectedInteresseIds.remove(_areaToIdMap[item]);
                           });
-                          print('Interesses selecionados: $_selectedInteresses');
-                          print('IDs dos interesses selecionados: $_selectedInteresseIds');
+                          print(
+                              'Interesses selecionados: $_selectedInteresses');
+                          print(
+                              'IDs dos interesses selecionados: $_selectedInteresseIds');
                         },
                       ),
                     ),
@@ -228,11 +276,13 @@ class _ProfilePageState extends State<ProfilePage> {
                             onPressed: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => asMinhasAtividades()),
+                                MaterialPageRoute(
+                                    builder: (context) => asMinhasAtividades()),
                               );
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color.fromRGBO(57, 99, 156, 1.0),
+                              backgroundColor:
+                                  const Color.fromRGBO(57, 99, 156, 1.0),
                               padding: EdgeInsets.symmetric(vertical: 12),
                             ),
                             child: const Text(
@@ -250,15 +300,43 @@ class _ProfilePageState extends State<ProfilePage> {
                             onPressed: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => MinhasInscricoesPage()),
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        MinhasInscricoesPage()),
                               );
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color.fromRGBO(57, 99, 156, 1.0),
+                              backgroundColor:
+                                  const Color.fromRGBO(57, 99, 156, 1.0),
                               padding: EdgeInsets.symmetric(vertical: 12),
                             ),
                             child: const Text(
                               'Inscrito',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ProfileUpdateScreen(
+                                        userId: widget.userId,
+                                        profileData: _profileData ?? {})),
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor:
+                                  const Color.fromRGBO(57, 99, 156, 1.0),
+                              padding: EdgeInsets.symmetric(vertical: 12),
+                            ),
+                            child: const Text(
+                              'Atualizar o perfil',
                               style: TextStyle(
                                 fontSize: 14,
                                 color: Colors.white,
