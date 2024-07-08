@@ -84,12 +84,16 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
       );
     }
   }
-//isso vai demorar
+
   Future<void> _enviarImagemPerfil() async {
     try {
+      Map<String, dynamic> data = {
+        'imagem': html.Blob([_imageData!]),
+      };
+
       final response = await ApiService.sendProfilePic(
-        'utilizador/atualizar/imagem/${widget.userId}',
-        data: {'imagem': html.Blob([_imageData!])},
+        'utilizador/imagem/atualizar/${widget.userId}',
+        data: data,
         fileKey: 'imagem',
       );
 

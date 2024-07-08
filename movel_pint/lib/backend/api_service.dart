@@ -142,8 +142,7 @@ static Future<http.Response> sendProfilePic(String endpoint, {required Map<Strin
       request.headers[key] = value;
     });
 
-    var streamedResponse = await request.send();
-    var response = await http.Response.fromStream(streamedResponse);
+    var response = await http.Response.fromStream(await request.send());
 
     return response;
   } catch (error) {
