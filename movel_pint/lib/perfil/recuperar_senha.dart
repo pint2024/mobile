@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'codigo_verificacao.dart'; // Importe o arquivo codigo_verificacao.dart
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:movel_pint/backend/api_service.dart'; // Certifique-se de importar sua classe ApiService
 
 class RecuperarSenha extends StatefulWidget {
   @override
@@ -9,6 +12,7 @@ class RecuperarSenha extends StatefulWidget {
 class _RecuperarSenhaState extends State<RecuperarSenha> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _emailController = TextEditingController();
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -32,7 +36,7 @@ class _RecuperarSenhaState extends State<RecuperarSenha> {
           IconButton(
             icon: Icon(Icons.close),
             onPressed: () {
-              Navigator.pop(context);
+              _showCancelDialog(context);
             },
           ),
         ],
@@ -97,15 +101,20 @@ class _RecuperarSenhaState extends State<RecuperarSenha> {
                       ),
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
-                          _handlePasswordRecovery();
+                          _handlePasswordRecovery(context);
                         }
                       },
-                      child: Text(
-                        'Enviar',
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
-                      ),
+                      child: _isLoading
+                          ? CircularProgressIndicator(
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.white),
+                            )
+                          : Text(
+                              'Enviar',
+                              style: TextStyle(
+                                color: Colors.white,
+                              ),
+                            ),
                     ),
                   ),
                 ],
@@ -117,29 +126,98 @@ class _RecuperarSenhaState extends State<RecuperarSenha> {
     );
   }
 
-  Future<void> _handlePasswordRecovery() async {
-    final email = _emailController.text;
-    // Simulando o envio do email e verificação
-    await Future.delayed(Duration(seconds: 2));
+  Future<void> _handlePasswordRecovery(BuildContext context) async {
+    final email = _emailController.text.trim();
 
-    // Exibir o pop-up informando que o código foi enviado
+    setState(() {
+      _isLoading = true;
+    });
+
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.none) {
+      _showNoInternetDialog(context);
+      setState(() {
+        _isLoading = false;
+      });
+    } else {
+      final response = await ApiService.postData('autenticacao/forgot-password', {'email': email});
+
+      setState(() {
+        _isLoading = false;
+      });
+
+      if (response != null && response['success']) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Código de Verificação Enviado'),
+              content: Text(response['data']),
+              actions: <Widget>[
+                TextButton(
+                  child: Text('OK'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(response != null ? response['data'] : 'Erro desconhecido.')),
+        );
+      }
+    }
+  }
+
+  void _showNoInternetDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Código de Verificação Enviado'),
-          content: Text('Um código de verificação foi enviado para o email $email.'),
+          title: Text('Sem Conexão'),
+          content: Text('Por favor, verifique sua conexão com a internet e tente novamente.'),
           actions: <Widget>[
             TextButton(
-              child: Text('OK'),
+              child: Text('Cancelar'),
               onPressed: () {
                 Navigator.of(context).pop();
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => CodigoVerificacaoPage(email: email),
-                  ),
-                );
+              },
+            ),
+            TextButton(
+              child: Text('Continuar'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                _handlePasswordRecovery(context); // Retentativa do envio ao continuar
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showCancelDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Cancelar Recuperação'),
+          content: Text('Tem certeza de que deseja cancelar a recuperação de senha?'),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Não'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Sim'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.pop(context); // Fecha a tela de recuperação de senha
               },
             ),
           ],
