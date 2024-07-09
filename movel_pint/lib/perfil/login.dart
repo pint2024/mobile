@@ -1,20 +1,17 @@
-/*import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:movel_pint/backend/api_service.dart';
 import 'package:flutter/gestures.dart'; // Para o TapGestureRecognizer
+import 'package:movel_pint/backend/auth_service.dart';
+import 'package:movel_pint/home/homepage.dart';
 import 'package:movel_pint/main.dart';
-import 'registo.dart'; // Importe o arquivo registo.dart
 import 'package:movel_pint/utils/user_preferences.dart';
 import 'recuperar_senha.dart'; // Importe o arquivo recuperar_senha.dart
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // Adicionado
-import 'registo.dart'; // Importe o arquivo registo.dart
-import 'profile.dart'; // Importe o arquivo profile.dart
 
 void main() {
   runApp(LoginApp());
@@ -294,28 +291,7 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ],
                         ),
-                        SizedBox(height: 25),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => RegisterPage()),
-                            );
-                          },
-                          child: const Text.rich(
-                            TextSpan(
-                              text: 'Não tens uma conta? ',
-                              children: <TextSpan>[
-                                TextSpan(
-                                  text: 'Registar',
-                                  style: TextStyle(
-                                    decoration: TextDecoration.underline,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
+                        
                         SizedBox(height: 30),
                       ],
                     ),
@@ -341,21 +317,17 @@ class _LoginPageState extends State<LoginPage> {
      
       final response = await ApiService.postData('autenticacao/entrar', data);
       if(response?['success']){
-        final SharedPreferences _prefs = await SharedPreferences.getInstance();
-
+        print("1");
         final token = response?['data']?['token'];
+        print("12");
         if(token != null){
-
-          final decoded = JwtDecoder.decode(token);
-          final headers = {'Authorization': 'Bearer $token', 'Content-Type': 'application/json'};
-          final userDataResponse = await ApiService.obter('autenticacao', '', headers: headers);
-          userDataResponse.addAll(decoded);
-          final userPreferences = UserPreferences.fromMap(userDataResponse,_prefs);
-          userPreferences.authToken = token;    
+          print("14");
+          UserPreferences().authToken = token;    
+          print("16");
           Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => HomePage()),
-        );  
+            context,
+            MaterialPageRoute(builder: (context) => HomePageMain()),
+          );
         }
       }
       else{
@@ -366,90 +338,56 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _handleSignInWithGoogle(BuildContext context) async {
-  var connectivityResult = await (Connectivity().checkConnectivity());
-  if (connectivityResult == ConnectivityResult.none) {
-    _showNoInternetDialog(context);
-  } else {
-    try {
-      GoogleSignIn googleSignIn = GoogleSignIn(scopes: ['email']);
-      GoogleSignInAccount? googleUser = await googleSignIn.signIn();
-      if (googleUser == null) {
-        // The user canceled the sign-in
-        return;
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.none) {
+      _showNoInternetDialog(context);
+    } else {
+      try {
+        GoogleSignIn googleSignIn = GoogleSignIn(scopes: ['email']);
+        GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+        // O código continua daqui
+      } catch (error) {
+        // Tratamento de erros (opcional)
       }
-      GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-      AuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
-      UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
-      // Successful authentication, navigate to profile page
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ProfilePage(
-            userId: int.tryParse(userCredential.user!.uid) ?? 0,
-          ),
-        ),
-      );
-    } on PlatformException catch (error) {
-      print('Erro ao autenticar com o Google: ${error.message}');
-      // You can show a user-friendly error message here
-    } catch (error) {
-      print('Erro ao autenticar com o Google: $error');
-      // You can show a user-friendly error message here
     }
   }
-}
 
-Future<void> _handleSignInWithFacebook(BuildContext context) async {
-  var connectivityResult = await (Connectivity().checkConnectivity());
-  if (connectivityResult == ConnectivityResult.none) {
-    _showNoInternetDialog(context);
-  } else {
-    try {
-      final LoginResult result = await FacebookAuth.instance.login();
-      if (result.status == LoginStatus.success) {
-        final AccessToken accessToken = result.accessToken!;
-        final OAuthCredential credential = FacebookAuthProvider.credential(accessToken.token);
-        final UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
-        // Successful authentication, navigate to profile page
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ProfilePage(
-              userId: int.tryParse(userCredential.user!.uid) ?? 0,
-            ),
-          ),
-        );
-      } else if (result.status == LoginStatus.cancelled) {
-        print('Autenticação com Facebook cancelada');
-      } else {
-        print('Erro ao autenticar com o Facebook: ${result.message}');
+  Future<void> _handleSignInWithFacebook(BuildContext context) async {
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.none) {
+      _showNoInternetDialog(context);
+    } else {
+      try {
+        final LoginResult result = await FacebookAuth.instance.login();
+        if (result.status == LoginStatus.success) {
+          final AccessToken accessToken = result.accessToken!;
+          print('Usuário autenticado com sucesso no Facebook');
+        } else {
+          print('Falha ao autenticar com o Facebook: ${result.status}');
+        }
+      } catch (error) {
+        print('Erro ao autenticar com o Facebook: $error');
       }
-    } on PlatformException catch (error) {
-      print('Erro ao autenticar com o Facebook: ${error.message}');
-    } catch (error) {
-      print('Erro ao autenticar com o Facebook: $error');
     }
   }
-}
-
 
   void _showNoInternetDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Sem conexão com a Internet'),
-        content: Text('Por favor, verifique sua conexão com a Internet e tente novamente.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('OK'),
-          ),
-        ],
-      ),
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Sem Conexão com a Internet'),
+          content: Text('Por favor, ligue-se à internet para continuar.'),
+          actions: [
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }
-*/

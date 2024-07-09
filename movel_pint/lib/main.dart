@@ -3,13 +3,15 @@ import 'package:movel_pint/atividade/criarAtividade.dart';
 import 'package:movel_pint/atividade/detalhes_atividade.dart';
 import 'package:movel_pint/espa%C3%A7o/criarespa%C3%A7o.dart';
 import 'package:movel_pint/evento/criarEvento.dart';
-import 'package:movel_pint/perfil/registo.dart';
+import 'package:movel_pint/perfil/login.dart';
 import 'package:movel_pint/recomedacao/criarRecomendacao.dart';
+import 'package:movel_pint/utils/user_preferences.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
 import 'package:movel_pint/widgets/customAppBar.dart'; // Certifique-se que o caminho está correto
 import 'package:movel_pint/home/homepage.dart';
 
-void main() {
+void main() async {
+  await UserPreferences().init();
   runApp(MyApp());
 }
 
@@ -56,12 +58,7 @@ class _HomePageState extends State<HomePage1> {
     );
   }
 
-  void _goToRegisterPerfilPage() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => RegisterPage()),
-    );
-  }
+  
 
   void _goToCreateEspacoPage() {
     Navigator.push(
@@ -95,7 +92,7 @@ class _HomePageState extends State<HomePage1> {
     void _goToRegisterPage() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => RegisterPage()),
+      MaterialPageRoute(builder: (context) => LoginApp()),
     );
   }
     void _goToHomePage() {
@@ -204,7 +201,7 @@ class _HomePageState extends State<HomePage1> {
           ),
           ElevatedButton(
             onPressed: _goToRegisterPage,
-            child: Text('Registar'),
+            child: Text('Login'),
           ),
           ElevatedButton(
             onPressed: _goToHomePage,

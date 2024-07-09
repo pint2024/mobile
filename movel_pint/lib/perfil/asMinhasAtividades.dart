@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:movel_pint/backend/auth_service.dart';
 import 'package:movel_pint/widgets/MycardAtividade.dart';
 import 'package:movel_pint/widgets/MycardAtividadeEditar.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
@@ -69,6 +70,9 @@ class _AtividadeState extends State<asMinhasAtividades> {
 
 Future<void> _fetchConteudos() async {
   try {
+    dynamic utilizadorAtual = await AuthService.obter();
+    int userId = utilizadorAtual["id"];
+    print("FODE-TE ${userId}");
     print('Chamando API para buscar dados...');
     final data = await ApiService.listar('conteudo');
     print('Dados recebidos da API: $data');
@@ -78,7 +82,7 @@ Future<void> _fetchConteudos() async {
         print('Data["data"] é uma lista');
         setState(() {
           _conteudos = List<Map<String, dynamic>>.from(data)
-              .where((conteudo) => conteudo['utilizador'] == 1) // ::::::::::::::::::::::::::::: substituir pelo id do utilizador logado :::::::::::::::::::::::::::::
+              .where((conteudo) => conteudo['utilizador'] == userId) // ::::::::::::::::::::::::::::: substituir pelo id do utilizador logado :::::::::::::::::::::::::::::
               .toList();
           _isLoading = false; 
         });

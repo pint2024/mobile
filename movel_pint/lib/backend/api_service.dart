@@ -15,6 +15,7 @@ class ApiService {
   // Método para obter um recurso específico
   static Future<dynamic> obter(String endpoint, int id, {Map<String, String> headers = const {}}) async {
     final url = '$endpoint/obter/$id';
+    print("url");
     try {
       return await myHttp(url: url, method: "GET", headers: headers);
     } catch (e) {

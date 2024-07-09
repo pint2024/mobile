@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:movel_pint/backend/auth_service.dart';
 import 'package:movel_pint/perfil/asMinhasAtividades.dart';
 import 'package:movel_pint/perfil/asMinhasInscricoes.dart';
 import 'package:movel_pint/perfil/modificar_perfil.dart';
@@ -11,12 +12,33 @@ import 'package:multi_select_flutter/multi_select_flutter.dart';
 void main() {
   runApp(ProfileApp());
 }
+class ProfileApp extends StatefulWidget {
+  @override
+  _ProfileAppState createState() => _ProfileAppState();
+}
 
-class ProfileApp extends StatelessWidget {
+class _ProfileAppState extends State<ProfileApp> {
+  int? userId;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserId();
+  }
+
+  Future<void> _fetchUserId() async {
+    dynamic data = await AuthService.obter();
+    setState(() {
+      userId = data["id"] as int?;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: ProfilePage(userId: 1), // ::::::::::::::::::::::::::::: substituir pelo id do utilizador logado :::::::::::::::::::::::::::::
+      home: userId == null
+          ? Center(child: CircularProgressIndicator())
+          : ProfilePage(userId: userId!),
     );
   }
 }
@@ -185,7 +207,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   ? NetworkImage(_profileData!['imagem'])
                                   : AssetImage(_profileData!['imagem']))
                               as ImageProvider
-                          : AssetImage('assets/Images/imageMissing.png'),
+                          : AssetImage('assets/Images/imageMissing.jpg'),
                     ),
                     SizedBox(height: 16),
                     Text(
