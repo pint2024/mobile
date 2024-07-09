@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:movel_pint/calendario/calendario.dart';
 import 'package:movel_pint/main.dart';
-import 'package:movel_pint/notificacoes/Notifications.dart';
-import 'package:movel_pint/perfil/profile.dart';
 import 'package:movel_pint/Forum/Forum.dart';
 
 class CustomBottomNavigationBar extends StatefulWidget {
@@ -37,11 +35,6 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
           //selectedIconTheme: IconThemeData(),
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.person_outline),
-          label: 'Perfil',
-         //selectedIconTheme: IconThemeData(),
-        ),
-        BottomNavigationBarItem(
           icon: Icon(Ionicons.grid_outline),
           label: 'Forum',
           //selectedIconTheme: IconThemeData(),
@@ -54,7 +47,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
         if (index == 0) {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => HomePage()),
+            MaterialPageRoute(builder: (context) => HomePage1()),
           );
         } else if (index == 1) {
           Navigator.push(
@@ -64,15 +57,12 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
         } else if (index == 2) {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => NotificationsPage()),
-          );
-        } else if (index == 3) {
-          Navigator.push(
-            context,
             MaterialPageRoute(builder: (context) => ForumPage()),
           );
+        } else if (index == 4) {
+          print("ndada");
+          
         }
-        // Atualiza o estado do índice selecionado
         widget.onItemTapped(index);
       },
     );

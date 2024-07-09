@@ -32,7 +32,7 @@ class ForumPage extends StatefulWidget {
 }
 
 class _HomePageState extends State<ForumPage> {
-  int _selectedIndex = 3;
+  int _selectedIndex = 2;
   final PageController _pageController = PageController();
   List<Map<String, dynamic>> _atividades = [];
   List<Map<String, dynamic>> _eventos = [];
@@ -198,7 +198,7 @@ class _HomePageState extends State<ForumPage> {
                       return Padding(
                         padding: const EdgeInsets.only(right: 8.0),
                         child: MiniCard(
-                          imageUrl: conteudo['imagem'] ?? 'assets/Images/logo2.png', // Ajuste conforme sua estrutura de dados
+                          imageUrl: conteudo['imagem'] ?? 'assets/Images/imageMissing.jpg', // Ajuste conforme sua estrutura de dados
                           title: conteudo['titulo'] ?? 'Título',
                         ),
                       );
@@ -284,7 +284,7 @@ class _HomePageState extends State<ForumPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => RecommendationFormPage(),
+                        builder: (context) => RecomendationFormPage(),
                       ),
                     );
                   },

@@ -1,3 +1,15 @@
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:7.4.0' // Verifique a versão correta do Android Gradle Plugin
+        classpath 'com.google.gms:google-services:4.3.10' // ou a versão mais recente
+    }
+}
+
 plugins {
     id "com.android.application"
     id "kotlin-android"
@@ -60,6 +72,10 @@ flutter {
     source '../..'
 }
 
-dependencies {
     implementation 'com.facebook.android:facebook-android-sdk:[5,6)'
+
+    implementation 'com.google.android.gms:play-services-auth:19.0.0'
 }
+
+// Aplicar o plugin fora do bloco de dependências
+//apply plugin: 'com.google.gms.google-services'

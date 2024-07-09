@@ -2,18 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:movel_pint/atividade/criarAtividade.dart';
 import 'package:movel_pint/atividade/detalhes_atividade.dart';
 import 'package:movel_pint/espa%C3%A7o/criarespa%C3%A7o.dart';
-import 'package:movel_pint/espa%C3%A7o/detalhesEspaco.dart';
 import 'package:movel_pint/evento/criarEvento.dart';
-import 'package:movel_pint/evento/detalhesEvento.dart';
-import 'package:movel_pint/notificacoes/Notifications.dart';
-import 'package:movel_pint/perfil/login.dart';
 import 'package:movel_pint/perfil/registo.dart';
 import 'package:movel_pint/recomedacao/criarRecomendacao.dart';
-import 'package:movel_pint/recomedacao/detalhesRecomendacao.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
-import 'package:movel_pint/widgets/card.dart';
 import 'package:movel_pint/widgets/customAppBar.dart'; // Certifique-se que o caminho está correto
-import 'package:movel_pint/calendario/calendario.dart'; // Importe o arquivo de calendar
+import 'package:movel_pint/home/homepage.dart';
 
 void main() {
   runApp(MyApp());
@@ -24,20 +18,20 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
 
     return MaterialApp(
-      home: HomePage(initialIndex: 0), // Índice inicial para HomePage
+      home: HomePage1(initialIndex: 0), // Índice inicial para HomePage
     );
   }
 }
 
-class HomePage extends StatefulWidget {
+class HomePage1 extends StatefulWidget {
   final int initialIndex; // Índice inicial para a BottomNavigationBar
-  HomePage({Key? key, this.initialIndex = 0}) : super(key: key);
+  HomePage1({Key? key, this.initialIndex = 0}) : super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage1> {
   int _selectedIndex = 0;
   PageController _pageController = PageController(initialPage: 0);
 
@@ -58,7 +52,7 @@ class _HomePageState extends State<HomePage> {
   void _goToLoginPerfilPage() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => LoginPage()),
+      MaterialPageRoute(builder: (context) => EventFormPage()),
     );
   }
 
@@ -79,7 +73,7 @@ class _HomePageState extends State<HomePage> {
   void _goToCreateRecomendacaoPage() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => RecommendationFormPage()),
+      MaterialPageRoute(builder: (context) => RecomendationFormPage()),
     );
   }
 
@@ -90,38 +84,24 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void _goToDetalhesEspacoPage() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => SpaceDetailsPage()),
-    );
-  }
-
-  void _goToDetalhesRecomedacaoPage() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => RecommendationDetailsPage()),
-    );
-  }
-
-void _goToDetalheEventoPage() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => EventDetailsPage()),
-    );
-  }
 
   void _goToDetalheAtividadePage() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => ActivityDetailsPage()),
+      MaterialPageRoute(builder: (context) => ActivityDetailsPage(activityId: 1,)),
     );
   }
 
     void _goToRegisterPage() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => LoginApp()),
+      MaterialPageRoute(builder: (context) => RegisterPage()),
+    );
+  }
+    void _goToHomePage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => HomePageMain()),
     );
   }
   
@@ -219,24 +199,16 @@ void _goToDetalheEventoPage() {
             child: Text('Criar atividade'),
           ),
           ElevatedButton(
-            onPressed: _goToDetalhesEspacoPage,
-            child: Text('Detalhes de Espaço'),
-          ),
-          ElevatedButton(
-            onPressed: _goToDetalhesRecomedacaoPage,
-            child: Text('Detalhes da Recomendacao'),
-          ),
-          ElevatedButton(
-            onPressed: _goToDetalheEventoPage,
-            child: Text('Detalhes do Evento'),
-          ),
-          ElevatedButton(
             onPressed: _goToDetalheAtividadePage,
             child: Text('Detalhes da Atividade'),
           ),
           ElevatedButton(
             onPressed: _goToRegisterPage,
             child: Text('Registar'),
+          ),
+          ElevatedButton(
+            onPressed: _goToHomePage,
+            child: Text('Homepage'),
           ),
           CustomBottomNavigationBar(
             selectedIndex: _selectedIndex,
