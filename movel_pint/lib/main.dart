@@ -16,6 +16,7 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+
     return MaterialApp(
       home: HomePage1(initialIndex: 0), // Índice inicial para HomePage
     );
