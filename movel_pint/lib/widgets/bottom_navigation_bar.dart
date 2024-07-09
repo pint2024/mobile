@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:movel_pint/calendario/calendario.dart';
 import 'package:movel_pint/main.dart';
-import 'package:movel_pint/notificacoes/Notifications.dart';
-import 'package:movel_pint/perfil/profile.dart';
 import 'package:movel_pint/Forum/Forum.dart';
 
 class CustomBottomNavigationBar extends StatefulWidget {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movel_pint/widgets/MycardAtividade.dart';
+import 'package:movel_pint/widgets/MycardAtividadeEditar.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
 import 'package:movel_pint/widgets/customAppBar.dart';
 import 'package:movel_pint/backend/api_service.dart';
@@ -23,12 +24,12 @@ class asMinhasAtividades extends StatefulWidget {
 }
 
 class _AtividadeState extends State<asMinhasAtividades> {
-  int _selectedIndex = 3;
+  int _selectedIndex = 2;
   PageController _pageController = PageController(initialPage: 0);
   List<Map<String, dynamic>> _conteudos = [];
-  bool _isLoading = true; // Variável para controlar o estado de carregamento
-  String? idAtividade; // Variável para armazenar o ID da atividade selecionada
-  int _selectedFilterIndex = 0; // Índice do filtro selecionado (inicialmente nenhum)
+  bool _isLoading = true; 
+  String? idAtividade; 
+  int _selectedFilterIndex = 0; 
 
   void _onItemTapped(int index) {
     setState(() {
@@ -259,22 +260,22 @@ class VerAtividades extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Center( // Centralizando o título
+            child: Center( 
               child: Text(
                 title,
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black87, // Cor do texto no título da seção
+                  color: Colors.black87, 
                 ),
               ),
             ),
           ),
           Column(
             children: conteudos
-                .map((conteudo) => MyCardAtividade(
+                .map((conteudo) => MyCardAtividadeComEditar(
                       atividade: conteudo,
-                      onTap: () => onCardTap(conteudo['id'].toString()),
+                      onTap: () => onCardTap(conteudo['id'].toString()), onEdit: () {  },
                     ))
                 .toList(),
           ),

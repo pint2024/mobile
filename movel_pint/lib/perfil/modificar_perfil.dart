@@ -18,7 +18,6 @@ class ProfileUpdateScreen extends StatefulWidget {
 class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
   TextEditingController _firstNameController = TextEditingController();
   TextEditingController _lastNameController = TextEditingController();
-  TextEditingController _centerController = TextEditingController();
   TextEditingController _linkedinController = TextEditingController();
   TextEditingController _instagramController = TextEditingController();
   TextEditingController _facebookController = TextEditingController();
@@ -26,15 +25,19 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
   Uint8List? _imageData;
   String? _imageBase64;
 
+  List<dynamic> _centers = [];
+  int? _selectedCenterId;
+
   @override
   void initState() {
     super.initState();
     _firstNameController.text = widget.profileData['nome'] ?? '';
     _lastNameController.text = widget.profileData['sobrenome'] ?? '';
-    _centerController.text = widget.profileData['utilizador_centro']['centro'] ?? '';
     _linkedinController.text = widget.profileData['linkedin'] ?? '';
     _instagramController.text = widget.profileData['instagram'] ?? '';
     _facebookController.text = widget.profileData['facebook'] ?? '';
+    _selectedCenterId = widget.profileData['utilizador_centro']?['id'];
+    _loadCenters();
   }
 
   Future<void> _selectImage() async {
@@ -58,17 +61,28 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
     });
   }
 
+  Future<void> _loadCenters() async {
+    try {
+      final response = await ApiService.listar('centro/simples');
+      setState(() {
+        _centers = response;
+      });
+    } catch (e) {
+      print('Erro ao carregar centros: $e');
+    }
+  }
+
   Future<void> _atualizarPerfil() async {
     try {
       Map<String, dynamic> data = {
         'nome': _firstNameController.text,
         'sobrenome': _lastNameController.text,
-        'utilizador_centro': {'centro': _centerController.text},
+        'centro': _selectedCenterId,
         'linkedin': _linkedinController.text,
         'instagram': _instagramController.text,
         'facebook': _facebookController.text,
       };
-
+      print(data);
       await ApiService.atualizar('utilizador', widget.userId, data: data);
 
       if (_imageData != null) {
@@ -177,8 +191,19 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
                       ),
                     ),
                     SizedBox(height: 10),
-                    TextFormField(
-                      controller: _centerController,
+                    DropdownButtonFormField<int>(
+                      value: _selectedCenterId,
+                      onChanged: (value) {
+                        setState(() {
+                          _selectedCenterId = value;
+                        });
+                      },
+                      items: _centers.map<DropdownMenuItem<int>>((center) {
+                        return DropdownMenuItem<int>(
+                          value: center['id'],
+                          child: Text(center['centro']),
+                        );
+                      }).toList(),
                       decoration: InputDecoration(
                         labelText: 'Centro',
                         border: OutlineInputBorder(),

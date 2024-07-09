@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+//talvez seja preciso isto para as notificações
+
 class NotificationCard extends StatelessWidget {
   final String title;
   final String description;

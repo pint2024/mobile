@@ -1,43 +1,99 @@
 import 'package:flutter/material.dart';
+import 'package:movel_pint/Forum/Forum.dart';
+import 'package:movel_pint/atividade/detalhes_atividade.dart';
 import 'package:movel_pint/backend/api_service.dart';
+import 'package:movel_pint/calendario/calendario.dart';
+import 'package:movel_pint/widgets/MycardAtividade.dart';
+import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
+import 'package:movel_pint/widgets/customAppBar.dart';
 
-class MinhasInscricoesPage extends StatelessWidget {
- 
-   Future<void> _fetchEventsForUser() async {
+class MinhasInscricoesPage extends StatefulWidget {
+  @override
+  _MinhasInscricoesPageState createState() => _MinhasInscricoesPageState();
+}
+
+class _MinhasInscricoesPageState extends State<MinhasInscricoesPage> {
+  int _selectedIndex = 0; 
+  List<Map<String, dynamic>> _atividades = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchAndSetAtividades();
+  }
+
+  Future<void> _fetchAndSetAtividades() async {
     try {
-      final data = await ApiService.listar('participante');
-      if (data != null && data['success'] && data['conteudo'] != null) {
-        List<int> conteudos = [];
-        for (var conteudo in data['conteudo']) {
-          if (conteudo['utilizador'] == 1) {
-            conteudos.add(conteudo['id']);
-          }
-        }
-        print('IDs dos conteúdos inscritos:');
-        conteudos.forEach((id) {
-          print('ID: $id');
-        });
-      } else {
-        print('Erro ao buscar conteúdos inscritos: ${data != null ? data['message'] : 'No data returned'}');
-      }
+      final response =
+          await ApiService.listar('participante', data: {'utilizador': 1});
+      final List<int> conteudoList =
+          response.map<int>((item) => item['conteudo'] as int).toList();
+      final List<Future<Map<String, dynamic>>> fetchTasks =
+          conteudoList.map((conteudoId) async {
+        final atividadeResponse =
+            await ApiService.obter('conteudo', conteudoId);
+        return atividadeResponse as Map<String, dynamic>;
+      }).toList();
+      final List<Map<String, dynamic>> atividades =
+          await Future.wait(fetchTasks);
+      setState(() {
+        _atividades = atividades;
+      });
     } catch (e) {
       print('Erro ao conectar ao servidor: $e');
+    }
+  }
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+
+    switch (index) {
+      case 0:
+        break;
+      case 1:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => CalendarScreen()),
+        );
+        break;
+      case 2:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ForumPage()),
+        );
+        break;
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Minhas Inscrições'),
-      ),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            _fetchEventsForUser();
-          },
-          child: Text('Buscar Meus Conteúdos Inscritos'),
-        ),
+      appBar: CustomAppBar(),
+      body: _atividades.isEmpty
+          ? Center(child: CircularProgressIndicator())
+          : ListView.builder(
+              itemCount: _atividades.length,
+              itemBuilder: (context, index) {
+                final atividade = _atividades[index];
+                return MyCardAtividade(
+                  atividade: atividade,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            ActivityDetailsPage(activityId: atividade['id']),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+      bottomNavigationBar: CustomBottomNavigationBar(
+        selectedIndex: _selectedIndex,
+        onItemTapped: _onItemTapped,
       ),
     );
   }

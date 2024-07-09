@@ -13,6 +13,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       automaticallyImplyLeading: false,
       title: Row(
         children: [
+          IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
           Padding(
             padding: const EdgeInsets.only(left: 16),
             child: Image.asset(
@@ -66,7 +72,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => ProfileApp()), // Navegar para ModificarPerfil
+                MaterialPageRoute(builder: (context) => ProfileApp()), 
               );
             },
           ),
