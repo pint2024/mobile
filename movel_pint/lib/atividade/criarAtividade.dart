@@ -47,7 +47,7 @@ class _CreateActivityPageState extends State<CreateActivityPage> {
         });
       }
     } catch (e) {
-      print("Error loading subtopics: $e");
+      print("Erro ao carregar os subtopicos: $e");
     }
   }
 
@@ -79,21 +79,20 @@ class _CreateActivityPageState extends State<CreateActivityPage> {
         'imagem': html.Blob([_imageData!]),
         'endereco': location,
         'data_evento': dateTime?.toIso8601String(),
-        'utilizador': 1,
+        'utilizador': 1,   // ::::::::::::::::::::::::::::: substituir pelo id do utilizador logado :::::::::::::::::::::::::::::
         'subtopico': subtopic,
         'tipo': CONSTANTS.valores['ATIVIDADE']?['ID'],
       };
-
       try {
         final response = await ApiService.criarFormData("conteudo", data: data, fileKey: "imagem");
 
         if (response != null) {
-          _showSnackbar("Atividade criada com sucesso, pode a ver na página das atividades");
+          _showSnackbar("Atividade criada com sucesso");
         } else {
           print("Erro ao criar atividade: Resposta nula");
         }
       } catch (e) {
-        print("Error creating atividade: $e");
+        print("Erro ao criar atividade atividade: $e");
       }
     }
   }
@@ -102,7 +101,6 @@ class _CreateActivityPageState extends State<CreateActivityPage> {
     html.FileUploadInputElement uploadInput = html.FileUploadInputElement();
     uploadInput.accept = 'image/*';
     uploadInput.click();
-
     uploadInput.onChange.listen((e) {
       final files = uploadInput.files;
       if (files!.isNotEmpty) {
@@ -164,19 +162,19 @@ class _CreateActivityPageState extends State<CreateActivityPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Cancelar Criação da atividade'),
+          title: Text('Cancelar'),
           content: Text('Tem a certeza que quer cancelar a criação da atividade? Os dados não serão guardados.'),
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Fecha o diálogo
+                Navigator.of(context).pop(); 
               },
               child: Text('Continuar'),
             ),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (context) => ForumPage()), // Navega para a página ForumPage
+                  MaterialPageRoute(builder: (context) => ForumPage()), 
                 );
               },
               child: Text('Cancelar'),
@@ -197,10 +195,8 @@ class _CreateActivityPageState extends State<CreateActivityPage> {
       if (!categorias.containsKey(topico)) {
         categorias[topico] = [];
       }
-
       categorias[topico]!.add(area);
     });
-
     return categorias;
   }
 
@@ -209,7 +205,6 @@ class _CreateActivityPageState extends State<CreateActivityPage> {
     _subtopics.forEach((subtopico) {
       final area = subtopico['area'];
       final id = subtopico['id'];
-
       items.add(DropdownMenuItem<String>(
         value: id.toString(),
         child: Text(area),
@@ -229,7 +224,7 @@ class _CreateActivityPageState extends State<CreateActivityPage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                'Criar Nova atividade',
+                'Criar atividade',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 24,
@@ -267,7 +262,7 @@ class _CreateActivityPageState extends State<CreateActivityPage> {
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Por favor, insira o nome da atividade';
+                          return 'Por favor, insira o título da atividade';
                         }
                         return null;
                       },

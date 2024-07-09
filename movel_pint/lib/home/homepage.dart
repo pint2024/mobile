@@ -198,7 +198,7 @@ class _HomePageMainState extends State<HomePageMain> {
                       return Padding(
                         padding: const EdgeInsets.only(right: 8.0),
                         child: MiniCard(
-                          imageUrl: conteudo['imagem'] ?? 'assets/Images/logo2.png',
+                          imageUrl: conteudo['imagem'] ?? 'assets/Images/imageMissing.jpg',
                           title: conteudo['titulo'] ?? 'Título',
                         ),
                       );

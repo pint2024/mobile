@@ -82,7 +82,7 @@ class _RecomendationFormPageState extends State<RecomendationFormPage> {
         'descricao': description,
         'imagem': html.Blob([_imageData!]),
         'endereco': location,
-        'utilizador': 1,
+        'utilizador': 1, // ::::::::::::::::::::::::::::: substituir pelo id do utilizador logado :::::::::::::::::::::::::::::
         'subtopico': subtopic,
         'tipo': CONSTANTS.valores['RECOMENDACAO']?['ID'],
         'classificacao': _rating,

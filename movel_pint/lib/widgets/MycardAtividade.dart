@@ -42,7 +42,7 @@ class MyCardAtividade extends StatelessWidget {
                       radius: 24,
                       backgroundImage: atividade['conteudo_utilizador']['imagem'] != null
                           ? NetworkImage(atividade['conteudo_utilizador']['imagem'])
-                          : AssetImage('assets/Images/logo2.png') as ImageProvider,
+                          : AssetImage('assets/Images/imageMissing.jpg') as ImageProvider,
                     ),
                     SizedBox(width: 12),
                     Expanded(
@@ -98,7 +98,7 @@ class MyCardAtividade extends StatelessWidget {
                       image: DecorationImage(
                         image: atividade['imagem'] != null
                             ? NetworkImage(atividade['imagem'])
-                            : AssetImage('assets/Images/logo2.png') as ImageProvider,
+                            : AssetImage('assets/Images/imageMissing.jpg') as ImageProvider,
                         fit: BoxFit.cover,
                       ),
                     ),

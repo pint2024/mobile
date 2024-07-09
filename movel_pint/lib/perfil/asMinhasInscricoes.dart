@@ -25,7 +25,7 @@ class _MinhasInscricoesPageState extends State<MinhasInscricoesPage> {
   Future<void> _fetchAndSetAtividades() async {
     try {
       final response =
-          await ApiService.listar('participante', data: {'utilizador': 1});
+          await ApiService.listar('participante', data: {'utilizador': 1}); // ::::::::::::::::::::::::::::: substituir pelo id do utilizador logado :::::::::::::::::::::::::::::
       final List<int> conteudoList =
           response.map<int>((item) => item['conteudo'] as int).toList();
       final List<Future<Map<String, dynamic>>> fetchTasks =

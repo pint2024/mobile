@@ -198,7 +198,7 @@ class _HomePageState extends State<ForumPage> {
                       return Padding(
                         padding: const EdgeInsets.only(right: 8.0),
                         child: MiniCard(
-                          imageUrl: conteudo['imagem'] ?? 'assets/Images/logo2.png', // Ajuste conforme sua estrutura de dados
+                          imageUrl: conteudo['imagem'] ?? 'assets/Images/imageMissing.jpg', // Ajuste conforme sua estrutura de dados
                           title: conteudo['titulo'] ?? 'Título',
                         ),
                       );

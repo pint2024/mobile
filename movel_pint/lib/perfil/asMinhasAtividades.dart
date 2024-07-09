@@ -77,11 +77,10 @@ Future<void> _fetchConteudos() async {
       if (data is List) {
         print('Data["data"] é uma lista');
         setState(() {
-          // Filtrando conteúdos apenas do utilizador 1 (supondo 'userId' como chave)
           _conteudos = List<Map<String, dynamic>>.from(data)
-              .where((conteudo) => conteudo['utilizador'] == 1)
+              .where((conteudo) => conteudo['utilizador'] == 1) // ::::::::::::::::::::::::::::: substituir pelo id do utilizador logado :::::::::::::::::::::::::::::
               .toList();
-          _isLoading = false; // Dados carregados, alterar o estado de carregamento
+          _isLoading = false; 
         });
       } else {
         print('Data["data"] não é uma lista, é: ${data.runtimeType}');
@@ -89,7 +88,7 @@ Future<void> _fetchConteudos() async {
     } else {
       print('Nenhum dado encontrado ou dado malformado');
       setState(() {
-        _isLoading = false; // Falha ao carregar dados, alterar o estado de carregamento
+        _isLoading = false;
       });
     }
   } catch (e) {

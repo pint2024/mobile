@@ -80,8 +80,8 @@ class _SpaceFormPageState extends State<SpaceFormPage> {
         'titulo': name,
         'descricao': description,
         'imagem': html.Blob([_imageData!]),
-        'endereco': location,
-        'utilizador': 1,
+        'endereco': location, 
+        'utilizador': 1, // ::::::::::::::::::::::::::::: substituir pelo id do utilizador logado :::::::::::::::::::::::::::::
         'subtopico': subtopic,
         'tipo': CONSTANTS.valores['ESPACO']?['ID'],        
       };

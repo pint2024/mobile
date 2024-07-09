@@ -53,34 +53,38 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
     );
   }
 
-  Future<void> _fetchActivityDetails(int activityId) async {
+Future<void> _fetchActivityDetails(int activityId) async {
+  try {
     setState(() {
       _isLoadingDetails = true;
     });
 
-    try {
-      final data = await ApiService.obter('conteudo', activityId);
+    final data = await ApiService.obter('conteudo', activityId);
+    print('Conteudo:\n');
+    print(data);
+    if (data != null) {
       final users = await _fetchUsers();
       final userRatings = await _fetchUserRatings();
-      if (data != null) {
-        setState(() {
-          _activityDetails = data;
-          _comments = data['comentario_conteudo'];
-          _userMap = users;
-          _userRatings = userRatings;
-        });
-        print('Dados carregados com sucesso');
-      } else {
-        print('Dados não encontrados ou inválidos');
-      }
-    } catch (e) {
-      print('Erro ao carregar dados: $e');
-    } finally {
+
       setState(() {
-        _isLoadingDetails = false; // Desativando carregamento
+        _activityDetails = data;
+        _comments = data['comentario_conteudo'];
+        _userMap = users;
+        _userRatings = userRatings;
       });
+
+      print('Dados carregados com sucesso');
+    } else {
+      print('Dados não encontrados ou inválidos');
     }
+  } catch (e) {
+    print('Erro ao carregar dados: $e');
+  } finally {
+    setState(() {
+      _isLoadingDetails = false;
+    });
   }
+}
 
   Future<Map<int, String>> _fetchUsers() async {
     try {
@@ -97,19 +101,18 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
   Future<Map<int, int>> _fetchUserRatings() async {
     try {
       final ratings =
-          await ApiService.listar('classificacao', data: {'utilizador': '1'});
+          await ApiService.listar('classificacao', data: {'utilizador': '1'}); // ::::::::::::::::::::::::::::: substituir pelo id do utilizador logado :::::::::::::::::::::::::::::
       return Map.fromIterable(ratings,
           key: (rating) => rating['comentario'],
           value: (rating) => (rating['classificacao'] ?? 0) as int);
     } catch (e) {
-      print('Erro ao carregar classificações do usuário: $e');
+      print('Erro ao carregar classificações do utilizador: $e');
       return {};
     }
   }
 
   Future<List<String>> _fetchAlbums() async {
     List<String> albumImages = [];
-
     try {
       final albums = await ApiService.listar('album');
       if (albums != null) {
@@ -126,14 +129,15 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
     } catch (e) {
       print('Erro ao carregar imagens dos álbuns: $e');
     }
-
     return albumImages;
   }
 
   Future<void> _fetchEventsForUser() async {
     try {
       final participants =
-          await ApiService.listar('participante', data: {'utilizador': '1'});
+          await ApiService.listar('participante', data: {'utilizador': '1'}); // ::::::::::::::::::::::::::::: substituir pelo id do utilizador logado :::::::::::::::::::::::::::::
+      print('Participantes:\n');
+      print(participants);
       setState(() {
         _isParticipating = participants
             .any((participant) => participant['conteudo'] == widget.activityId);
@@ -151,10 +155,9 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
 
   Future<void> _postParticipation(int activityId, int userId) async {
     Map<String, dynamic> participationData = {
-      'utilizador': userId,
+      'utilizador': userId, 
       'conteudo': activityId,
     };
-
     try {
       final response =
           await ApiService.postData('participante/criar', participationData);
@@ -170,8 +173,7 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
       var commentToDelete =
           _comments!.firstWhere((comment) => comment['id'] == commentId);
       var userIdOfComment = commentToDelete['utilizador'];
-      var currentUserId = 1;
-
+      var currentUserId = 1; // ::::::::::::::::::::::::::::: substituir pelo id do utilizador logado :::::::::::::::::::::::::::::
       if (userIdOfComment == currentUserId) {
         await ApiService.deleteData('comentario/remover/$commentId');
         setState(() {
@@ -205,9 +207,8 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
     Map<String, dynamic> commentData = {
       'comentario': _commentController.text,
       'conteudo': widget.activityId,
-      'utilizador': 1, // Substitua pelo ID real do usuário
+      'utilizador': 1, // ::::::::::::::::::::::::::::: substituir pelo id do utilizador logado :::::::::::::::::::::::::::::
     };
-
     try {
       final response =
           await ApiService.postData('comentario/criar', commentData);
@@ -238,7 +239,7 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
     Map<String, dynamic> rateData = {
       'comentario': commentId,
       'conteudo': null,
-      'utilizador': 1,
+      'utilizador': 1, // ::::::::::::::::::::::::::::: substituir pelo id do utilizador logado :::::::::::::::::::::::::::::
       'classificacao': rating,
     };
 
@@ -311,8 +312,7 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
               child: Text("Participar"),
               onPressed: () {
                 Navigator.of(context).pop();
-                _postParticipation(widget.activityId,
-                    1); // Substitua 1 pelo ID real do usuário
+                _postParticipation(widget.activityId, 1); // Substitua 1 pelo ID real do usuário
               },
             ),
           ],
@@ -353,7 +353,7 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
     Map<String, dynamic> rateData = {
       'comentario': null,
       'conteudo': contentId,
-      'utilizador': 1,
+      'utilizador': 1, // ::::::::::::::::::::::::::::: substituir pelo id do utilizador logado :::::::::::::::::::::::::::::
       'classificacao': rating,
     };
 
@@ -474,7 +474,7 @@ void _shareContent() {
                           ? NetworkImage(item['imagem'])
                           : AssetImage('assets/Images/${item['imagem']}'))
                       as ImageProvider
-                  : AssetImage('assets/Images/jauzim.jpg'),
+                  : AssetImage('assets/Images/imageMissing.jpg'),
               fit: BoxFit.cover,
             ),
           ),
@@ -614,7 +614,7 @@ void _shareContent() {
 
   Widget _buildCommentItem(Map<String, dynamic> comment) {
     int commentId = comment['id'];
-    var currentUserId = 1; // Substitua pelo ID real do usuário logado
+    var currentUserId = 1;         // ::::::::::::::::::::::::::::: substituir pelo id do utilizador logado :::::::::::::::::::::::::::::
 
     bool isCurrentUserComment = comment['utilizador'] == currentUserId;
     String userName =

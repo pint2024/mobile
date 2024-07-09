@@ -88,7 +88,7 @@ class _EventFormPageState extends State<EventFormPage> {
         'imagem': html.Blob([_imageData!]),
         'endereco': location,
         'data_evento': dateTime?.toIso8601String(),
-        'utilizador': 1,
+        'utilizador': 1,  // ::::::::::::::::::::::::::::: substituir pelo id do utilizador logado :::::::::::::::::::::::::::::
         'subtopico': subtopic,
         'tipo': CONSTANTS.valores['EVENTO']?['ID'],
       };

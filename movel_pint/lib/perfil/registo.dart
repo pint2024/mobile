@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+//acho que esta pagina n serve pra anda
+
 void main() {
   runApp(RegisterApp());
 }

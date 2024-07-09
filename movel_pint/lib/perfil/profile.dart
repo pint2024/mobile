@@ -16,7 +16,7 @@ class ProfileApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: ProfilePage(userId: 1), // Ensure userId is an int
+      home: ProfilePage(userId: 1), // ::::::::::::::::::::::::::::: substituir pelo id do utilizador logado :::::::::::::::::::::::::::::
     );
   }
 }
@@ -185,7 +185,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   ? NetworkImage(_profileData!['imagem'])
                                   : AssetImage(_profileData!['imagem']))
                               as ImageProvider
-                          : AssetImage('assets/Images/jauzim.jpg'),
+                          : AssetImage('assets/Images/imageMissing.png'),
                     ),
                     SizedBox(height: 16),
                     Text(
