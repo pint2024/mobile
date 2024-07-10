@@ -26,8 +26,10 @@ class _EventoState extends State<TodosEventos> {
   int _selectedIndex = 2;
   PageController _pageController = PageController(initialPage: 0);
   List<Map<String, dynamic>> _conteudos = []; // Lista para armazenar conteúdos
+  List<Map<String, dynamic>> _filteredConteudos = []; // Lista para armazenar conteúdos filtrados
   bool _isLoading = true; // Variável para controlar o estado de carregamento
   String? idAtividade; // Variável para armazenar o ID da atividade selecionada
+  String _selectedFilter = 'Mais recentes'; // Filtro inicial selecionado
 
   void _onItemTapped(int index) {
     setState(() {
@@ -54,8 +56,24 @@ class _EventoState extends State<TodosEventos> {
   }
 
   void _handleFilterSelection(String value) {
-    // Aqui você pode adicionar lógica para aplicar o filtro selecionado
-    print('Filtro selecionado: $value');
+    setState(() {
+      _selectedFilter = value;
+      _applyFilter();
+    });
+  }
+
+  void _applyFilter() {
+    setState(() {
+      if (_selectedFilter == 'Mais recentes') {
+        _filteredConteudos.sort((a, b) => b['data_criacao'].compareTo(a['data_criacao']));
+      } else if (_selectedFilter == 'Mais antigas') {
+        _filteredConteudos.sort((a, b) => a['data_criacao'].compareTo(b['data_criacao']));
+      } else if (_selectedFilter == 'A-Z') {
+        _filteredConteudos.sort((a, b) => a['titulo'].compareTo(b['titulo']));
+      } else if (_selectedFilter == 'Z-A') {
+        _filteredConteudos.sort((a, b) => b['titulo'].compareTo(a['titulo']));
+      }
+    });
   }
 
   @override
@@ -78,6 +96,8 @@ class _EventoState extends State<TodosEventos> {
             _conteudos = List<Map<String, dynamic>>.from(data)
                 .where((conteudo) => conteudo['tipo'] == 1)
                 .toList();
+            _filteredConteudos = List<Map<String, dynamic>>.from(_conteudos);
+            _applyFilter();
             _isLoading = false; // Dados carregados, alterar o estado de carregamento
           });
         } else {
@@ -117,7 +137,7 @@ class _EventoState extends State<TodosEventos> {
       nextPage: _nextPage,
       previousPage: _previousPage,
       handleFilterSelection: _handleFilterSelection,
-      conteudos: _conteudos, // Passando a lista de conteúdos para o widget VerEventos
+      conteudos: _filteredConteudos, // Usar a lista filtrada
       isLoading: _isLoading, // Passando o estado de carregamento para o widget VerEventos
       onCardTap: _onCardTap, // Passando a função para manipular o toque no cartão
     );

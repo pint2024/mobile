@@ -26,8 +26,10 @@ class _AtividadeState extends State<TodasAtividades> {
   int _selectedIndex = 2;
   PageController _pageController = PageController(initialPage: 0);
   List<Map<String, dynamic>> _conteudos = [];
+  List<Map<String, dynamic>> _filteredConteudos = []; // Lista filtrada
   bool _isLoading = true; 
   String? idAtividade; 
+  String _selectedFilter = 'Mais recentes'; // Filtro selecionado
 
   void _onItemTapped(int index) {
     setState(() {
@@ -54,8 +56,34 @@ class _AtividadeState extends State<TodasAtividades> {
   }
 
   void _handleFilterSelection(String value) {
-    print('Filtro selecionado: $value');
+    setState(() {
+      _selectedFilter = value;
+      _applyFilter();
+    });
   }
+
+ void _applyFilter() {
+  setState(() {
+    if (_selectedFilter == 'Mais recentes') {
+      _filteredConteudos.sort((a, b) {
+        DateTime dataA = DateTime.parse(a['data_criacao']);
+        DateTime dataB = DateTime.parse(b['data_criacao']);
+        return dataB.compareTo(dataA);
+      });
+    } else if (_selectedFilter == 'Mais antigas') {
+      _filteredConteudos.sort((a, b) {
+        DateTime dataA = DateTime.parse(a['data_criacao']);
+        DateTime dataB = DateTime.parse(b['data_criacao']);
+        return dataA.compareTo(dataB);
+      });
+    } else if (_selectedFilter == 'A-Z') {
+      _filteredConteudos.sort((a, b) => a['titulo'].compareTo(b['titulo']));
+    } else if (_selectedFilter == 'Z-A') {
+      _filteredConteudos.sort((a, b) => b['titulo'].compareTo(a['titulo']));
+    }
+  });
+}
+
 
   @override
   void initState() {
@@ -77,6 +105,8 @@ class _AtividadeState extends State<TodasAtividades> {
             _conteudos = List<Map<String, dynamic>>.from(data)
                 .where((conteudo) => conteudo['tipo'] == 2)
                 .toList();
+            _filteredConteudos = List<Map<String, dynamic>>.from(_conteudos);
+            _applyFilter();
             _isLoading = false; // Dados carregados, alterar o estado de carregamento
           });
         } else {
@@ -113,7 +143,7 @@ class _AtividadeState extends State<TodasAtividades> {
       nextPage: _nextPage,
       previousPage: _previousPage,
       handleFilterSelection: _handleFilterSelection,
-      conteudos: _conteudos,
+      conteudos: _filteredConteudos, // Usar a lista filtrada
       isLoading: _isLoading, // Passando o estado de carregamento para o widget VerAtividades
       onCardTap: _onCardTap, // Passando a função para manipular o toque no cartão
     );
