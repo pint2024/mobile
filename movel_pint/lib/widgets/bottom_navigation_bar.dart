@@ -29,6 +29,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
           icon: Icon(Icons.home),
           label: 'Home',
          // selectedIconTheme: IconThemeData(),
+          //selectedIconTheme: IconThemeData(),
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.calendar_month),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:movel_pint/Forum/Forum.dart';
 
 // Importações dos arquivos de páginas e widgets (exemplo de importações, ajuste conforme sua estrutura)
 import 'package:movel_pint/atividade/TodasAtividades.dart';
@@ -19,6 +20,8 @@ import 'package:movel_pint/widgets/minicard.dart';
 // Importação do serviço de API
 import 'package:movel_pint/backend/api_service.dart';
 
+// Importação da página ForumPage
+
 void main() {
   runApp(MyApp());
 }
@@ -36,6 +39,10 @@ class HomePageMain extends StatefulWidget {
   @override
   _HomePageMainState createState() => _HomePageMainState();
 }
+
+void _onCardTap(String id) {
+    print('ID da atividade: $id');
+  }
 
 class _HomePageMainState extends State<HomePageMain> {
   int _selectedIndex = 0; // índice inicial selecionado
@@ -195,11 +202,17 @@ class _HomePageMainState extends State<HomePageMain> {
                     itemCount: conteudos.take(3).length,
                     itemBuilder: (context, index) {
                       final conteudo = conteudos[index];
+
+                      // Verificação de null para o campo 'tipo'
+                      final tipo = conteudo['tipo'] ?? 0;
+
                       return Padding(
                         padding: const EdgeInsets.only(right: 8.0),
                         child: MiniCard(
                           imageUrl: conteudo['imagem'] ?? 'assets/Images/imageMissing.jpg',
-                          title: conteudo['titulo'] ?? 'Título', atividade: {}, onTap: () {  },
+                          title: conteudo['titulo'] ?? 'Título', 
+                          atividade: conteudo, 
+                          onTap: () => _onCardTap(conteudo['id'].toString()),
                         ),
                       );
                     },
@@ -215,35 +228,32 @@ class _HomePageMainState extends State<HomePageMain> {
     );
   }
 
-
-Widget _buildImageCarousel() {
-  return SizedBox(
-    height: 240,
-    width: 900,
-    child: Stack(
-      children: [
-        PageView.builder(
-          controller: _pageController,
-          scrollDirection: Axis.horizontal,
-          itemCount: _atividades.length,
-          itemBuilder: (BuildContext context, int index) {
-            return Container(
-              width: 300,
-              height: 200,
-              child: Image.network(
-                'https://t4.ftcdn.net/jpg/03/84/55/29/360_F_384552930_zPoe9zgmCF7qgt8fqSedcyJ6C6Ye3dFs.jpg',
-                fit: BoxFit.cover,
-              ),
-            );
-            
-          },
-        ),
-      ],
-    ),
-  );
-}
-
-
+  Widget _buildImageCarousel() {
+    return SizedBox(
+      height: 240,
+      width: 900,
+      child: Stack(
+        children: [
+          PageView.builder(
+            controller: _pageController,
+            scrollDirection: Axis.horizontal,
+            itemCount: _atividades.length,
+            itemBuilder: (BuildContext context, int index) {
+              return Container(
+                width: 300,
+                height: 200,
+                child: Image.network(
+                  'https://t4.ftcdn.net/jpg/03/84/55/29/360_F_384552930_zPoe9zgmCF7qgt8fqSedcyJ6C6Ye3dFs.jpg',
+                  fit: BoxFit.cover,
+                ),
+              );
+              
+            },
+          ),
+        ],
+      ),
+    );
+  }
 
   void _showOptionsDialog(BuildContext context) {
     showDialog(
@@ -330,6 +340,7 @@ class SectionTitle extends StatelessWidget {
           title,
           style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
         ),
+        // Remove or comment out the GestureDetector
         /*GestureDetector(
           onTap: onViewMore,
           child: Text(
