@@ -5,7 +5,7 @@ import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import 'package:movel_pint/backend/myHttp.dart';
 import 'package:movel_pint/utils/constants.dart';
-import 'dart:html' as html; // Importa 'dart:html' para usar Blob
+import 'dart:html' as html; 
 
 
 const String baseUrl = CONSTANTS.API_BASE_URL;
@@ -33,37 +33,71 @@ class ApiService {
     }
   }
 
-  
-static Future<http.Response> criarFormData(String endpoint, {Map<String, dynamic> data = const {}, String fileKey = "", Map<String, dynamic> headers = const {}}) async {
-  try {
-    var url = Uri.parse('$baseUrl/$endpoint/criar');
-    var request = http.MultipartRequest('POST', url);
+  static Future<http.Response> criarFormDataArray(String endpoint, {Map<String, dynamic> data = const {}, String fileKey = "imagem", List<Uint8List> files = const [], Map<String, dynamic> headers = const {}}) async {
+    try {
+      var url = Uri.parse('$baseUrl/$endpoint/criar');
+      var request = http.MultipartRequest('POST', url);
 
-    data.forEach((key, value) {
-      if (key != fileKey) {
+      // Adicionar campos ao formulário
+      data.forEach((key, value) {
         request.fields[key] = value.toString();
+      });
+
+      // Adicionar arquivos de imagem ao formulário
+      for (var i = 0; i < files.length; i++) {
+        var arquivoMultipart = http.MultipartFile.fromBytes(
+          fileKey, // Utilizar a mesma chave para todas as imagens
+          files[i],
+          filename: 'upload_$i.jpg', // Nome do arquivo diferenciado por índice
+        );
+        request.files.add(arquivoMultipart);
       }
-    });
 
-    if (data.containsKey(fileKey) && data[fileKey] != null) {
-      Uint8List imageBytes = await blobToUint8List(data[fileKey]);
+      // Adicionar cabeçalhos ao formulário
+      headers.forEach((key, value) {
+        request.headers[key] = value.toString();
+      });
 
-      var arquivoMultipart = http.MultipartFile.fromBytes(
-        fileKey,
-        imageBytes,
-        filename: 'upload.jpg',
-      );
-      
-      request.files.add(arquivoMultipart);
+      // Enviar a solicitação e aguardar a resposta
+      var response = await http.Response.fromStream(await request.send());
+
+      return response;
+    } catch (error) {
+      throw error;
     }
-
-    var response = await http.Response.fromStream(await request.send());
-
-    return response;
-  } catch (error) {
-    throw error;
   }
-}
+
+  
+  static Future<http.Response> criarFormData(String endpoint, {Map<String, dynamic> data = const {}, String fileKey = "", Map<String, dynamic> headers = const {}}) async {
+    try {
+      var url = Uri.parse('$baseUrl/$endpoint/criar');
+      var request = http.MultipartRequest('POST', url);
+
+      data.forEach((key, value) {
+        if (key != fileKey) {
+          request.fields[key] = value.toString();
+        }
+      });
+
+      if (data.containsKey(fileKey) && data[fileKey] != null) {
+        Uint8List imageBytes = await blobToUint8List(data[fileKey]);
+
+        var arquivoMultipart = http.MultipartFile.fromBytes(
+          fileKey,
+          imageBytes,
+          filename: 'upload.jpg',
+        );
+        
+        request.files.add(arquivoMultipart);
+      }
+
+      var response = await http.Response.fromStream(await request.send());
+
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
 
 // Função para converter Blob em Uint8List
 static Future<Uint8List> blobToUint8List(html.Blob blob) async {

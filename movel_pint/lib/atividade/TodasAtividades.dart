@@ -26,8 +26,8 @@ class _AtividadeState extends State<TodasAtividades> {
   int _selectedIndex = 2;
   PageController _pageController = PageController(initialPage: 0);
   List<Map<String, dynamic>> _conteudos = [];
-  bool _isLoading = true; // Variável para controlar o estado de carregamento
-  String? idAtividade; // Variável para armazenar o ID da atividade selecionada
+  bool _isLoading = true; 
+  String? idAtividade; 
 
   void _onItemTapped(int index) {
     setState(() {

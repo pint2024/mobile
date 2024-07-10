@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:movel_pint/Forum/Forum.dart';
 import 'package:movel_pint/atividade/detalhes_atividade.dart';
 import 'package:movel_pint/backend/api_service.dart';
+import 'package:movel_pint/backend/auth_service.dart';
 import 'package:movel_pint/calendario/calendario.dart';
 import 'package:movel_pint/widgets/MycardAtividade.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
@@ -24,8 +25,11 @@ class _MinhasInscricoesPageState extends State<MinhasInscricoesPage> {
 
   Future<void> _fetchAndSetAtividades() async {
     try {
+      dynamic data = await AuthService.obter();
+      int _userId = data['id'];
+      print("TA AQUI CAMPEAO $_userId");
       final response =
-          await ApiService.listar('participante', data: {'utilizador': 1}); // ::::::::::::::::::::::::::::: substituir pelo id do utilizador logado :::::::::::::::::::::::::::::
+          await ApiService.listar('participante', data: {'utilizador': _userId}); // ::::::::::::::::::::::::::::: substituir pelo id do utilizador logado :::::::::::::::::::::::::::::
       final List<int> conteudoList =
           response.map<int>((item) => item['conteudo'] as int).toList();
       final List<Future<Map<String, dynamic>>> fetchTasks =

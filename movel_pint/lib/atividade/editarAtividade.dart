@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:movel_pint/backend/api_service.dart';
+import 'package:movel_pint/backend/auth_service.dart';
 import 'package:movel_pint/utils/constants.dart';
 import 'package:movel_pint/widgets/customAppBar.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
@@ -32,6 +33,8 @@ class _EditActivityPageState extends State<EditActivityPage> {
   TimeOfDay? _selectedTime;
   String? _selectedSubtopic;
   int _selectedIndex = 2;
+  late int _userId;
+
 
   List<dynamic> _subtopics = [];
 
@@ -40,7 +43,16 @@ class _EditActivityPageState extends State<EditActivityPage> {
     super.initState();
     _initializeFields();
     _loadSubtopics();
+    _loadUserId();
   }
+
+    Future<void> _loadUserId() async {
+    dynamic utilizadorAtual = await AuthService.obter();
+    setState(() {
+      _userId = utilizadorAtual["id"];
+    });
+  }
+
 
   Future<void> _initializeFields() async {
     _tituloController.text = widget.atividade['titulo'] ?? '';
@@ -83,7 +95,7 @@ class _EditActivityPageState extends State<EditActivityPage> {
         'titulo': _tituloController.text,
         'descricao': _descricaoController.text,
         'endereco': _enderecoController.text,
-        'utilizador': 1, // ::::::::::::::::::::::::::::: substituir pelo id do utilizador logado :::::::::::::::::::::::::::::
+        'utilizador': _userId, // ::::::::::::::::::::::::::::: substituir pelo id do utilizador logado :::::::::::::::::::::::::::::
         'subtopico': _selectedSubtopic ?? widget.atividade['subtopico']['id'].toString(),
       };
 

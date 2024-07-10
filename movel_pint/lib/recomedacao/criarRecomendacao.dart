@@ -4,6 +4,7 @@ import 'dart:html' as html;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:movel_pint/backend/api_service.dart';
+import 'package:movel_pint/backend/auth_service.dart';
 import 'package:movel_pint/utils/constants.dart';
 import 'package:movel_pint/widgets/customAppBar.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
@@ -34,14 +35,25 @@ class _RecomendationFormPageState extends State<RecomendationFormPage> {
   double _rating = 0;
   int preco = 0;
   String? _selectedLocation;
+  late int _userId;
+
 
   List<dynamic> _subtopics = [];
 
   @override
   void initState() {
     super.initState();
+    _loadUserId();
     _loadSubtopics();
   }
+
+   Future<void> _loadUserId() async {
+    dynamic utilizadorAtual = await AuthService.obter();
+    setState(() {
+      _userId = utilizadorAtual["id"];
+    });
+  }
+
 
   void _showSnackbar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -82,7 +94,7 @@ class _RecomendationFormPageState extends State<RecomendationFormPage> {
         'descricao': description,
         'imagem': html.Blob([_imageData!]),
         'endereco': location,
-        'utilizador': 1, // ::::::::::::::::::::::::::::: substituir pelo id do utilizador logado :::::::::::::::::::::::::::::
+        'utilizador': _userId, // ::::::::::::::::::::::::::::: substituir pelo id do utilizador logado :::::::::::::::::::::::::::::
         'subtopico': subtopic,
         'tipo': CONSTANTS.valores['RECOMENDACAO']?['ID'],
         'classificacao': _rating,
@@ -323,8 +335,7 @@ class _RecomendationFormPageState extends State<RecomendationFormPage> {
                           ),
                         ),
                         IconButton(
-                          icon: Icon(Icons.map),
-                          onPressed: _openMapDialog,
+                          icon: Icon(Icons.map), onPressed: () {  },
                         ),
                       ],
                     ),

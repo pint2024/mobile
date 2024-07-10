@@ -72,7 +72,6 @@ Future<void> _fetchConteudos() async {
   try {
     dynamic utilizadorAtual = await AuthService.obter();
     int userId = utilizadorAtual["id"];
-    print("FODE-TE ${userId}");
     print('Chamando API para buscar dados...');
     final data = await ApiService.listar('conteudo');
     print('Dados recebidos da API: $data');
@@ -82,7 +81,7 @@ Future<void> _fetchConteudos() async {
         print('Data["data"] é uma lista');
         setState(() {
           _conteudos = List<Map<String, dynamic>>.from(data)
-              .where((conteudo) => conteudo['utilizador'] == userId) // ::::::::::::::::::::::::::::: substituir pelo id do utilizador logado :::::::::::::::::::::::::::::
+              .where((conteudo) => conteudo['utilizador'] == userId) 
               .toList();
           _isLoading = false; 
         });

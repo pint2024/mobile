@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'dart:html' as html;
 import 'package:flutter/material.dart';
 import 'package:movel_pint/backend/api_service.dart';
+import 'package:movel_pint/backend/auth_service.dart';
 import 'package:movel_pint/utils/constants.dart';
 import 'package:movel_pint/widgets/customAppBar.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
@@ -29,13 +30,23 @@ class _CreateActivityPageState extends State<CreateActivityPage> {
   TimeOfDay? _selectedTime;
   String? _selectedSubtopic;
   int _selectedIndex = 2;
+  late int _userId;
+
 
   List<dynamic> _subtopics = [];
 
   @override
   void initState() {
+        _loadUserId();
     super.initState();
     _loadSubtopics();
+  }
+
+  Future<void> _loadUserId() async {
+    dynamic utilizadorAtual = await AuthService.obter();
+    setState(() {
+      _userId = utilizadorAtual["id"];
+    });
   }
 
   Future<void> _loadSubtopics() async {
@@ -79,7 +90,7 @@ class _CreateActivityPageState extends State<CreateActivityPage> {
         'imagem': html.Blob([_imageData!]),
         'endereco': location,
         'data_evento': dateTime?.toIso8601String(),
-        'utilizador': 1,   // ::::::::::::::::::::::::::::: substituir pelo id do utilizador logado :::::::::::::::::::::::::::::
+        'utilizador': _userId,   // ::::::::::::::::::::::::::::: substituir pelo id do utilizador logado :::::::::::::::::::::::::::::
         'subtopico': subtopic,
         'tipo': CONSTANTS.valores['ATIVIDADE']?['ID'],
       };

@@ -99,6 +99,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _buscarMeusInteresses() async {
+    print("OUUUUUUUUUUU ${widget.userId}");  // Imprime o userId
     var response = await ApiService.listar('interesse',
         headers: {'Content-Type': 'application/json'},
         data: {'utilizador': widget.userId});

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movel_pint/atividade/detalhes_atividade.dart';
+import 'package:movel_pint/backend/auth_service.dart';
 import 'package:movel_pint/perfil/profile.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
 import 'package:movel_pint/widgets/customAppBar.dart';
@@ -17,13 +18,23 @@ class _EventCalendarPageState extends State<CalendarScreen> {
   List<Map<String, dynamic>> _selectedEvents = [];
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
-  int _selectedIndex = 1; // Índice inicial da bottom navigation bar
+  int _selectedIndex = 1; 
+  late int _userId;
 
 
   @override
   void initState() {
+    _loadUserId();
     super.initState();
+ 
     _fetchEventsForUser();
+  }
+
+    Future<void> _loadUserId() async {
+    dynamic utilizadorAtual = await AuthService.obter();
+    setState(() {
+      _userId = utilizadorAtual["id"];
+    });
   }
 
   Future<void> _fetchEventsForUser() async {
@@ -35,7 +46,7 @@ class _EventCalendarPageState extends State<CalendarScreen> {
 
         for (var eventData in data) {
           // ::::::::::::::::::::::::::::: substituir pelo id do utilizador logado :::::::::::::::::::::::::::::
-          if (eventData['utilizador'] == 1 && (eventData['participante_conteudo']['tipo'] == 1 || eventData['participante_conteudo']['tipo'] == 2)) { 
+          if (eventData['utilizador'] == _userId && (eventData['participante_conteudo']['tipo'] == 1 || eventData['participante_conteudo']['tipo'] == 2)) { 
             DateTime eventDate = DateTime.parse(eventData['participante_conteudo']['data_evento']).toLocal();
             DateTime eventDay = DateTime(eventDate.year, eventDate.month, eventDate.day);
             if (!events.containsKey(eventDay)) {
@@ -74,7 +85,7 @@ class _EventCalendarPageState extends State<CalendarScreen> {
       body: Column(
         children: [
           Container(
-            color: Colors.grey.shade200, // Cor de fundo do calendário
+            color: Colors.grey.shade200, 
             child: TableCalendar(
               firstDay: DateTime.utc(2020, 1, 1),
               lastDay: DateTime.utc(2030, 12, 31),
@@ -187,7 +198,7 @@ class _EventCalendarPageState extends State<CalendarScreen> {
         final event = _selectedEvents[index];
         return GestureDetector(
           onTap: () {
-            _navigateToEventDetails(event['id']); // Redireciona para a página de detalhes com o id do evento
+            _navigateToEventDetails(event['id']);
           },
           child: Card(
             child: ListTile(

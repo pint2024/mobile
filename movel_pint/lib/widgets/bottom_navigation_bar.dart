@@ -27,17 +27,17 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
         BottomNavigationBarItem(
           icon: Icon(Icons.home),
           label: 'Home',
-          //selectedIconTheme: IconThemeData(),
+          selectedIconTheme: IconThemeData(),
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.calendar_month),
           label: 'Calendário',
-          //selectedIconTheme: IconThemeData(),
+          selectedIconTheme: IconThemeData(),
         ),
         BottomNavigationBarItem(
           icon: Icon(Ionicons.grid_outline),
           label: 'Forum',
-          //selectedIconTheme: IconThemeData(),
+          selectedIconTheme: IconThemeData(),
         ),
       ],
       currentIndex: widget.selectedIndex,
@@ -59,7 +59,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
             context,
             MaterialPageRoute(builder: (context) => ForumPage()),
           );
-        } else if (index == 4) {
+        } else if (index >= 3 || index < 0) {
           print("ndada");
           
         }

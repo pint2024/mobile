@@ -36,7 +36,11 @@ class AlbumSliderPage extends StatelessWidget {
           },
         ),
       ),
-      bottomNavigationBar: CustomBottomNavigationBar(selectedIndex: 3, onItemTapped: (int ) {  },
+      bottomNavigationBar: CustomBottomNavigationBar(
+        selectedIndex: 2, // Pode ajustar este valor conforme a necessidade
+        onItemTapped: (int index) {
+          // Ação a ser tomada quando um item for selecionado
+        },
       ),
     );
   }
