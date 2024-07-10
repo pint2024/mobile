@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'dart:html' as html;
 import 'package:flutter/material.dart';
 import 'package:movel_pint/backend/api_service.dart';
+import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
 import 'package:movel_pint/widgets/customAppBar.dart';
 
 class ProfileUpdateScreen extends StatefulWidget {
@@ -27,6 +28,8 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
 
   List<dynamic> _centers = [];
   int? _selectedCenterId;
+  int _selectedIndex = 2;
+
 
   @override
   void initState() {
@@ -40,6 +43,12 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
     _loadCenters();
   }
 
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+  
   Future<void> _selectImage() async {
     html.FileUploadInputElement uploadInput = html.FileUploadInputElement();
     uploadInput.accept = 'image/*';
@@ -244,6 +253,11 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
             ],
           ),
         ),
+      ),
+
+    bottomNavigationBar: CustomBottomNavigationBar(
+        selectedIndex: _selectedIndex,
+        onItemTapped: _onItemTapped,
       ),
     );
   }

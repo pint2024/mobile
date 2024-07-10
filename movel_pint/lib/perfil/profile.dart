@@ -99,7 +99,6 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _buscarMeusInteresses() async {
-    print("OUUUUUUUUUUU ${widget.userId}");  // Imprime o userId
     var response = await ApiService.listar('interesse',
         headers: {'Content-Type': 'application/json'},
         data: {'utilizador': widget.userId});
@@ -112,7 +111,7 @@ class _ProfilePageState extends State<ProfilePage> {
         _selectedInteresses = List.from(_meusInteresses);
         _selectedInteresseIds = interesses
             .map((item) => item['interesse_subtopico']['id'] as int)
-            .toList(); // Inicializa os IDs
+            .toList();
       });
       print(_meusInteresses);
     } else {
@@ -343,6 +342,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             ),
                           ),
                         ),
+                        SizedBox(width: 8),
                         Expanded(
                           child: ElevatedButton(
                             onPressed: () {

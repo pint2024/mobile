@@ -24,9 +24,8 @@ class _EventCalendarPageState extends State<CalendarScreen> {
 
   @override
   void initState() {
-    _loadUserId();
     super.initState();
- 
+    _loadUserId();
     _fetchEventsForUser();
   }
 
