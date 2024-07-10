@@ -55,7 +55,7 @@ class _HomePageState extends State<ForumPage> {
       if (data != null) {
         print('Data não é nulo');
         if (data is List) {
-          print('Data["data"] é uma lista');
+          print('Data é uma lista');
           setState(() {
             _atividades = List<Map<String, dynamic>>.from(data).where((conteudo) => conteudo['tipo'] == 2).toList();
             _eventos = List<Map<String, dynamic>>.from(data).where((conteudo) => conteudo['tipo'] == 1).toList();
@@ -64,7 +64,7 @@ class _HomePageState extends State<ForumPage> {
             _isLoading = false; // Dados carregados, alterar o estado de carregamento
           });
         } else {
-          print('Data["data"] não é uma lista, é: ${data.runtimeType}');
+          print('Data não é uma lista, é: ${data.runtimeType}');
           setState(() {
             _isLoading = false; // Dados carregados (ou falha), alterar o estado de carregamento
           });
@@ -88,6 +88,10 @@ class _HomePageState extends State<ForumPage> {
       _selectedIndex = index;
     });
     _pageController.jumpToPage(index);
+  }
+
+  void _onCardTap(String id) {
+    print('ID da atividade: $id');
   }
 
   @override
@@ -200,6 +204,8 @@ class _HomePageState extends State<ForumPage> {
                         child: MiniCard(
                           imageUrl: conteudo['imagem'] ?? 'assets/Images/imageMissing.jpg', // Ajuste conforme sua estrutura de dados
                           title: conteudo['titulo'] ?? 'Título',
+                          atividade: conteudo,
+                          onTap: () => _onCardTap(conteudo['id'].toString()),
                         ),
                       );
                     },
@@ -310,7 +316,7 @@ class _HomePageState extends State<ForumPage> {
     );
   }
 
-    String _selectedOption = ''; // Estado para armazenar a opção selecionada
+  String _selectedOption = ''; // Estado para armazenar a opção selecionada
 
   void _selectOption(String option) {
     setState(() {
@@ -345,5 +351,3 @@ class SectionTitle extends StatelessWidget {
     );
   }
 }
-
-

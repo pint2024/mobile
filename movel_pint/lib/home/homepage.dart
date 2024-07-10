@@ -199,7 +199,7 @@ class _HomePageMainState extends State<HomePageMain> {
                         padding: const EdgeInsets.only(right: 8.0),
                         child: MiniCard(
                           imageUrl: conteudo['imagem'] ?? 'assets/Images/imageMissing.jpg',
-                          title: conteudo['titulo'] ?? 'Título',
+                          title: conteudo['titulo'] ?? 'Título', atividade: {}, onTap: () {  },
                         ),
                       );
                     },
