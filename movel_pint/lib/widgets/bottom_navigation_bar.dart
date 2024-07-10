@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:movel_pint/calendario/calendario.dart';
+import 'package:movel_pint/home/homepage.dart';
 import 'package:movel_pint/main.dart';
 import 'package:movel_pint/Forum/Forum.dart';
 
@@ -47,7 +48,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
         if (index == 0) {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => HomePage1()),
+            MaterialPageRoute(builder: (context) => HomePageMain()),
           );
         } else if (index == 1) {
           Navigator.push(
