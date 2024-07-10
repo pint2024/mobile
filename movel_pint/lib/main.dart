@@ -12,15 +12,18 @@ import 'package:movel_pint/home/homepage.dart';
 
 void main() async {
   await UserPreferences().init();
-  runApp(MyApp());
+  final userPreferences = UserPreferences();
+  String? token = userPreferences.authToken;
+  runApp(MyApp(token: token));
 }
 
 class MyApp extends StatelessWidget {
+  final String? token;
+  MyApp({required this.token});
   @override
   Widget build(BuildContext context) {
-
     return MaterialApp(
-      home: HomePage1(initialIndex: 0), // Índice inicial para HomePage
+      home: token == null? LoginPage(): HomePage1(initialIndex: 0), // Índice inicial para HomePage
     );
   }
 }

@@ -72,10 +72,3 @@ flutter {
     source '../..'
 }
 
-    implementation 'com.facebook.android:facebook-android-sdk:[5,6)'
-
-    implementation 'com.google.android.gms:play-services-auth:19.0.0'
-}
-
-// Aplicar o plugin fora do bloco de dependências
-//apply plugin: 'com.google.gms.google-services'
