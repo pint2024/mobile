@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:jwt_decoder/jwt_decoder.dart';
-import 'package:movel_pint/backend/api_service.dart'; 
+import 'package:movel_pint/backend/api_service.dart';
 
 class RecuperarSenha extends StatefulWidget {
   @override
@@ -29,17 +27,23 @@ class _RecuperarSenhaState extends State<RecuperarSenha> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color.fromRGBO(57, 99, 156, 1.0),
-        title: Text('Recuperar Senha'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.close),
-            onPressed: () {
-              _showCancelDialog(context);
-            },
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(60),
+        child: AppBar(
+          backgroundColor: const Color.fromRGBO(57, 99, 156, 1.0),
+          title: Row(
+            children: [
+              Padding(
+                padding: EdgeInsets.only(left: 16),
+                child: Image.asset(
+                  'assets/Images/logo.png', // Caminho da imagem de TI
+                  width: 40,
+                  height: 40,
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
       body: Container(
         color: const Color.fromRGBO(57, 99, 156, 1.0),
@@ -110,7 +114,7 @@ class _RecuperarSenhaState extends State<RecuperarSenha> {
                                   AlwaysStoppedAnimation<Color>(Colors.white),
                             )
                           : Text(
-                              'Enviar',
+                              'enviar',
                               style: TextStyle(
                                 color: Colors.white,
                               ),
@@ -140,7 +144,8 @@ class _RecuperarSenhaState extends State<RecuperarSenha> {
         _isLoading = false;
       });
     } else {
-      final response = await ApiService.postData('autenticacao/forgot-password', {'email': email});
+      final response = await ApiService.postData(
+          'autenticacao/forgot-password', {'email': email});
 
       setState(() {
         _isLoading = false;
@@ -151,8 +156,8 @@ class _RecuperarSenhaState extends State<RecuperarSenha> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('Código de Verificação Enviado'),
-              content: Text(response['data']),
+              title: Text('Enviado'),
+              content: Text('Link de recuperação da palavra-passe foi enviado para o seu e-mail.'),
               actions: <Widget>[
                 TextButton(
                   child: Text('OK'),
@@ -166,7 +171,10 @@ class _RecuperarSenhaState extends State<RecuperarSenha> {
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(response != null ? response['data'] : 'Erro desconhecido.')),
+          SnackBar(
+              content: Text(response != null
+                  ? response['data']
+                  : 'Erro desconhecido.')),
         );
       }
     }
@@ -178,7 +186,8 @@ class _RecuperarSenhaState extends State<RecuperarSenha> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Sem Conexão'),
-          content: Text('Por favor, verifique sua conexão com a internet e tente novamente.'),
+          content: Text(
+              'Por favor, verifique sua conexão com a internet e tente novamente.'),
           actions: <Widget>[
             TextButton(
               child: Text('Cancelar'),
@@ -190,34 +199,7 @@ class _RecuperarSenhaState extends State<RecuperarSenha> {
               child: Text('Continuar'),
               onPressed: () {
                 Navigator.of(context).pop();
-                _handlePasswordRecovery(context); 
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showCancelDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Cancelar Recuperação'),
-          content: Text('Tem certeza de que deseja cancelar a recuperação de senha?'),
-          actions: <Widget>[
-            TextButton(
-              child: Text('Não'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: Text('Sim'),
-              onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.pop(context); 
+                _handlePasswordRecovery(context);
               },
             ),
           ],
