@@ -44,7 +44,7 @@ class AlbumSliderPage extends StatelessWidget {
                     right: 16.0,
                     child: FloatingActionButton(
                       onPressed: () {
-                        // Ação a ser tomada quando o botão "+" for pressionado
+                        // Adicionar fotos ao album (ainda n implementado)
                       },
                       child: Icon(Icons.add),
                     ),
@@ -53,9 +53,8 @@ class AlbumSliderPage extends StatelessWidget {
               ),
       ),
       bottomNavigationBar: CustomBottomNavigationBar(
-        selectedIndex: 2, // Pode ajustar este valor conforme a necessidade
+        selectedIndex: 2, 
         onItemTapped: (int index) {
-          // Ação a ser tomada quando um item for selecionado
         },
       ),
     );

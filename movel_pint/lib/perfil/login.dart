@@ -4,12 +4,12 @@ import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:movel_pint/backend/api_service.dart';
-import 'package:flutter/gestures.dart'; // Para o TapGestureRecognizer
+import 'package:flutter/gestures.dart'; 
 import 'package:movel_pint/backend/auth_service.dart';
 import 'package:movel_pint/home/homepage.dart';
 import 'package:movel_pint/main.dart';
 import 'package:movel_pint/utils/user_preferences.dart';
-import 'recuperar_senha.dart'; // Importe o arquivo recuperar_senha.dart
+import 'recuperar_senha.dart'; 
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -48,7 +48,6 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   void dispose() {
-    // Descartando os controladores quando não são mais necessários
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
@@ -271,7 +270,7 @@ class _LoginPageState extends State<LoginPage> {
                                 },
                               ),
                             ),
-                            SizedBox(width: 20), // Espaçamento entre os ícones
+                            SizedBox(width: 20), 
                             Container(
                               padding: EdgeInsets.all(8),
                               decoration: BoxDecoration(
@@ -345,9 +344,7 @@ class _LoginPageState extends State<LoginPage> {
       try {
         GoogleSignIn googleSignIn = GoogleSignIn(scopes: ['email']);
         GoogleSignInAccount? googleUser = await googleSignIn.signIn();
-        // O código continua daqui
       } catch (error) {
-        // Tratamento de erros (opcional)
       }
     }
   }

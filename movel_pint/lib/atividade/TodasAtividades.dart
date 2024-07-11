@@ -26,10 +26,10 @@ class _AtividadeState extends State<TodasAtividades> {
   int _selectedIndex = 2;
   PageController _pageController = PageController(initialPage: 0);
   List<Map<String, dynamic>> _conteudos = [];
-  List<Map<String, dynamic>> _filteredConteudos = []; // Lista filtrada
+  List<Map<String, dynamic>> _filteredConteudos = []; 
   bool _isLoading = true; 
   String? idAtividade; 
-  String _selectedFilter = 'Mais recentes'; // Filtro selecionado
+  String _selectedFilter = 'Mais recentes';
 
   void _onItemTapped(int index) {
     setState(() {
@@ -107,7 +107,7 @@ class _AtividadeState extends State<TodasAtividades> {
                 .toList();
             _filteredConteudos = List<Map<String, dynamic>>.from(_conteudos);
             _applyFilter();
-            _isLoading = false; // Dados carregados, alterar o estado de carregamento
+            _isLoading = false; 
           });
         } else {
           print('Data["data"] não é uma lista, é: ${data.runtimeType}');
@@ -115,13 +115,13 @@ class _AtividadeState extends State<TodasAtividades> {
       } else {
         print('Nenhum dado encontrado ou dado malformado');
         setState(() {
-          _isLoading = false; // Falha ao carregar dados, alterar o estado de carregamento
+          _isLoading = false;
         });
       }
     } catch (e) {
       print('Erro ao carregar conteúdos: $e');
       setState(() {
-        _isLoading = false; // Erro ao carregar dados, alterar o estado de carregamento
+        _isLoading = false; 
       });
     }
   }
@@ -143,9 +143,9 @@ class _AtividadeState extends State<TodasAtividades> {
       nextPage: _nextPage,
       previousPage: _previousPage,
       handleFilterSelection: _handleFilterSelection,
-      conteudos: _filteredConteudos, // Usar a lista filtrada
-      isLoading: _isLoading, // Passando o estado de carregamento para o widget VerAtividades
-      onCardTap: _onCardTap, // Passando a função para manipular o toque no cartão
+      conteudos: _filteredConteudos,
+      isLoading: _isLoading, 
+      onCardTap: _onCardTap,
     );
   }
 }
@@ -158,8 +158,8 @@ class VerAtividades extends StatelessWidget {
   final VoidCallback previousPage;
   final Function(String) handleFilterSelection;
   final List<Map<String, dynamic>> conteudos;
-  final bool isLoading; // Adicionando o parâmetro isLoading
-  final Function(String) onCardTap; // Adicionando a função de callback
+  final bool isLoading;  
+  final Function(String) onCardTap; 
 
   const VerAtividades({
     required this.selectedIndex,
@@ -169,8 +169,8 @@ class VerAtividades extends StatelessWidget {
     required this.previousPage,
     required this.handleFilterSelection,
     required this.conteudos,
-    required this.isLoading, // Inicializando o parâmetro
-    required this.onCardTap, // Inicializando o parâmetro
+    required this.isLoading,
+    required this.onCardTap, 
   });
 
   @override
@@ -179,7 +179,7 @@ class VerAtividades extends StatelessWidget {
     return Scaffold(
       appBar: CustomAppBar(),
       body: isLoading
-          ? Center(child: CircularProgressIndicator()) // Exibindo a rodinha de carregamento
+          ? Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
               child: Center(
                 child: Column(

@@ -92,7 +92,7 @@ class _SpaceFormPageState extends State<SpaceFormPage> {
         'descricao': description,
         'imagem': html.Blob([_imageData!]),
         'endereco': location, 
-        'utilizador': _userId, // ::::::::::::::::::::::::::::: substituir pelo id do utilizador logado :::::::::::::::::::::::::::::
+        'utilizador': _userId, 
         'subtopico': subtopic,
         'tipo': CONSTANTS.valores['ESPACO']?['ID'],        
       };
@@ -203,7 +203,7 @@ class _SpaceFormPageState extends State<SpaceFormPage> {
     final selectedLocation = await showDialog<String>(
       context: context,
       builder: (BuildContext context) {
-        LatLng _initialPosition = LatLng(-15.7942, -47.8822); // Default location
+        LatLng _initialPosition = LatLng(-15.7942, -47.8822); 
         LatLng? _pickedLocation;
 
         return AlertDialog(
@@ -224,7 +224,7 @@ class _SpaceFormPageState extends State<SpaceFormPage> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Fecha o diálogo sem selecionar
+                Navigator.of(context).pop();
               },
               child: Text('Cancelar'),
             ),
@@ -233,7 +233,7 @@ class _SpaceFormPageState extends State<SpaceFormPage> {
                 if (_pickedLocation != null) {
                   Navigator.of(context).pop(
                     '${_pickedLocation!.latitude}, ${_pickedLocation!.longitude}',
-                  ); // Fecha o diálogo com a localização selecionada
+                  ); 
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(

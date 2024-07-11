@@ -44,7 +44,6 @@ class _EventCalendarPageState extends State<CalendarScreen> {
         Map<DateTime, List<Map<String, dynamic>>> events = {};
 
         for (var eventData in data) {
-          // ::::::::::::::::::::::::::::: substituir pelo id do utilizador logado :::::::::::::::::::::::::::::
           if (eventData['utilizador'] == _userId && (eventData['participante_conteudo']['tipo'] == 1 || eventData['participante_conteudo']['tipo'] == 2)) { 
             DateTime eventDate = DateTime.parse(eventData['participante_conteudo']['data_evento']).toLocal();
             DateTime eventDay = DateTime(eventDate.year, eventDate.month, eventDate.day);

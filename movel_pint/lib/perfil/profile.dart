@@ -183,10 +183,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _logout() async {
-    // Clear the auth token from shared preferences
     UserPreferences().authToken = null;
-
-    // Navigate to the login page
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (context) => LoginPage()),

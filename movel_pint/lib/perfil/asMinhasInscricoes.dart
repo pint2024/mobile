@@ -29,7 +29,7 @@ class _MinhasInscricoesPageState extends State<MinhasInscricoesPage> {
       int _userId = data['id'];
       print("TA AQUI CAMPEAO $_userId");
       final response =
-          await ApiService.listar('participante', data: {'utilizador': _userId}); // ::::::::::::::::::::::::::::: substituir pelo id do utilizador logado :::::::::::::::::::::::::::::
+          await ApiService.listar('participante', data: {'utilizador': _userId}); 
       final List<int> conteudoList =
           response.map<int>((item) => item['conteudo'] as int).toList();
       final List<Future<Map<String, dynamic>>> fetchTasks =

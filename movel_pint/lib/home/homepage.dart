@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:movel_pint/Forum/Forum.dart';
-
-// Importações dos arquivos de páginas e widgets (exemplo de importações, ajuste conforme sua estrutura)
 import 'package:movel_pint/atividade/TodasAtividades.dart';
 import 'package:movel_pint/atividade/criarAtividade.dart';
 import 'package:movel_pint/espaço/TodosEspacos.dart';
@@ -10,17 +8,12 @@ import 'package:movel_pint/evento/TodosEventos.dart';
 import 'package:movel_pint/evento/criarEvento.dart';
 import 'package:movel_pint/recomedacao/TodasRecomendacoes.dart';
 import 'package:movel_pint/recomedacao/criarRecomendacao.dart';
-
-// Importações de constantes, barra de navegação personalizada e mini cards
 import 'package:movel_pint/utils/constants.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
 import 'package:movel_pint/widgets/customAppBar.dart';
 import 'package:movel_pint/widgets/minicard.dart';
-
-// Importação do serviço de API
 import 'package:movel_pint/backend/api_service.dart';
 
-// Importação da página ForumPage
 
 void main() {
   runApp(MyApp());
@@ -30,7 +23,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: HomePageMain(), // Alteração aqui para HomePageMain
+      home: HomePageMain(), 
     );
   }
 }
@@ -45,7 +38,7 @@ void _onCardTap(String id) {
   }
 
 class _HomePageMainState extends State<HomePageMain> {
-  int _selectedIndex = 0; // índice inicial selecionado
+  int _selectedIndex = 0; 
   final PageController _pageController = PageController();
   List<Map<String, dynamic>> _atividades = [];
   List<Map<String, dynamic>> _eventos = [];
@@ -74,24 +67,24 @@ class _HomePageMainState extends State<HomePageMain> {
             _eventos = List<Map<String, dynamic>>.from(data).where((conteudo) => conteudo['tipo'] == 1).toList();
             _recomendacoes = List<Map<String, dynamic>>.from(data).where((conteudo) => conteudo['tipo'] == 3).toList();
             _espacos = List<Map<String, dynamic>>.from(data).where((conteudo) => conteudo['tipo'] == 4).toList();
-            _isLoading = false; // Dados carregados, alterar o estado de carregamento
+            _isLoading = false; 
           });
         } else {
           print('Data["data"] não é uma lista, é: ${data.runtimeType}');
           setState(() {
-            _isLoading = false; // Dados carregados (ou falha), alterar o estado de carregamento
+            _isLoading = false; 
           });
         }
       } else {
         print('Nenhum dado encontrado ou dado malformado');
         setState(() {
-          _isLoading = false; // Dados malformados, alterar o estado de carregamento
+          _isLoading = false;
         });
       }
     } catch (e) {
       print('Erro ao carregar conteúdos: $e');
       setState(() {
-        _isLoading = false; // Erro ao carregar dados, alterar o estado de carregamento
+        _isLoading = false; 
       });
     }
   }
@@ -113,12 +106,8 @@ class _HomePageMainState extends State<HomePageMain> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Carrossel de imagens
                   _buildImageCarousel(),
-
                   SizedBox(height: 20.0),
-
-                  // Título "Últimas atividades"
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: Text(
@@ -129,10 +118,7 @@ class _HomePageMainState extends State<HomePageMain> {
                       ),
                     ),
                   ),
-
                   SizedBox(height: 10.0),
-
-                  // Lista de últimas atividades
                   buildSection('Atividades', _atividades, context),
                   buildSection('Eventos', _eventos, context),
                   buildSection('Recomendações', _recomendacoes, context),
@@ -202,8 +188,6 @@ class _HomePageMainState extends State<HomePageMain> {
                     itemCount: conteudos.take(3).length,
                     itemBuilder: (context, index) {
                       final conteudo = conteudos[index];
-
-                      // Verificação de null para o campo 'tipo'
                       final tipo = conteudo['tipo'] ?? 0;
 
                       return Padding(
@@ -340,14 +324,6 @@ class SectionTitle extends StatelessWidget {
           title,
           style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
         ),
-        // Remove or comment out the GestureDetector
-        /*GestureDetector(
-          onTap: onViewMore,
-          child: Text(
-            'Ver mais...',
-            style: TextStyle(fontSize: 14.0, color: Colors.blue),
-          ),
-        ),*/
       ],
     );
   }

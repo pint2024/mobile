@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
-import 'package:movel_pint/backend/api_service.dart'; // Certifique-se de importar sua classe ApiService
+import 'package:movel_pint/backend/api_service.dart'; 
 
 class RecuperarSenha extends StatefulWidget {
   @override
@@ -190,7 +190,7 @@ class _RecuperarSenhaState extends State<RecuperarSenha> {
               child: Text('Continuar'),
               onPressed: () {
                 Navigator.of(context).pop();
-                _handlePasswordRecovery(context); // Retentativa do envio ao continuar
+                _handlePasswordRecovery(context); 
               },
             ),
           ],
@@ -217,7 +217,7 @@ class _RecuperarSenhaState extends State<RecuperarSenha> {
               child: Text('Sim'),
               onPressed: () {
                 Navigator.of(context).pop();
-                Navigator.pop(context); // Fecha a tela de recuperação de senha
+                Navigator.pop(context); 
               },
             ),
           ],

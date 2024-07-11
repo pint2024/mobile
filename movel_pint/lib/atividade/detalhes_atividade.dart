@@ -161,7 +161,7 @@ Future<Map<int, int>> _fetchUserRatings() async {
   Future<void> _fetchEventsForUser() async {
     try {
     print("fetch _fetchEventsForUser");
-      final participants = await ApiService.listar('participante', data: {'utilizador': _userId}); // ::::::::::::::::::::::::::::: substituir pelo id do utilizador logado :::::::::::::::::::::::::::::
+      final participants = await ApiService.listar('participante', data: {'utilizador': _userId});
       print('Participantes:\n');
       print(participants);
       setState(() {
@@ -200,7 +200,7 @@ Future<void> _deleteComment(int commentId) async {
     var commentToDelete =
         _comments!.firstWhere((comment) => comment['id'] == commentId);
     var userIdOfComment = commentToDelete['utilizador'];
-    var currentUserId = _userId; // ::::::::::::::::::::::::::::: substituir pelo id do utilizador logado :::::::::::::::::::::::::::::
+    var currentUserId = _userId;
     
     if (userIdOfComment == currentUserId) {
       await ApiService.deleteData('comentario/remover/$commentId');
@@ -239,7 +239,7 @@ Future<void> _deleteComment(int commentId) async {
     Map<String, dynamic> commentData = {
       'comentario': _commentController.text,
       'conteudo': widget.activityId,
-      'utilizador': _userId, // ::::::::::::::::::::::::::::: substituir pelo id do utilizador logado :::::::::::::::::::::::::::::
+      'utilizador': _userId, 
     };
     try {
       final response =
@@ -271,7 +271,7 @@ Future<void> _rateComment(int commentId, int rating) async {
   Map<String, dynamic> rateData = {
     'comentario': commentId,
     'conteudo': null,
-    'utilizador': _userId, // ::::::::::::::::::::::::::::: substituir pelo id do utilizador logado :::::::::::::::::::::::::::::
+    'utilizador': _userId, 
     'classificacao': rating,
   };
 
@@ -326,8 +326,8 @@ Future<void> _confirmDeleteComment(int commentId) async {
           TextButton(
             child: Text("Apagar"),
             onPressed: () async {
-              Navigator.of(context).pop(); // Close the dialog first
-              await _deleteComment(commentId); // Then delete the comment
+              Navigator.of(context).pop();
+              await _deleteComment(commentId); 
             },
           ),
         ],
@@ -394,7 +394,7 @@ Future<void> _confirmDeleteComment(int commentId) async {
     Map<String, dynamic> rateData = {
       'comentario': null,
       'conteudo': contentId,
-      'utilizador': _userId, // ::::::::::::::::::::::::::::: substituir pelo id do utilizador logado :::::::::::::::::::::::::::::
+      'utilizador': _userId, 
       'classificacao': rating,
     };
 

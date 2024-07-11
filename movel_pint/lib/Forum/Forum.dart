@@ -61,24 +61,24 @@ class _HomePageState extends State<ForumPage> {
             _eventos = List<Map<String, dynamic>>.from(data).where((conteudo) => conteudo['tipo'] == 1).toList();
             _recomendacoes = List<Map<String, dynamic>>.from(data).where((conteudo) => conteudo['tipo'] == 3).toList();
             _espacos = List<Map<String, dynamic>>.from(data).where((conteudo) => conteudo['tipo'] == 4).toList();
-            _isLoading = false; // Dados carregados, alterar o estado de carregamento
+            _isLoading = false; 
           });
         } else {
           print('Data não é uma lista, é: ${data.runtimeType}');
           setState(() {
-            _isLoading = false; // Dados carregados (ou falha), alterar o estado de carregamento
+            _isLoading = false; 
           });
         }
       } else {
         print('Nenhum dado encontrado ou dado malformado');
         setState(() {
-          _isLoading = false; // Dados malformados, alterar o estado de carregamento
+          _isLoading = false;
         });
       }
     } catch (e) {
       print('Erro ao carregar conteúdos: $e');
       setState(() {
-        _isLoading = false; // Erro ao carregar dados, alterar o estado de carregamento
+        _isLoading = false;
       });
     }
   }
@@ -132,10 +132,10 @@ class _HomePageState extends State<ForumPage> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            _buildAddButton(), // Adiciona o botão "Adicionar" ao lado do título "Fórum"
+            _buildAddButton(), 
           ],
         ),
-        SizedBox(height: 20.0), // Espaço entre o botão e a seção de atividades
+        SizedBox(height: 20.0),
         buildSection('Atividades', _atividades, context),
         buildSection('Eventos', _eventos, context),
         buildSection('Recomendações', _recomendacoes, context),
@@ -145,7 +145,7 @@ class _HomePageState extends State<ForumPage> {
   }
 
   Widget buildSection(String title, List<Map<String, dynamic>> conteudos, BuildContext context) {
-    final ScrollController scrollController = ScrollController(); // Adicione o ScrollController
+    final ScrollController scrollController = ScrollController(); 
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -157,28 +157,28 @@ class _HomePageState extends State<ForumPage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => TodasAtividades(), // Navegue para TodasAtividades quando o título for "Atividades"
+                  builder: (context) => TodasAtividades(), 
                 ),
               );
             } else if (title == 'Eventos') {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => TodosEventos(), // Navegue para TodosEventos quando o título for "Eventos"
+                  builder: (context) => TodosEventos(), 
                 ),
               );
             } else if (title == 'Recomendações') {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => TodasRecomendacoes(), // Navegue para TodasRecomendacoes quando o título for "Recomendações"
+                  builder: (context) => TodasRecomendacoes(), 
                 ),
               );
             } else if (title == 'Espaços') {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => TodasEspacos(), // Navegue para TodosEspacos quando o título for "Espaços"
+                  builder: (context) => TodasEspacos(), 
                 ),
               );
             }
@@ -191,18 +191,18 @@ class _HomePageState extends State<ForumPage> {
             children: [
               Expanded(
                 child: Scrollbar(
-                  controller: scrollController, // Passe o ScrollController aqui
-                  thumbVisibility: true, // Mostra sempre a barra de rolagem
+                  controller: scrollController,
+                  thumbVisibility: true, 
                   child: ListView.builder(
-                    controller: scrollController, // Passe o ScrollController aqui também
+                    controller: scrollController,
                     scrollDirection: Axis.horizontal,
-                    itemCount: conteudos.take(6).length, // Número de itens baseado nos conteúdos
+                    itemCount: conteudos.take(6).length, 
                     itemBuilder: (context, index) {
                       final conteudo = conteudos[index];
                       return Padding(
                         padding: const EdgeInsets.only(right: 8.0),
                         child: MiniCard(
-                          imageUrl: conteudo['imagem'] ?? 'assets/Images/imageMissing.jpg', // Ajuste conforme sua estrutura de dados
+                          imageUrl: conteudo['imagem'] ?? 'assets/Images/imageMissing.jpg', 
                           title: conteudo['titulo'] ?? 'Título',
                           atividade: conteudo,
                           onTap: () => _onCardTap(conteudo['id'].toString()),
@@ -212,11 +212,11 @@ class _HomePageState extends State<ForumPage> {
                   ),
                 ),
               ),
-              SizedBox(height: 10.0), // Espaçamento entre cartões e barra de rolagem
+              SizedBox(height: 10.0), 
             ],
           ),
         ),
-        SizedBox(height: 20.0), // Espaço adicional entre seções
+        SizedBox(height: 20.0), 
       ],
     );
   }
@@ -230,7 +230,7 @@ class _HomePageState extends State<ForumPage> {
         padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
         decoration: BoxDecoration(
           color: Colors.blue,
-          borderRadius: BorderRadius.circular(20.0), // Bordas arredondadas
+          borderRadius: BorderRadius.circular(20.0), 
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -316,7 +316,7 @@ class _HomePageState extends State<ForumPage> {
     );
   }
 
-  String _selectedOption = ''; // Estado para armazenar a opção selecionada
+  String _selectedOption = ''; 
 
   void _selectOption(String option) {
     setState(() {

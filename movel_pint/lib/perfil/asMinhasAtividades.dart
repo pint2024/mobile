@@ -97,7 +97,7 @@ Future<void> _fetchConteudos() async {
   } catch (e) {
     print('Erro ao carregar conteúdos: $e');
     setState(() {
-      _isLoading = false; // Erro ao carregar dados, alterar o estado de carregamento
+      _isLoading = false; 
     });
   }
 }
@@ -120,9 +120,9 @@ Future<void> _fetchConteudos() async {
       previousPage: _previousPage,
       handleFilterSelection: _handleFilterSelection,
       conteudos: _conteudos,
-      isLoading: _isLoading, // Passando o estado de carregamento para o widget VerAtividades
-      onCardTap: _onCardTap, // Passando a função para manipular o toque no cartão
-      selectedFilterIndex: _selectedFilterIndex, // Passando o índice do filtro selecionado
+      isLoading: _isLoading, 
+      onCardTap: _onCardTap,
+      selectedFilterIndex: _selectedFilterIndex,
     );
   }
 }
@@ -135,9 +135,9 @@ class VerAtividades extends StatelessWidget {
   final VoidCallback previousPage;
   final Function(int) handleFilterSelection;
   final List<Map<String, dynamic>> conteudos;
-  final bool isLoading; // Adicionando o parâmetro isLoading
-  final Function(String) onCardTap; // Adicionando a função de callback
-  final int selectedFilterIndex; // Índice do filtro selecionado
+  final bool isLoading; 
+  final Function(String) onCardTap; 
+  final int selectedFilterIndex; 
 
   const VerAtividades({
     required this.selectedIndex,
@@ -147,9 +147,9 @@ class VerAtividades extends StatelessWidget {
     required this.previousPage,
     required this.handleFilterSelection,
     required this.conteudos,
-    required this.isLoading, // Inicializando o parâmetro
-    required this.onCardTap, // Inicializando o parâmetro
-    required this.selectedFilterIndex, // Inicializando o parâmetro
+    required this.isLoading,
+    required this.onCardTap, 
+    required this.selectedFilterIndex, 
   });
 
   @override
@@ -158,7 +158,7 @@ class VerAtividades extends StatelessWidget {
     return Scaffold(
       appBar: CustomAppBar(),
       body: isLoading
-          ? Center(child: CircularProgressIndicator()) // Exibindo a rodinha de carregamento
+          ? Center(child: CircularProgressIndicator()) 
           : SingleChildScrollView(
               child: Column(
                 children: [
@@ -204,8 +204,6 @@ class VerAtividades extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 16), 
-
-                  // Exibir seção de Eventos (tipo = 1)
                   if (selectedFilterIndex == 0 || selectedFilterIndex == 1)
                     _buildSection(
                       title: 'Eventos',
@@ -213,8 +211,6 @@ class VerAtividades extends StatelessWidget {
                       conteudos: conteudos.where((conteudo) => conteudo['tipo'] == 1).toList(),
                     ),
                   SizedBox(height: 16),
-
-                  // Exibir seção de Atividades (tipo = 2)
                   if (selectedFilterIndex == 0 || selectedFilterIndex == 2)
                     _buildSection(
                       title: 'Atividades',
@@ -222,8 +218,6 @@ class VerAtividades extends StatelessWidget {
                       conteudos: conteudos.where((conteudo) => conteudo['tipo'] == 2).toList(),
                     ),
                   SizedBox(height: 16), 
-
-                  // Exibir seção de Recomendações (tipo = 3)
                   if (selectedFilterIndex == 0 || selectedFilterIndex == 3)
                     _buildSection(
                       title: 'Recomendações',
@@ -231,8 +225,6 @@ class VerAtividades extends StatelessWidget {
                       conteudos: conteudos.where((conteudo) => conteudo['tipo'] == 3).toList(),
                     ),
                   SizedBox(height: 16),
-
-                  // Exibir seção de Espaços (tipo = 4)
                   if (selectedFilterIndex == 0 || selectedFilterIndex == 4)
                     _buildSection(
                       title: 'Espaços',

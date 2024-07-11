@@ -23,13 +23,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: token == null ? LoginPage() : HomePage1(initialIndex: 0), // Índice inicial para HomePage
+      home: token == null ? LoginPage() : HomePage1(initialIndex: 0), 
     );
   }
 }
 
 class HomePage1 extends StatefulWidget {
-  final int initialIndex; // Índice inicial para a BottomNavigationBar
+  final int initialIndex; 
   HomePage1({Key? key, this.initialIndex = 0}) : super(key: key);
 
   @override
@@ -103,10 +103,7 @@ class _HomePageState extends State<HomePage1> {
   }
 
   void _logout() async {
-    // Clear the auth token from shared preferences
     UserPreferences().authToken = null;
-
-    // Navigate to the login page
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (context) => LoginPage()),
@@ -117,7 +114,7 @@ class _HomePageState extends State<HomePage1> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(), // Integrando a CustomAppBar aqui
+      appBar: CustomAppBar(), 
       body: SingleChildScrollView(
         child: Center(
           child: Container(
@@ -184,7 +181,7 @@ class _HomePageState extends State<HomePage1> {
       bottomNavigationBar: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          SizedBox(height: 16), // Espaçamento entre o card e o botão
+          SizedBox(height: 16), 
           ElevatedButton(
             onPressed: _goToEventFormPage,
             child: Text('Criar Novo Evento'),

@@ -90,7 +90,7 @@ class _CreateActivityPageState extends State<CreateActivityPage> {
         'imagem': html.Blob([_imageData!]),
         'endereco': location,
         'data_evento': dateTime?.toIso8601String(),
-        'utilizador': _userId,   // ::::::::::::::::::::::::::::: substituir pelo id do utilizador logado :::::::::::::::::::::::::::::
+        'utilizador': _userId,   
         'subtopico': subtopic,
         'tipo': CONSTANTS.valores['ATIVIDADE']?['ID'],
       };

@@ -26,10 +26,10 @@ class _EspacoState extends State<TodasEspacos> {
   int _selectedIndex = 2;
   PageController _pageController = PageController(initialPage: 0);
   List<Map<String, dynamic>> _conteudos = [];
-  List<Map<String, dynamic>> _filteredConteudos = []; // Lista filtrada
-  bool _isLoading = true; // Variável para controlar o estado de carregamento
-  String? idAtividade; // Variável para armazenar o ID da atividade selecionada
-  String _selectedFilter = 'Mais recentes'; // Filtro inicial selecionado
+  List<Map<String, dynamic>> _filteredConteudos = []; 
+  bool _isLoading = true; 
+  String? idAtividade; 
+  String _selectedFilter = 'Mais recentes'; 
 
   void _onItemTapped(int index) {
     setState(() {
@@ -98,24 +98,24 @@ class _EspacoState extends State<TodasEspacos> {
                 .toList();
             _filteredConteudos = List<Map<String, dynamic>>.from(_conteudos);
             _applyFilter();
-            _isLoading = false; // Dados carregados, alterar o estado de carregamento
+            _isLoading = false; 
           });
         } else {
           print('Data["data"] não é uma lista, é: ${data.runtimeType}');
           setState(() {
-            _isLoading = false; // Dados carregados (ou falha), alterar o estado de carregamento
+            _isLoading = false; 
           });
         }
       } else {
         print('Nenhum dado encontrado ou dado malformado');
         setState(() {
-          _isLoading = false; // Dados malformados, alterar o estado de carregamento
+          _isLoading = false; 
         });
       }
     } catch (e) {
       print('Erro ao carregar conteúdos: $e');
       setState(() {
-        _isLoading = false; // Erro ao carregar dados, alterar o estado de carregamento
+        _isLoading = false; 
       });
     }
   }
@@ -137,9 +137,9 @@ class _EspacoState extends State<TodasEspacos> {
       nextPage: _nextPage,
       previousPage: _previousPage,
       handleFilterSelection: _handleFilterSelection,
-      conteudos: _filteredConteudos, // Usar a lista filtrada
-      isLoading: _isLoading, // Passando o estado de carregamento para o widget VerEspacos
-      onCardTap: _onCardTap, // Passando a função para manipular o toque no cartão
+      conteudos: _filteredConteudos, 
+      isLoading: _isLoading,
+      onCardTap: _onCardTap, 
     );
   }
 }
@@ -152,8 +152,8 @@ class VerEspacos extends StatelessWidget {
   final VoidCallback previousPage;
   final Function(String) handleFilterSelection;
   final List<Map<String, dynamic>> conteudos;
-  final bool isLoading; // Adicionando o parâmetro isLoading
-  final Function(String) onCardTap; // Adicionando a função de callback
+  final bool isLoading; 
+  final Function(String) onCardTap; 
 
   const VerEspacos({
     required this.selectedIndex,
@@ -163,8 +163,8 @@ class VerEspacos extends StatelessWidget {
     required this.previousPage,
     required this.handleFilterSelection,
     required this.conteudos,
-    required this.isLoading, // Inicializando o parâmetro
-    required this.onCardTap, // Inicializando o parâmetro
+    required this.isLoading,
+    required this.onCardTap, 
   });
 
   @override
@@ -173,7 +173,7 @@ class VerEspacos extends StatelessWidget {
     return Scaffold(
       appBar: CustomAppBar(),
       body: isLoading
-          ? Center(child: CircularProgressIndicator()) // Exibindo a rodinha de carregamento
+          ? Center(child: CircularProgressIndicator()) 
           : SingleChildScrollView(
               child: Center(
                 child: Column(
@@ -217,7 +217,6 @@ class VerEspacos extends StatelessWidget {
                         ],
                       ),
                     ),
-                    // Verificando se há conteúdos
                     conteudos.isNotEmpty
                         ? Column(
                             children: conteudos

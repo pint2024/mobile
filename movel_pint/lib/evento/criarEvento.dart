@@ -98,7 +98,7 @@ class _EventFormPageState extends State<EventFormPage> {
         'imagem': html.Blob([_imageData!]),
         'endereco': location,
         'data_evento': dateTime?.toIso8601String(),
-        'utilizador': _userId,  // ::::::::::::::::::::::::::::: substituir pelo id do utilizador logado :::::::::::::::::::::::::::::
+        'utilizador': _userId,  
         'subtopico': subtopic,
         'tipo': CONSTANTS.valores['EVENTO']?['ID'],
       };
@@ -180,14 +180,14 @@ class _EventFormPageState extends State<EventFormPage> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Fecha o diálogo
+                Navigator.of(context).pop(); 
               },
               child: Text('Continuar'),
             ),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (context) => ForumPage()), // Navega para a página ForumPage
+                  MaterialPageRoute(builder: (context) => ForumPage()),
                 );
               },
               child: Text('Cancelar'),

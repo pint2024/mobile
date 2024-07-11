@@ -12,7 +12,6 @@ const String baseUrl = CONSTANTS.API_BASE_URL;
 
 class ApiService {
 
-  // Método para obter um recurso específico
   static Future<dynamic> obter(String endpoint, int id, {Map<String, String> headers = const {}}) async {
     final url = '$endpoint/obter/$id';
     print("url");
@@ -23,7 +22,6 @@ class ApiService {
     }
   }
 
-  // Método para listar recursos
   static Future<dynamic> listar(String endpoint, {Map<String, String> headers = const {}, dynamic data}) async {
     final url = '$endpoint/listar';
     try {
@@ -38,27 +36,23 @@ class ApiService {
       var url = Uri.parse('$baseUrl/$endpoint/criar');
       var request = http.MultipartRequest('POST', url);
 
-      // Adicionar campos ao formulário
       data.forEach((key, value) {
         request.fields[key] = value.toString();
       });
 
-      // Adicionar arquivos de imagem ao formulário
       for (var i = 0; i < files.length; i++) {
         var arquivoMultipart = http.MultipartFile.fromBytes(
-          fileKey, // Utilizar a mesma chave para todas as imagens
+          fileKey, 
           files[i],
-          filename: 'upload_$i.jpg', // Nome do arquivo diferenciado por índice
+          filename: 'upload_$i.jpg', 
         );
         request.files.add(arquivoMultipart);
       }
 
-      // Adicionar cabeçalhos ao formulário
       headers.forEach((key, value) {
         request.headers[key] = value.toString();
       });
 
-      // Enviar a solicitação e aguardar a resposta
       var response = await http.Response.fromStream(await request.send());
 
       return response;
@@ -99,19 +93,14 @@ class ApiService {
     }
   }
 
-// Função para converter Blob em Uint8List
 static Future<Uint8List> blobToUint8List(html.Blob blob) async {
-  // Usa FileReader para ler os dados do Blob
   final reader = html.FileReader();
   reader.readAsArrayBuffer(blob);
 
-  await reader.onLoadEnd.first; // Espera o carregamento completo
-
-  // Obtém os dados como Uint8List
+  await reader.onLoadEnd.first; 
   return reader.result as Uint8List;
 }
 
-  // Método para criar um recurso
   static Future<dynamic> criar(String endpoint, {Map<String, String> headers = const {}, dynamic data}) async {
     final url = '$endpoint/criar';
     try {
@@ -121,7 +110,6 @@ static Future<Uint8List> blobToUint8List(html.Blob blob) async {
     }
   }
 
-  // Método para atualizar um recurso
   static Future<void> atualizar(String endpoint, int id, {Map<String, String>? headers, dynamic data}) async {
     final url = '$endpoint/atualizar/$id';
     try {
@@ -143,12 +131,6 @@ static Future<Uint8List> blobToUint8List(html.Blob blob) async {
     }
   }
 
-//
-//
-//
-//
-//
-// funcao para atualizar a imagem do perfil
 static Future<http.Response> sendProfilePic(String endpoint, {required Map<String, dynamic> data, required String fileKey, Map<String, String> headers = const {}}) async {
   try {
     var url = Uri.parse('$baseUrl/$endpoint');
@@ -186,7 +168,6 @@ static Future<http.Response> sendProfilePic(String endpoint, {required Map<Strin
 }
 
 
-  // Método para remover um recurso
   static Future<void> remover(String endpoint, int id, {Map<String, String>? headers}) async {
     final url = '$endpoint/remover/$id';
     try {
@@ -207,7 +188,6 @@ static Future<http.Response> sendProfilePic(String endpoint, {required Map<Strin
     }
   }
 
-  // Método genérico para fazer requisições POST
   static Future<Map<String, dynamic>?> postData(String endpoint, Map<String, dynamic> data) async {
     try {
       final response = await http.post(
@@ -228,7 +208,6 @@ static Future<http.Response> sendProfilePic(String endpoint, {required Map<Strin
     }
   }
 
-  // Método para atualizar perfil
   static Future<void> updateProfile(Map<String, dynamic> profileData) async {
     final String endpoint = 'utilizador/atualizar/${profileData['id']}';
     try {
@@ -250,7 +229,6 @@ static Future<http.Response> sendProfilePic(String endpoint, {required Map<Strin
     }
   }
 
-  // Método genérico para fazer requisições PUT
   static Future<Map<String, dynamic>?> putData(String endpoint, Map<String, dynamic> data) async {
     try {
       final response = await http.put(
@@ -271,7 +249,6 @@ static Future<http.Response> sendProfilePic(String endpoint, {required Map<Strin
     }
   }
 
-  // Método genérico para fazer requisições DELETE
   static Future<void> deleteData(String endpoint) async {
     try {
       final response = await http.delete(

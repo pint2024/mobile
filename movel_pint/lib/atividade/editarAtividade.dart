@@ -95,7 +95,7 @@ class _EditActivityPageState extends State<EditActivityPage> {
         'titulo': _tituloController.text,
         'descricao': _descricaoController.text,
         'endereco': _enderecoController.text,
-        'utilizador': _userId, // ::::::::::::::::::::::::::::: substituir pelo id do utilizador logado :::::::::::::::::::::::::::::
+        'utilizador': _userId,
         'subtopico': _selectedSubtopic ?? widget.atividade['subtopico']['id'].toString(),
       };
 
