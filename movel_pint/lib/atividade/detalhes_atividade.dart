@@ -195,25 +195,29 @@ Future<Map<int, int>> _fetchUserRatings() async {
     }
   }
 
-  Future<void> _deleteComment(int commentId) async {
-    try {
-      var commentToDelete =
-          _comments!.firstWhere((comment) => comment['id'] == commentId);
-          print(commentToDelete);
-      var userIdOfComment = commentToDelete['utilizador'];
-      var currentUserId = _userId; // ::::::::::::::::::::::::::::: substituir pelo id do utilizador logado :::::::::::::::::::::::::::::
-      if (userIdOfComment == currentUserId) {
-        await ApiService.deleteData('comentario/remover/$commentId');
-        setState(() {
-          _comments!.removeWhere((comment) => comment['id'] == commentId);
-        });
-      } else {
-        print('Você não pode excluir este comentário.');
-      }
-    } catch (e) {
-      print('Erro ao remover comentário: $e');
+Future<void> _deleteComment(int commentId) async {
+  try {
+    var commentToDelete =
+        _comments!.firstWhere((comment) => comment['id'] == commentId);
+    var userIdOfComment = commentToDelete['utilizador'];
+    var currentUserId = _userId; // ::::::::::::::::::::::::::::: substituir pelo id do utilizador logado :::::::::::::::::::::::::::::
+    
+    if (userIdOfComment == currentUserId) {
+      await ApiService.deleteData('comentario/remover/$commentId');
+      setState(() {
+        _comments!.removeWhere((comment) => comment['id'] == commentId);
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Você não pode excluir este comentário.'))
+      );
     }
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Não é possivel remover o comentario porque alguém o classificou!'))
+    );
   }
+}
 
   Future<void> _deleteInscricao(int participacaoID) async {
     try {
@@ -254,40 +258,50 @@ Future<Map<int, int>> _fetchUserRatings() async {
     }
   }
 
-  Future<void> _rateComment(int commentId, int rating) async {
-    if (_ratedCommentIds.contains(commentId)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Você já classificou este comentário.'),
-        ),
-      );
-      return;
-    }
-
-    Map<String, dynamic> rateData = {
-      'comentario': commentId,
-      'conteudo': null,
-      'utilizador': _userId, // ::::::::::::::::::::::::::::: substituir pelo id do utilizador logado :::::::::::::::::::::::::::::
-      'classificacao': rating,
-    };
-
-    try {
-      final response =
-          await ApiService.postData('classificacao/criar', rateData);
-      print(response);
-
-      setState(() {
-        var index =
-            _comments!.indexWhere((comment) => comment['id'] == commentId);
-        if (index != -1) {
-          _comments![index]['classificacao_comentario'] = rating;
-          _ratedCommentIds.add(commentId);
-        }
-      });
-    } catch (e) {
-      print('Erro ao classificar comentário: $e');
-    }
+Future<void> _rateComment(int commentId, int rating) async {
+  if (_ratedCommentIds.contains(commentId)) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Você já classificou este comentário.'),
+      ),
+    );
+    return;
   }
+
+  Map<String, dynamic> rateData = {
+    'comentario': commentId,
+    'conteudo': null,
+    'utilizador': _userId, // ::::::::::::::::::::::::::::: substituir pelo id do utilizador logado :::::::::::::::::::::::::::::
+    'classificacao': rating,
+  };
+
+  try {
+    final response = await ApiService.postData('classificacao/criar', rateData);
+    print(response);
+
+    setState(() {
+      var index = _comments!.indexWhere((comment) => comment['id'] == commentId);
+      if (index != -1) {
+        _comments![index]['classificacao_comentario'] = rating;
+        _ratedCommentIds.add(commentId);
+      }
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Comentário classificado com sucesso.'),
+      ),
+    );
+  } catch (e) {
+    print('Erro ao classificar comentário: $e');
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Erro ao classificar comentário. Tente novamente.'),
+      ),
+    );
+  }
+}
+
 
   String _formatDateTime(String dateTime) {
     final DateTime parsedDateTime = DateTime.parse(dateTime);
@@ -295,33 +309,32 @@ Future<Map<int, int>> _fetchUserRatings() async {
     return formatter.format(parsedDateTime);
   }
 
-  Future<void> _confirmDeleteComment(int commentId) async {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Confirmação"),
-          content: Text("Tem certeza que deseja apagar o comentário?"),
-          actions: <Widget>[
-            TextButton(
-              child: Text("Cancelar"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: Text("Apagar"),
-              onPressed: () {
-                _deleteComment(commentId);
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
+Future<void> _confirmDeleteComment(int commentId) async {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text("Confirmação"),
+        content: Text("Tem certeza que deseja apagar o comentário?"),
+        actions: <Widget>[
+          TextButton(
+            child: Text("Cancelar"),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          TextButton(
+            child: Text("Apagar"),
+            onPressed: () async {
+              Navigator.of(context).pop(); // Close the dialog first
+              await _deleteComment(commentId); // Then delete the comment
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
   void _confirmParticipation() {
     showDialog(
       context: context,
