@@ -33,8 +33,11 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
-  late TextEditingController _emailController = TextEditingController();
-  late TextEditingController _passwordController = TextEditingController();
+      
+ final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  late TextEditingController _emailController;
+  late TextEditingController _passwordController;
   bool _passwordVisible = false;
   bool _keepLoggedIn = false;
 
@@ -56,6 +59,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(60),
         child: AppBar(
@@ -177,8 +181,7 @@ class _LoginPageState extends State<LoginPage> {
                             alignment: Alignment.centerRight,
                             child: RichText(
                               text: TextSpan(
-                                style: TextStyle(
-                                  color: Colors.grey, fontSize: 14.0),
+                                style: TextStyle(color: Colors.grey, fontSize: 14.0),
                                 children: <TextSpan>[
                                   TextSpan(
                                     text: 'Esqueceu a senha?',
@@ -206,7 +209,9 @@ class _LoginPageState extends State<LoginPage> {
                           width: double.infinity,
                           child: ElevatedButton(
                             style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all<Color>(Color.fromRGBO(57, 99, 156, 1.0)),
+                              backgroundColor: MaterialStateProperty.all<Color>(
+                                Color.fromRGBO(57, 99, 156, 1.0),
+                              ),
                             ),
                             onPressed: () {
                               if (_formKey.currentState!.validate()) {
@@ -305,6 +310,8 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _handleLogin(BuildContext context) async {
+    try {
+
     final email = _emailController.text;
     final password = _passwordController.text;
     Map<String,String> data = {'login':email, 'senha': password};
@@ -316,25 +323,33 @@ class _LoginPageState extends State<LoginPage> {
      
       final response = await ApiService.postData('autenticacao/entrar', data);
       if(response?['success']){
-        print("1");
         final token = response?['data']?['token'];
-        print("12");
         if(token != null){
-          print("14");
           UserPreferences().authToken = token;    
-          print("16");
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => HomePageMain()),
           );
         }
       }
-      else{
-        print('Não foi possivel guardar os dados');
-      }
+    }
 
+    } catch (error) {
+      print('Erro durante o login: $error');
+      _showSnackBar('Credencias inválidas');
     }
   }
+
+void _showSnackBar(String message) {
+  final snackBar = SnackBar(
+    content: Text(message),
+    duration: Duration(seconds: 2),
+  );
+  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+}
+
+
+  
 
   Future<void> _handleSignInWithGoogle(BuildContext context) async {
     var connectivityResult = await (Connectivity().checkConnectivity());
