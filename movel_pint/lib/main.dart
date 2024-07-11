@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: token == null ? LoginPage() : HomePage1(initialIndex: 0), 
+      home: token == null ? LoginPage() : HomePageMain(), 
     );
   }
 }
