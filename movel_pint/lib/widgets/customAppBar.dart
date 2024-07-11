@@ -26,7 +26,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               alignment: Alignment.centerRight,
               child: Stack(
                 children: [
-                  IconButton(
+                  /*IconButton(
                     icon: const Icon(Icons.notifications, color: Colors.white),
                     onPressed: () {
                       Navigator.push(
@@ -56,7 +56,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                         textAlign: TextAlign.center,
                       ),
                     ),
-                  ),
+                  ),*/
                 ],
               ),
             ),

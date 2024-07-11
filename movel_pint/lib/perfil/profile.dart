@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:movel_pint/backend/auth_service.dart';
 import 'package:movel_pint/perfil/asMinhasAtividades.dart';
 import 'package:movel_pint/perfil/asMinhasInscricoes.dart';
+import 'package:movel_pint/perfil/login.dart';
 import 'package:movel_pint/perfil/modificar_perfil.dart';
+import 'package:movel_pint/utils/user_preferences.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
 import 'package:movel_pint/backend/api_service.dart';
 import 'package:movel_pint/widgets/customAppBar.dart';
@@ -12,6 +14,7 @@ import 'package:multi_select_flutter/multi_select_flutter.dart';
 void main() {
   runApp(ProfileApp());
 }
+
 class ProfileApp extends StatefulWidget {
   @override
   _ProfileAppState createState() => _ProfileAppState();
@@ -61,7 +64,6 @@ class _ProfilePageState extends State<ProfilePage> {
   List<int> _selectedInteresseIds = [];
   List<MultiSelectItem<String>> _allAreas = [];
   Map<String, int> _areaToIdMap = {};
-
 
   @override
   void initState() {
@@ -178,6 +180,45 @@ class _ProfilePageState extends State<ProfilePage> {
     } catch (e) {
       print('Erro ao enviar interesses: $e');
     }
+  }
+
+  Future<void> _logout() async {
+    // Clear the auth token from shared preferences
+    UserPreferences().authToken = null;
+
+    // Navigate to the login page
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => LoginPage()),
+      (Route<dynamic> route) => false,
+    );
+  }
+
+  void _showLogoutConfirmationDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Tem a certeza que quer fazer logout?'),
+          content: Text('Irá ter de refazer o login.'),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancelar'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Continuar'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                _logout();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -369,6 +410,14 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                         ),
                       ],
+                    ),
+                    SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: _showLogoutConfirmationDialog,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                      ),
+                      child: Text('Logout'),
                     ),
                   ],
                 ),

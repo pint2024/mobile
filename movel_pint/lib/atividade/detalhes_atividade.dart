@@ -199,6 +199,7 @@ Future<Map<int, int>> _fetchUserRatings() async {
     try {
       var commentToDelete =
           _comments!.firstWhere((comment) => comment['id'] == commentId);
+          print(commentToDelete);
       var userIdOfComment = commentToDelete['utilizador'];
       var currentUserId = _userId; // ::::::::::::::::::::::::::::: substituir pelo id do utilizador logado :::::::::::::::::::::::::::::
       if (userIdOfComment == currentUserId) {
@@ -554,10 +555,16 @@ void _shareContent() {
             ),
             Column(
               children: [
-                IconButton(
+                  IconButton(
                   icon: Icon(Icons.share),
                   onPressed: () {
                     _shareContent();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text("Atividade copiada, pode colar onde quiser agora"),
+                        duration: Duration(seconds: 2),
+                      ),
+                    );
                   },
                 ),
                 SizedBox(height: 4),
