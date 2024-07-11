@@ -48,13 +48,11 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
   }
 
     Future<void> _loadUserId() async {
-      print("fetch _loadUserId");
       dynamic utilizadorAtual = await AuthService.obter();
       setState(() {
         _userId = utilizadorAtual["id"];
         _isLoading = false;
       });
-      print("fetch _loadUserId over");
     }
 
   void _navigateToAlbumSliderPage() async {
@@ -62,7 +60,7 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => AlbumSliderPage(albumImages: albumImages),
+        builder: (context) => AlbumSliderPage(contentId: widget.activityId, albumImages: albumImages),
       ),
     );
   }
