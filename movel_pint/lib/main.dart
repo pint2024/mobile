@@ -205,10 +205,10 @@ class _HomePageState extends State<HomePage1> {
             onPressed: _goToDetalheAtividadePage,
             child: Text('Detalhes da Atividade'),
           ),
-          ElevatedButton(
+         /* ElevatedButton(
             onPressed: _goToRegisterPage,
             child: Text('Login'),
-          ),
+          ),*/
           ElevatedButton(
             onPressed: _goToHomePage,
             child: Text('Homepage'),
