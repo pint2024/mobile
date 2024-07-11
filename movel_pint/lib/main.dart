@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:movel_pint/atividade/criarAtividade.dart';
 import 'package:movel_pint/atividade/detalhes_atividade.dart';
-import 'package:movel_pint/espa%C3%A7o/criarespa%C3%A7o.dart';
+import 'package:movel_pint/espaço/criarespaço.dart';
 import 'package:movel_pint/evento/criarEvento.dart';
 import 'package:movel_pint/perfil/login.dart';
 import 'package:movel_pint/recomedacao/criarRecomendacao.dart';
 import 'package:movel_pint/utils/user_preferences.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
-import 'package:movel_pint/widgets/customAppBar.dart'; // Certifique-se que o caminho está correto
+import 'package:movel_pint/widgets/customAppBar.dart';
 import 'package:movel_pint/home/homepage.dart';
 
 void main() async {
@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: token == null? LoginPage(): HomePage1(initialIndex: 0), // Índice inicial para HomePage
+      home: token == null ? LoginPage() : HomePage1(initialIndex: 0), // Índice inicial para HomePage
     );
   }
 }
@@ -46,7 +46,6 @@ class _HomePageState extends State<HomePage1> {
     });
   }
 
-  
   void _goToEventFormPage() {
     Navigator.push(
       context,
@@ -60,8 +59,6 @@ class _HomePageState extends State<HomePage1> {
       MaterialPageRoute(builder: (context) => EventFormPage()),
     );
   }
-
-  
 
   void _goToCreateEspacoPage() {
     Navigator.push(
@@ -84,30 +81,38 @@ class _HomePageState extends State<HomePage1> {
     );
   }
 
-
   void _goToDetalheAtividadePage() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => ActivityDetailsPage(activityId: 1,)),
+      MaterialPageRoute(builder: (context) => ActivityDetailsPage(activityId: 1)),
     );
   }
 
-    void _goToRegisterPage() {
+  void _goToRegisterPage() {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => LoginApp()),
     );
   }
-    void _goToHomePage() {
+
+  void _goToHomePage() {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => HomePageMain()),
     );
   }
-  
-  
-  
 
+  void _logout() async {
+    // Clear the auth token from shared preferences
+    UserPreferences().authToken = null;
+
+    // Navigate to the login page
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => LoginPage()),
+      (Route<dynamic> route) => false,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -179,8 +184,6 @@ class _HomePageState extends State<HomePage1> {
       bottomNavigationBar: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          //MyCard(),
-          
           SizedBox(height: 16), // Espaçamento entre o card e o botão
           ElevatedButton(
             onPressed: _goToEventFormPage,
@@ -210,11 +213,14 @@ class _HomePageState extends State<HomePage1> {
             onPressed: _goToHomePage,
             child: Text('Homepage'),
           ),
+          ElevatedButton(
+            onPressed: _logout,
+            child: Text('Logout'),
+          ),
           CustomBottomNavigationBar(
             selectedIndex: _selectedIndex,
             onItemTapped: _onItemTapped,
           ),
-          
         ],
       ),
     );
