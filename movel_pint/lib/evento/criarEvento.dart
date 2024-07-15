@@ -37,19 +37,19 @@ class _EventFormPageState extends State<EventFormPage> {
   @override
   void initState() {
     super.initState();
-    _loadUserId();
-    _loadSubtopics();
+    _loadUserId(); //para carregar o ID dos usuários
+    _loadSubtopics(); //para carregar os subtópicos.
   }
 
     Future<void> _loadUserId() async {
-    dynamic utilizadorAtual = await AuthService.obter();
+    dynamic utilizadorAtual = await AuthService.obter(); //manda ao api o que ele precisa da base de dados
     setState(() {
       _userId = utilizadorAtual["id"];
     });
   }
 
   void _showSnackbar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
+    ScaffoldMessenger.of(context).showSnackBar( //mostra a mensagem que queira
       SnackBar(
         content: Text(message),
       ),
@@ -59,7 +59,7 @@ class _EventFormPageState extends State<EventFormPage> {
   Future<void> _loadSubtopics() async {
     try {
       final response = await ApiService.listar("subtopico");
-      if (response != null) {
+      if (response != null) { //manda ao api o que ele precisa da base de dados neste caso vai buscar os subtopicos
         setState(() {
           _subtopics = response;
         });
@@ -95,7 +95,7 @@ class _EventFormPageState extends State<EventFormPage> {
       Map<String, dynamic> data = {
         'titulo': name,
         'descricao': description,
-        'imagem': html.Blob([_imageData!]),
+        'imagem': html.Blob([_imageData!]), //O nome das variaveis que vao ser enviadas para a bd
         'endereco': location,
         'data_evento': dateTime?.toIso8601String(),
         'utilizador': _userId,  
@@ -104,7 +104,7 @@ class _EventFormPageState extends State<EventFormPage> {
       };
 
       try {
-        final response = await ApiService.criarFormData("conteudo", data: data, fileKey: "imagem");
+        final response = await ApiService.criarFormData("conteudo", data: data, fileKey: "imagem"); //envia para a base de dados o fromulario com todas as informações que foram dadas
 
         if (response != null) {
           _showSnackbar("Evento criado com sucesso, pode a ver na página dos Eventos");
@@ -123,7 +123,7 @@ class _EventFormPageState extends State<EventFormPage> {
     uploadInput.click();
 
     uploadInput.onChange.listen((e) {
-      final files = uploadInput.files;
+      final files = uploadInput.files; //abre o ficheiro das imagens le os dados e armazena-os em _iamgeData e imgageBase64
       if (files!.isNotEmpty) {
         final reader = html.FileReader();
         reader.readAsArrayBuffer(files[0]);
@@ -142,7 +142,7 @@ class _EventFormPageState extends State<EventFormPage> {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
-      firstDate: DateTime.now(),
+      firstDate: DateTime.now(), //escolher a data
       lastDate: DateTime(2030),
     );
     if (pickedDate != null) {
@@ -156,8 +156,8 @@ class _EventFormPageState extends State<EventFormPage> {
     final TimeOfDay? pickedTime = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
-    );
-    if (pickedTime != null) {
+    ); 
+    if (pickedTime != null) { //escolher o dia
       setState(() {
         _selectedTime = pickedTime;
       });
@@ -170,7 +170,7 @@ class _EventFormPageState extends State<EventFormPage> {
     });
   }
 
-  void _showCancelDialog() {
+  void _showCancelDialog() { //o aviso que aparece quando se clica em cancelar
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -215,7 +215,7 @@ class _EventFormPageState extends State<EventFormPage> {
     return categorias;
   }
 
-  List<DropdownMenuItem<String>> extrairAreas() {
+  List<DropdownMenuItem<String>> extrairAreas() { //escolher um subtopico da lista
     List<DropdownMenuItem<String>> items = [];
     _subtopics.forEach((subtopico) {
       final area = subtopico['area'];
@@ -229,7 +229,7 @@ class _EventFormPageState extends State<EventFormPage> {
     return items;
   }
 
-  @override
+  @override  // construção da interface
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(),
