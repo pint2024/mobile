@@ -24,25 +24,32 @@ class _EventCalendarPageState extends State<CalendarScreen> {
 
   @override
   void initState() {
+    _fetch();
     super.initState();
-    _loadUserId();
-    _fetchEventsForUser();
+  }
+  
+  void _fetch() async {
+    await _loadUserId();
+    await _fetchEventsForUser();
   }
 
     Future<void> _loadUserId() async {
-    dynamic utilizadorAtual = await AuthService.obter();
-    setState(() {
-      _userId = utilizadorAtual["id"];
-    });
-  }
+      dynamic utilizadorAtual = await AuthService.obter();
+      print("pocrl $utilizadorAtual");
+      setState(() {
+        _userId = utilizadorAtual["id"];
+      });
+    }
 
   Future<void> _fetchEventsForUser() async {
     try {
       final data = await ApiService.listar('participante');
+      print("-------------------------------------------\n\n\n");
       print(data);
+      print("-------------------------------------------\n\n\n");
+
       if (data != null && data is List<dynamic>) {
         Map<DateTime, List<Map<String, dynamic>>> events = {};
-
         for (var eventData in data) {
           if (eventData['utilizador'] == _userId && (eventData['participante_conteudo']['tipo'] == 1 || eventData['participante_conteudo']['tipo'] == 2)) { 
             DateTime eventDate = DateTime.parse(eventData['participante_conteudo']['data_evento']).toLocal();
