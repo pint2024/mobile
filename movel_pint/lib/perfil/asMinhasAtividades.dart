@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:movel_pint/backend/auth_service.dart';
-import 'package:movel_pint/widgets/MycardAtividade.dart';
 import 'package:movel_pint/widgets/MycardAtividadeEditar.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
 import 'package:movel_pint/widgets/customAppBar.dart';
@@ -65,7 +64,17 @@ class _AtividadeState extends State<asMinhasAtividades> {
   @override
   void initState() {
     super.initState();
+    _fetchRevisoes();
     _fetchConteudos();
+  }
+
+Future<void> _fetchRevisoes() async {
+    try {
+      final revisoes = await ApiService.listar('revisao');
+      print("AQUI ESTAO AS REVISOES: $revisoes");
+          } catch (e) {
+      print('Erro ao carregar revisoes');
+    }
   }
 
 Future<void> _fetchConteudos() async {
