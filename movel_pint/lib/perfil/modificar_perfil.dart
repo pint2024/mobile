@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
-import 'dart:html' as html;
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:movel_pint/backend/api_service.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
 import 'package:movel_pint/widgets/customAppBar.dart';
@@ -30,7 +30,6 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
   int? _selectedCenterId;
   int _selectedIndex = 2;
 
-
   @override
   void initState() {
     super.initState();
@@ -48,26 +47,18 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
       _selectedIndex = index;
     });
   }
-  
+
   Future<void> _selectImage() async {
-    html.FileUploadInputElement uploadInput = html.FileUploadInputElement();
-    uploadInput.accept = 'image/*';
-    uploadInput.click();
+    final ImagePicker _picker = ImagePicker();
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
 
-    uploadInput.onChange.listen((e) {
-      final files = uploadInput.files;
-      if (files!.isNotEmpty) {
-        final reader = html.FileReader();
-        reader.readAsArrayBuffer(files[0]);
-
-        reader.onLoadEnd.listen((e) {
-          setState(() {
-            _imageData = reader.result as Uint8List?;
-            _imageBase64 = base64Encode(_imageData!);
-          });
-        });
-      }
-    });
+    if (image != null) {
+      final Uint8List imageData = await image.readAsBytes();
+      setState(() {
+        _imageData = imageData;
+        _imageBase64 = base64Encode(_imageData!);
+      });
+    }
   }
 
   Future<void> _loadCenters() async {
@@ -91,7 +82,6 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
         'instagram': _instagramController.text,
         'facebook': _facebookController.text,
       };
-      print(data);
       await ApiService.atualizar('utilizador', widget.userId, data: data);
 
       if (_imageData != null) {
@@ -110,13 +100,9 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
 
   Future<void> _enviarImagemPerfil() async {
     try {
-      Map<String, dynamic> data = {
-        'imagem': html.Blob([_imageData!]),
-      };
-
       final response = await ApiService.sendProfilePic(
         'utilizador/imagem/atualizar/${widget.userId}',
-        data: data,
+        fileData: _imageData!,
         fileKey: 'imagem',
       );
 
@@ -254,8 +240,7 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
           ),
         ),
       ),
-
-    bottomNavigationBar: CustomBottomNavigationBar(
+      bottomNavigationBar: CustomBottomNavigationBar(
         selectedIndex: _selectedIndex,
         onItemTapped: _onItemTapped,
       ),

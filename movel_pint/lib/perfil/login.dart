@@ -314,14 +314,22 @@ class _LoginPageState extends State<LoginPage> {
 
     final email = _emailController.text;
     final password = _passwordController.text;
-    Map<String,String> data = {'login':email, 'senha': password};
+    Map<String,String> data = {'login': email, 'senha': password};
     
+    print("data");
+    print(data);
+
     var connectivityResult = await (Connectivity().checkConnectivity());
+    print("connectivityRaesult");
+    print(connectivityResult);
     if (connectivityResult == ConnectivityResult.none) {
       _showNoInternetDialog(context);
     } else {
      
+    print("asd");
       final response = await ApiService.postData('autenticacao/entrar', data);
+    print("response");
+    print(response);
       if(response?['success']){
         final token = response?['data']?['token'];
         if(token != null){

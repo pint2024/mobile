@@ -11,6 +11,7 @@ import 'package:movel_pint/widgets/customAppBar.dart';
 import 'package:movel_pint/home/homepage.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await UserPreferences().init();
   final userPreferences = UserPreferences();
   String? token = userPreferences.authToken;

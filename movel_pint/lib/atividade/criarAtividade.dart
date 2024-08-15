@@ -1,13 +1,14 @@
+import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'dart:typed_data';
-import 'dart:html' as html;
-import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:movel_pint/Forum/Forum.dart';
 import 'package:movel_pint/backend/api_service.dart';
 import 'package:movel_pint/backend/auth_service.dart';
 import 'package:movel_pint/utils/constants.dart';
-import 'package:movel_pint/widgets/customAppBar.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
-import 'package:movel_pint/Forum/Forum.dart';
+import 'package:movel_pint/widgets/customAppBar.dart';
 
 void main() {
   runApp(MaterialApp(home: CreateActivityPage()));
@@ -32,12 +33,13 @@ class _CreateActivityPageState extends State<CreateActivityPage> {
   int _selectedIndex = 2;
   late int _userId;
 
+  LatLng? _selectedLocation;
 
   List<dynamic> _subtopics = [];
 
   @override
   void initState() {
-        _loadUserId();
+    _loadUserId();
     super.initState();
     _loadSubtopics();
   }
@@ -68,6 +70,7 @@ class _CreateActivityPageState extends State<CreateActivityPage> {
         _showSnackbar("Por favor, selecione uma imagem.");
         return;
       }
+
       String name = _tituloController.text;
       String location = _enderecoController.text;
       String description = _descricaoController.text;
@@ -84,18 +87,23 @@ class _CreateActivityPageState extends State<CreateActivityPage> {
         );
       }
 
-      Map<String, dynamic> data = {
+      Map<String, String> data = {
         'titulo': name,
         'descricao': description,
-        'imagem': html.Blob([_imageData!]),
         'endereco': location,
-        'data_evento': dateTime?.toIso8601String(),
-        'utilizador': _userId,   
+        'data_evento': dateTime?.toIso8601String() ?? '',
+        'utilizador': _userId.toString(),   
         'subtopico': subtopic,
-        'tipo': CONSTANTS.valores['ATIVIDADE']?['ID'],
+        'tipo': CONSTANTS.valores['ATIVIDADE']!['ID'].toString(),
       };
+
       try {
-        final response = await ApiService.criarFormData("conteudo", data: data, fileKey: "imagem");
+        final response = await ApiService.criarFormDataFile(
+          "conteudo/criar",
+          data: data,
+          fileKey: "imagem",
+          file: _imageData!,
+        );
 
         if (response != null) {
           _showSnackbar("Atividade criada com sucesso");
@@ -103,30 +111,28 @@ class _CreateActivityPageState extends State<CreateActivityPage> {
           print("Erro ao criar atividade: Resposta nula");
         }
       } catch (e) {
-        print("Erro ao criar atividade atividade: $e");
+        print("Erro ao criar atividade: $e");
       }
     }
   }
 
-  Future<void> _getImage() async {
-    html.FileUploadInputElement uploadInput = html.FileUploadInputElement();
-    uploadInput.accept = 'image/*';
-    uploadInput.click();
-    uploadInput.onChange.listen((e) {
-      final files = uploadInput.files;
-      if (files!.isNotEmpty) {
-        final reader = html.FileReader();
-        reader.readAsArrayBuffer(files[0]);
 
-        reader.onLoadEnd.listen((e) {
-          setState(() {
-            _imageData = reader.result as Uint8List?;
-            _imageBase64 = base64Encode(_imageData!);
-          });
-        });
-      }
-    });
+
+  Future<void> _getImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      final imageBytes = await pickedFile.readAsBytes();
+      setState(() {
+        _imageData = imageBytes;
+        _imageBase64 = base64Encode(_imageData!);
+      });
+    } else {
+      _showSnackbar("Nenhuma imagem selecionada.");
+    }
   }
+
 
   Future<void> _selectDate() async {
     final DateTime? pickedDate = await showDatePicker(
@@ -152,6 +158,50 @@ class _CreateActivityPageState extends State<CreateActivityPage> {
         _selectedTime = pickedTime;
       });
     }
+  }
+
+  Future<void> _selectLocation() async {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          height: 400,
+          child: Column(
+            children: [
+              Expanded(
+                child: GoogleMap(
+                  initialCameraPosition: CameraPosition(
+                    target: LatLng(-23.550520, -46.633308),
+                    zoom: 12,
+                  ),
+                  onTap: (LatLng location) {
+                    setState(() {
+                      _selectedLocation = location;
+                      _enderecoController.text = '${location.latitude}, ${location.longitude}';
+                    });
+                    Navigator.pop(context);
+                  },
+                  markers: _selectedLocation != null
+                      ? {
+                          Marker(
+                            markerId: MarkerId('selected'),
+                            position: _selectedLocation!,
+                          ),
+                        }
+                      : {},
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text('Confirmar Localização'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   void _showSnackbar(String message) {
@@ -279,18 +329,28 @@ class _CreateActivityPageState extends State<CreateActivityPage> {
                       },
                     ),
                     SizedBox(height: 10),
-                    TextFormField(
-                      controller: _enderecoController,
-                      decoration: InputDecoration(
-                        labelText: 'Local',
-                        border: OutlineInputBorder(),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Por favor, insira o local da atividade';
-                        }
-                        return null;
-                      },
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            controller: _enderecoController,
+                            decoration: InputDecoration(
+                              labelText: 'Local',
+                              border: OutlineInputBorder(),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Por favor, insira o local da atividade';
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.map),
+                          onPressed: _selectLocation,
+                        ),
+                      ],
                     ),
                     SizedBox(height: 10),
                     TextFormField(

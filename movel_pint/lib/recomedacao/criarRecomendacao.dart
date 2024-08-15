@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:typed_data';
-import 'dart:html' as html;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart'; // Adiciona a biblioteca image_picker
 import 'package:movel_pint/backend/api_service.dart';
 import 'package:movel_pint/backend/auth_service.dart';
 import 'package:movel_pint/utils/constants.dart';
@@ -37,7 +37,6 @@ class _RecomendationFormPageState extends State<RecomendationFormPage> {
   String? _selectedLocation;
   late int _userId;
 
-
   List<dynamic> _subtopics = [];
 
   @override
@@ -47,13 +46,12 @@ class _RecomendationFormPageState extends State<RecomendationFormPage> {
     _loadSubtopics();
   }
 
-   Future<void> _loadUserId() async {
+  Future<void> _loadUserId() async {
     dynamic utilizadorAtual = await AuthService.obter();
     setState(() {
       _userId = utilizadorAtual["id"];
     });
   }
-
 
   void _showSnackbar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -89,21 +87,19 @@ class _RecomendationFormPageState extends State<RecomendationFormPage> {
       String subtopic = _selectedSubtopic!;
       preco = int.tryParse(_PrecoController.text) ?? 0;
 
-      Map<String, dynamic> data = {
+      Map<String, String> data = {
         'titulo': name,
         'descricao': description,
-        'imagem': html.Blob([_imageData!]),
         'endereco': location,
-        'utilizador': _userId, 
+        'utilizador': _userId.toString(), 
         'subtopico': subtopic,
-        'tipo': CONSTANTS.valores['RECOMENDACAO']?['ID'],
-        'classificacao': _rating,
-        'preco': preco,
-        
+        'tipo': CONSTANTS.valores['RECOMENDACAO']!['ID'].toString(),
+        'classificacao': _rating.toString(),
+        'preco': preco.toString(),
       };
 
       try {
-        final response = await ApiService.criarFormData("conteudo", data: data, fileKey: "imagem");
+        final response = await ApiService.criarFormDataFile("conteudo/criar", data: data, fileKey: "imagem", file: _imageData!);
 
         if (response != null) {
           print(data);
@@ -119,24 +115,18 @@ class _RecomendationFormPageState extends State<RecomendationFormPage> {
   }
 
   Future<void> _getImage() async {
-    html.FileUploadInputElement uploadInput = html.FileUploadInputElement();
-    uploadInput.accept = 'image/*';
-    uploadInput.click();
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
-    uploadInput.onChange.listen((e) {
-      final files = uploadInput.files;
-      if (files!.isNotEmpty) {
-        final reader = html.FileReader();
-        reader.readAsArrayBuffer(files[0]);
-
-        reader.onLoadEnd.listen((e) {
-          setState(() {
-            _imageData = reader.result as Uint8List?;
-            _imageBase64 = base64Encode(_imageData!);
-          });
-        });
-      }
-    });
+    if (pickedFile != null) {
+      final bytes = await pickedFile.readAsBytes();
+      setState(() {
+        _imageData = bytes;
+        _imageBase64 = base64Encode(bytes);
+      });
+    } else {
+      _showSnackbar("Nenhuma imagem foi selecionada.");
+    }
   }
 
   void _onItemTapped(int index) {
@@ -335,7 +325,7 @@ class _RecomendationFormPageState extends State<RecomendationFormPage> {
                           ),
                         ),
                         IconButton(
-                          icon: Icon(Icons.map), onPressed: () {  },
+                          icon: Icon(Icons.map), onPressed: () => _openMapDialog(),
                         ),
                       ],
                     ),

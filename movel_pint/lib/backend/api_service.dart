@@ -1,14 +1,12 @@
 import 'dart:convert';
-import 'dart:html';
-import 'dart:io';
 import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import 'package:movel_pint/backend/myHttp.dart';
 import 'package:movel_pint/utils/constants.dart';
-import 'dart:html' as html; 
+import 'package:http_parser/http_parser.dart';  // Adicione essa linha
 
 
-const String baseUrl = CONSTANTS.API_BASE_URL;
+const String baseUrl = CONSTANTS.API_MOBILE_BASE_URL;
 
 class ApiService {
 
@@ -61,52 +59,76 @@ class ApiService {
     }
   }
 
-  
-  static Future<http.Response> criarFormData(String endpoint, {Map<String, dynamic> data = const {}, String fileKey = "", Map<String, dynamic> headers = const {}}) async {
-    try {
-      var url = Uri.parse('$baseUrl/$endpoint/criar');
-      var request = http.MultipartRequest('POST', url);
-
-      data.forEach((key, value) {
-        if (key != fileKey) {
-          request.fields[key] = value.toString();
-        }
-      });
-
-      if (data.containsKey(fileKey) && data[fileKey] != null) {
-        Uint8List imageBytes = await blobToUint8List(data[fileKey]);
-
-        var arquivoMultipart = http.MultipartFile.fromBytes(
-          fileKey,
-          imageBytes,
-          filename: 'upload.jpg',
-        );
-        
-        request.files.add(arquivoMultipart);
-      }
-
-      var response = await http.Response.fromStream(await request.send());
-
-      return response;
-    } catch (error) {
-      throw error;
-    }
-  }
-
-static Future<Uint8List> blobToUint8List(html.Blob blob) async {
-  final reader = html.FileReader();
-  reader.readAsArrayBuffer(blob);
-
-  await reader.onLoadEnd.first; 
-  return reader.result as Uint8List;
-}
-
-  static Future<dynamic> criar(String endpoint, {Map<String, String> headers = const {}, dynamic data}) async {
+static Future<dynamic> criar(String endpoint, {Map<String, String> headers = const {}, dynamic data}) async {
     final url = '$endpoint/criar';
     try {
       return await myHttp(url: url, method: "POST", headers: headers, data: jsonEncode(data));
     } catch (e) {
       throw Exception('Failed to connect to server: $e');
+    }
+  }
+
+  static Future<dynamic> criarFormDataFile(String endpoint, {required Map<String, String> data, required String fileKey, required Uint8List file}) async {
+    var uri = Uri.parse('$baseUrl/$endpoint');
+    print("uri");
+    print(uri);
+    var request = http.MultipartRequest('POST', uri);
+
+    // Adicionar os campos
+    data.forEach((key, value) {
+      request.fields[key] = value;
+    });
+
+    // Adicionar o arquivo como MultipartFile
+    request.files.add(http.MultipartFile.fromBytes(
+      fileKey,
+      file,
+      filename: 'upload.png', // Nome do arquivo
+      contentType: MediaType('image', 'png'), // Tipo de conteúdo
+    ));
+
+    // Enviar o request
+    var response = await request.send();
+
+    if (response.statusCode == 200) {
+      return jsonDecode(await response.stream.bytesToString());
+    } else {
+      print('Erro ao enviar dados: ${response.statusCode}');
+      return null;
+    }
+  }
+
+  static Future<dynamic> criarFormData(String endpoint, {required Map<String, dynamic> data, required String fileKey}) async {
+    var uri = Uri.parse('$baseUrl/$endpoint');
+    var request = http.MultipartRequest('POST', uri);
+
+    // Adicionar os campos (exceto o campo de imagem)
+    data.forEach((key, value) {
+      if (key != fileKey) {
+        request.fields[key] = value.toString();
+      }
+    });
+
+    // Tratar o arquivo de imagem como Uint8List
+    if (data.containsKey(fileKey)) {
+      Uint8List fileData = data[fileKey];
+      request.files.add(http.MultipartFile.fromBytes(
+        fileKey,
+        fileData,
+        filename: 'upload.png', // Nome do arquivo (pode ser alterado)
+        contentType: MediaType('image', 'png'), // Tipo de conteúdo
+      ));
+    }
+
+    // Enviar a requisição
+    var response = await request.send();
+
+    if (response.statusCode == 200) {
+      // Decodificar a resposta JSON
+      return jsonDecode(await response.stream.bytesToString());
+    } else {
+      print('Erro ao enviar dados: ${response.statusCode}');
+      return null;
     }
   }
 
@@ -131,34 +153,32 @@ static Future<Uint8List> blobToUint8List(html.Blob blob) async {
     }
   }
 
-static Future<http.Response> sendProfilePic(String endpoint, {required Map<String, dynamic> data, required String fileKey, Map<String, String> headers = const {}}) async {
+static Future<http.Response> sendProfilePic(
+  String endpoint, {
+  required Uint8List fileData,
+  required String fileKey,
+  Map<String, String> headers = const {},
+}) async {
   try {
     var url = Uri.parse('$baseUrl/$endpoint');
     var request = http.MultipartRequest('PUT', url);
 
-    data.forEach((key, value) {
-      if (key != fileKey) {
-        request.fields[key] = value.toString();
-        print('Field: $key = ${value.toString()}');
-      }
-    });
+    // Adicionar o arquivo ao request
+    var arquivoMultipart = http.MultipartFile.fromBytes(
+      fileKey,
+      fileData,
+      filename: 'upload.jpg',
+    );
 
-    if (data.containsKey(fileKey) && data[fileKey] != null) {
-      Uint8List imageBytes = await blobToUint8List(data[fileKey]);
-      var arquivoMultipart = http.MultipartFile.fromBytes(
-        fileKey,
-        imageBytes,
-        filename: 'upload.jpg',
-      );
+    request.files.add(arquivoMultipart);
+    print('File added: $fileKey');
 
-      request.files.add(arquivoMultipart);
-      print('File added: $fileKey');
-    }
-
+    // Adicionar headers ao request
     headers.forEach((key, value) {
       request.headers[key] = value;
     });
 
+    // Enviar o request e obter a resposta
     var response = await http.Response.fromStream(await request.send());
 
     return response;
@@ -166,7 +186,6 @@ static Future<http.Response> sendProfilePic(String endpoint, {required Map<Strin
     throw error;
   }
 }
-
 
   static Future<void> remover(String endpoint, int id, {Map<String, String>? headers}) async {
     final url = '$endpoint/remover/$id';
@@ -189,24 +208,33 @@ static Future<http.Response> sendProfilePic(String endpoint, {required Map<Strin
   }
 
   static Future<Map<String, dynamic>?> postData(String endpoint, Map<String, dynamic> data) async {
-    try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/$endpoint'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(data),
-      );
+    print('URL da API: $baseUrl/$endpoint');
+  try {
 
-      if (response.statusCode == 200) {
-        return json.decode(response.body);
-      } else {
-        throw Exception('Falha ao enviar dados para a API');
+    final response = await http.post(
+      Uri.parse('$baseUrl/$endpoint'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(data),
+    );
+
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      // Verifica se o corpo da resposta pode ser decodificado como JSON
+      try {
+        return json.decode(response.body) as Map<String, dynamic>?;
+      } catch (e) {
+        throw Exception('Erro ao decodificar resposta da API: ${response.body}');
       }
-    } catch (e) {
-      throw Exception('Erro na comunicação com a API: $e');
+    } else {
+      // Inclui mais informações sobre a falha
+      throw Exception('Falha ao enviar dados para a API. Status code: ${response.statusCode}, Resposta: ${response.body}');
     }
+  } catch (e) {
+    throw Exception('Erro na comunicação com a API: $e');
   }
+}
+
 
   static Future<void> updateProfile(Map<String, dynamic> profileData) async {
     final String endpoint = 'utilizador/atualizar/${profileData['id']}';

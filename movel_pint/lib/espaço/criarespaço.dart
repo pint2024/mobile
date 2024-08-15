@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
-import 'dart:html' as html;
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';  // Importação do image_picker
 import 'package:movel_pint/backend/api_service.dart';
 import 'package:movel_pint/backend/auth_service.dart';
 import 'package:movel_pint/utils/constants.dart';
@@ -28,10 +28,8 @@ class _SpaceFormPageState extends State<SpaceFormPage> {
   final TextEditingController _PrecoController = TextEditingController();
 
   Uint8List? _imageData;
-  String? _imageBase64;
   String? _selectedSubtopic;
   int _selectedIndex = 2;
-  double _rating = 0;
   int preco = 0;
   String? _selectedLocation;
   late int _userId;
@@ -45,13 +43,12 @@ class _SpaceFormPageState extends State<SpaceFormPage> {
     _loadSubtopics();
   }
 
-    Future<void> _loadUserId() async {
+  Future<void> _loadUserId() async {
     dynamic utilizadorAtual = await AuthService.obter();
     setState(() {
       _userId = utilizadorAtual["id"];
     });
   }
-
 
   void _showSnackbar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -75,63 +72,55 @@ class _SpaceFormPageState extends State<SpaceFormPage> {
   }
 
   Future<void> _createRecomendacao() async {
-    if (_formKey.currentState!.validate()) {
-      if (_imageData == null) {
-        _showSnackbar("Por favor, selecione uma imagem.");
-        return;
-      }
+    try {
+      print('Iniciando criação de recomendação');
+      if (_formKey.currentState!.validate()) {
+        if (_imageData == null) {
+          _showSnackbar("Por favor, selecione uma imagem.");
+          return;
+        }
 
-      String name = _tituloController.text;
-      String location = _selectedLocation ?? _enderecoController.text;
-      String description = _descricaoController.text;
-      String subtopic = _selectedSubtopic!;
-      preco = int.tryParse(_PrecoController.text) ?? 0;
+        String name = _tituloController.text;
+        String location = _selectedLocation ?? _enderecoController.text;
+        String description = _descricaoController.text;
+        String subtopic = _selectedSubtopic!;
+        preco = int.tryParse(_PrecoController.text) ?? 0;
 
-      Map<String, dynamic> data = {
-        'titulo': name,
-        'descricao': description,
-        'imagem': html.Blob([_imageData!]),
-        'endereco': location, 
-        'utilizador': _userId, 
-        'subtopico': subtopic,
-        'tipo': CONSTANTS.valores['ESPACO']?['ID'],        
-      };
+        print('Preparando dados para enviar...');
+        Map<String, String> data = {
+          'titulo': name,
+          'descricao': description,
+          'endereco': location,
+          'utilizador': _userId.toString(),
+          'subtopico': subtopic,
+          'tipo': CONSTANTS.valores['ESPACO']!['ID'].toString(),
+        };
 
-      try {
-        final response = await ApiService.criarFormData("conteudo", data: data, fileKey: "imagem");
+        print('Enviando dados...');
+        final response = await ApiService.criarFormDataFile("conteudo/criar", data: data, fileKey: "imagem", file: _imageData!);
 
         if (response != null) {
-          print(data);
-          print('$name, $description, $location, $subtopic, $_rating, $preco');
+          print('Espaço criado com sucesso');
           _showSnackbar("Espaço criado com sucesso, pode a ver na página dos espaços");
         } else {
           print("Erro ao criar o espaço: Resposta nula");
         }
-      } catch (e) {
-        print("Error creating Espaço: $e");
       }
+    } catch (e) {
+      print("Error creating Espaço: $e");
     }
   }
 
   Future<void> _getImage() async {
-    html.FileUploadInputElement uploadInput = html.FileUploadInputElement();
-    uploadInput.accept = 'image/*';
-    uploadInput.click();
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
-    uploadInput.onChange.listen((e) {
-      final files = uploadInput.files;
-      if (files!.isNotEmpty) {
-        final reader = html.FileReader();
-        reader.readAsArrayBuffer(files[0]);
-
-        reader.onLoadEnd.listen((e) {
-          setState(() {
-            _imageData = reader.result as Uint8List?;
-            _imageBase64 = base64Encode(_imageData!);
-          });
-        });
-      }
-    });
+    if (pickedFile != null) {
+      final bytes = await pickedFile.readAsBytes();
+      setState(() {
+        _imageData = bytes;
+      });
+    }
   }
 
   void _onItemTapped(int index) {
@@ -330,7 +319,8 @@ class _SpaceFormPageState extends State<SpaceFormPage> {
                           ),
                         ),
                         IconButton(
-                          icon: Icon(Icons.map), onPressed: () {  },
+                          icon: Icon(Icons.map),
+                          onPressed: _openMapDialog,
                         ),
                       ],
                     ),
@@ -368,14 +358,14 @@ class _SpaceFormPageState extends State<SpaceFormPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         ElevatedButton(
-                          onPressed: () {
-                            _showCancelDialog();
-                          },
-                          style: ElevatedButton.styleFrom(backgroundColor: Color.fromRGBO(247, 245, 249, 1)),
+                          onPressed: _showCancelDialog,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Color.fromRGBO(247, 245, 249, 1),
+                          ),
                           child: const Text('Cancelar'),
                         ),
                         ElevatedButton(
-                          onPressed: () => _createRecomendacao(),
+                          onPressed: _createRecomendacao,
                           child: const Text('Criar espaço'),
                         ),
                       ],

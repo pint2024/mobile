@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'dart:typed_data';
-import 'dart:html' as html;
+import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:movel_pint/backend/api_service.dart';
 import 'package:movel_pint/backend/auth_service.dart';
 import 'package:movel_pint/utils/constants.dart';
@@ -92,19 +93,22 @@ class _EventFormPageState extends State<EventFormPage> {
         );
       }
 
-      Map<String, dynamic> data = {
+      print("oi");
+
+      Map<String, String> data = {
         'titulo': name,
         'descricao': description,
-        'imagem': html.Blob([_imageData!]), //O nome das variaveis que vao ser enviadas para a bd
         'endereco': location,
-        'data_evento': dateTime?.toIso8601String(),
-        'utilizador': _userId,  
+        'data_evento': dateTime!.toIso8601String().toString(),
+        'utilizador': _userId.toString(),  
         'subtopico': subtopic,
-        'tipo': CONSTANTS.valores['EVENTO']?['ID'],
+        'tipo': CONSTANTS.valores['EVENTO']!['ID'].toString(),
       };
+      print(data);
 
       try {
-        final response = await ApiService.criarFormData("conteudo", data: data, fileKey: "imagem"); //envia para a base de dados o fromulario com todas as informações que foram dadas
+        final response = await ApiService.criarFormDataFile("conteudo/criar", data: data, fileKey: "imagem", file: _imageData!);
+      print(response);
 
         if (response != null) {
           _showSnackbar("Evento criado com sucesso, pode a ver na página dos Eventos");
@@ -118,24 +122,16 @@ class _EventFormPageState extends State<EventFormPage> {
   }
 
   Future<void> _getImage() async {
-    html.FileUploadInputElement uploadInput = html.FileUploadInputElement();
-    uploadInput.accept = 'image/*';
-    uploadInput.click();
+    final ImagePicker _picker = ImagePicker();
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
 
-    uploadInput.onChange.listen((e) {
-      final files = uploadInput.files; //abre o ficheiro das imagens le os dados e armazena-os em _iamgeData e imgageBase64
-      if (files!.isNotEmpty) {
-        final reader = html.FileReader();
-        reader.readAsArrayBuffer(files[0]);
-
-        reader.onLoadEnd.listen((e) {
-          setState(() {
-            _imageData = reader.result as Uint8List?;
-            _imageBase64 = base64Encode(_imageData!);
-          });
-        });
-      }
-    });
+    if (image != null) {
+      final Uint8List imageData = await image.readAsBytes();
+      setState(() {
+        _imageData = imageData;
+        _imageBase64 = base64Encode(_imageData!);
+      });
+    }
   }
 
   Future<void> _selectDate() async {
