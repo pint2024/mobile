@@ -35,7 +35,6 @@ class _EventCalendarPageState extends State<CalendarScreen> {
 
     Future<void> _loadUserId() async {
       dynamic utilizadorAtual = await AuthService.obter();
-      print("pocrl $utilizadorAtual");
       setState(() {
         _userId = utilizadorAtual["id"];
       });
@@ -44,9 +43,6 @@ class _EventCalendarPageState extends State<CalendarScreen> {
   Future<void> _fetchEventsForUser() async {
     try {
       final data = await ApiService.listar('participante');
-      print("-------------------------------------------\n\n\n");
-      print(data);
-      print("-------------------------------------------\n\n\n");
 
       if (data != null && data is List<dynamic>) {
         Map<DateTime, List<Map<String, dynamic>>> events = {};

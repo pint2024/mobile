@@ -73,7 +73,6 @@ class _SpaceFormPageState extends State<SpaceFormPage> {
 
   Future<void> _createRecomendacao() async {
     try {
-      print('Iniciando criação de recomendação');
       if (_formKey.currentState!.validate()) {
         if (_imageData == null) {
           _showSnackbar("Por favor, selecione uma imagem.");
@@ -86,7 +85,6 @@ class _SpaceFormPageState extends State<SpaceFormPage> {
         String subtopic = _selectedSubtopic!;
         preco = int.tryParse(_PrecoController.text) ?? 0;
 
-        print('Preparando dados para enviar...');
         Map<String, String> data = {
           'titulo': name,
           'descricao': description,
@@ -96,11 +94,9 @@ class _SpaceFormPageState extends State<SpaceFormPage> {
           'tipo': CONSTANTS.valores['ESPACO']!['ID'].toString(),
         };
 
-        print('Enviando dados...');
         final response = await ApiService.criarFormDataFile("conteudo/criar", data: data, fileKey: "imagem", file: _imageData!);
 
         if (response != null) {
-          print('Espaço criado com sucesso');
           _showSnackbar("Espaço criado com sucesso, pode a ver na página dos espaços");
         } else {
           print("Erro ao criar o espaço: Resposta nula");

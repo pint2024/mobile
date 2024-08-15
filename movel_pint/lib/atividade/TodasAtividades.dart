@@ -95,12 +95,8 @@ class _AtividadeState extends State<TodasAtividades> {
     try {
       print('Chamando API para buscar dados...');
       final data = await ApiService.listar('conteudo');
-      print("dados recevidos");
-      print('Dados recebidos da API: $data');
       if (data != null) {
-        print('Data não é nulo');
         if (data is List) {
-          print('Data["data"] é uma lista');
           setState(() {
             _conteudos = List<Map<String, dynamic>>.from(data)
                 .where((conteudo) => conteudo['tipo'] == 2)
@@ -113,13 +109,11 @@ class _AtividadeState extends State<TodasAtividades> {
           print('Data["data"] não é uma lista, é: ${data.runtimeType}');
         }
       } else {
-        print('Nenhum dado encontrado ou dado malformado');
         setState(() {
           _isLoading = false;
         });
       }
     } catch (e) {
-      print('Erro ao carregar conteúdos: $e');
       setState(() {
         _isLoading = false; 
       });
@@ -130,12 +124,10 @@ class _AtividadeState extends State<TodasAtividades> {
     setState(() {
       idAtividade = id;
     });
-    print('ID da atividade selecionada: $idAtividade');
   }
 
   @override
   Widget build(BuildContext context) {
-    print('Construindo widget VerAtividades...');
     return VerAtividades(
       selectedIndex: _selectedIndex,
       onItemTapped: _onItemTapped,
@@ -175,7 +167,6 @@ class VerAtividades extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('Construindo VerAtividades...');
     return Scaffold(
       appBar: CustomAppBar(),
       body: isLoading

@@ -12,7 +12,6 @@ class ApiService {
 
   static Future<dynamic> obter(String endpoint, int id, {Map<String, String> headers = const {}}) async {
     final url = '$endpoint/obter/$id';
-    print("url");
     try {
       return await myHttp(url: url, method: "GET", headers: headers);
     } catch (e) {
@@ -70,8 +69,6 @@ static Future<dynamic> criar(String endpoint, {Map<String, String> headers = con
 
   static Future<dynamic> criarFormDataFile(String endpoint, {required Map<String, String> data, required String fileKey, required Uint8List file}) async {
     var uri = Uri.parse('$baseUrl/$endpoint');
-    print("uri");
-    print(uri);
     var request = http.MultipartRequest('POST', uri);
 
     // Adicionar os campos
@@ -171,7 +168,6 @@ static Future<http.Response> sendProfilePic(
     );
 
     request.files.add(arquivoMultipart);
-    print('File added: $fileKey');
 
     // Adicionar headers ao request
     headers.forEach((key, value) {
@@ -208,7 +204,6 @@ static Future<http.Response> sendProfilePic(
   }
 
   static Future<Map<String, dynamic>?> postData(String endpoint, Map<String, dynamic> data) async {
-    print('URL da API: $baseUrl/$endpoint');
   try {
 
     final response = await http.post(

@@ -30,8 +30,6 @@ class AlbumSliderPage extends StatelessWidget {
           files: files,
         );
 
-        print("RESPONSE CRL $response");
-
         if (response.statusCode == 200) {
           print('Upload bem-sucedido');
         } else {
@@ -40,14 +38,6 @@ class AlbumSliderPage extends StatelessWidget {
       }
     } catch (e) {
       print("Erro ao selecionar imagens: $e");
-    }
-  }
-
-  Future<void> _uploadImage(XFile file) async {
-    try {
-      print("FNDLNASDLJKFNSAKJF NASDJK");
-    } catch (e) {
-      print("Erro ao fazer upload: $e");
     }
   }
 

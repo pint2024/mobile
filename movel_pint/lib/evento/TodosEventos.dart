@@ -84,14 +84,9 @@ class _EventoState extends State<TodosEventos> {
 
   Future<void> _fetchConteudos() async {
     try {
-      print('Chamando API para buscar dados...');
       final data = await ApiService.listar('conteudo');
-      print("dados recevidos");
-      print('Dados recebidos da API: $data');
       if (data != null) {
-        print('Data não é nulo');
         if (data is List) {
-          print('Data["data"] é uma lista');
           setState(() {
             _conteudos = List<Map<String, dynamic>>.from(data)
                 .where((conteudo) => conteudo['tipo'] == 1)
@@ -101,19 +96,16 @@ class _EventoState extends State<TodosEventos> {
             _isLoading = false; 
           });
         } else {
-          print('Data["data"] não é uma lista, é: ${data.runtimeType}');
           setState(() {
             _isLoading = false; 
           });
         }
       } else {
-        print('Nenhum dado encontrado ou dado malformado');
         setState(() {
           _isLoading = false; 
         });
       }
     } catch (e) {
-      print('Erro ao carregar conteúdos: $e');
       setState(() {
         _isLoading = false; 
       });
@@ -124,12 +116,10 @@ class _EventoState extends State<TodosEventos> {
     setState(() {
       idAtividade = id;
     });
-    print('ID da atividade selecionada: $idAtividade');
   }
 
   @override
   Widget build(BuildContext context) {
-    print('Construindo widget VerEventos...');
     return VerEventos(
       selectedIndex: _selectedIndex,
       onItemTapped: _onItemTapped,
@@ -169,7 +159,6 @@ class VerEventos extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('Construindo VerEventos...');
     return Scaffold(
       appBar: CustomAppBar(),
       body: isLoading

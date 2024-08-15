@@ -33,7 +33,7 @@ class HomePageMain extends StatefulWidget {
   _HomePageMainState createState() => _HomePageMainState();
 }
 
-void _onCardTap(String id) {
+  void _onCardTap(String id) {
     print('ID da atividade: $id');
   }
 
@@ -54,12 +54,9 @@ class _HomePageMainState extends State<HomePageMain> {
 
   Future<void> _fetchConteudos() async {
     try {
-      print('Chamando API para buscar dados...');
       final data = await ApiService.listar('conteudo');
       if (data != null) {
-        print('Data não é nulo');
         if (data is List) {
-          print('Data["data"] é uma lista');
           setState(() {
             _atividades = List<Map<String, dynamic>>.from(data).where((conteudo) => conteudo['tipo'] == 2).toList();
             _eventos = List<Map<String, dynamic>>.from(data).where((conteudo) => conteudo['tipo'] == 1).toList();
@@ -68,19 +65,16 @@ class _HomePageMainState extends State<HomePageMain> {
             _isLoading = false; 
           });
         } else {
-          print('Data["data"] não é uma lista, é: ${data.runtimeType}');
           setState(() {
             _isLoading = false; 
           });
         }
       } else {
-        print('Nenhum dado encontrado ou dado malformado');
         setState(() {
           _isLoading = false;
         });
       }
     } catch (e) {
-      print('Erro ao carregar conteúdos: $e');
       setState(() {
         _isLoading = false; 
       });

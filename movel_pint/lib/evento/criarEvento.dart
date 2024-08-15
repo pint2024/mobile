@@ -93,8 +93,6 @@ class _EventFormPageState extends State<EventFormPage> {
         );
       }
 
-      print("oi");
-
       Map<String, String> data = {
         'titulo': name,
         'descricao': description,
@@ -104,11 +102,9 @@ class _EventFormPageState extends State<EventFormPage> {
         'subtopico': subtopic,
         'tipo': CONSTANTS.valores['EVENTO']!['ID'].toString(),
       };
-      print(data);
 
       try {
         final response = await ApiService.criarFormDataFile("conteudo/criar", data: data, fileKey: "imagem", file: _imageData!);
-      print(response);
 
         if (response != null) {
           _showSnackbar("Evento criado com sucesso, pode a ver na página dos Eventos");

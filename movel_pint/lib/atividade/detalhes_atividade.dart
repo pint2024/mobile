@@ -73,7 +73,6 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
 
 Future<void> _fetchActivityDetails(int activityId) async {
   try {
-    print("fetch _fetchActivityDetails");
     setState(() {
       _isLoadingDetails = true;
     });
@@ -89,12 +88,9 @@ Future<void> _fetchActivityDetails(int activityId) async {
         _userMap = users;
         _userRatings = userRatings;
       });
-
-      print('Dados carregados com sucesso');
     } else {
       print('Dados não encontrados ou inválidos');
     }
-    print("fetch _fetchActivityDetails over");
   } catch (e) {
     print('Erro ao carregar dados: $e');
   } finally {
@@ -142,7 +138,6 @@ Future<Map<int, int>> _fetchUserRatings() async {
             albumImages.add(album['imagem']);
           }
         }
-        print('Imagens dos álbuns carregadas com sucesso: $albumImages');
       } else {
         print('Nenhum álbum encontrado para este conteúdo');
       }
@@ -165,7 +160,6 @@ Future<Map<int, int>> _fetchUserRatings() async {
           _userParticipationId = null;
         }
       });
-    print("fetch _fetchEventsForUser over");
     } catch (e) {
       print('Erro ao carregar dados: $e');
     }
@@ -179,7 +173,6 @@ Future<Map<int, int>> _fetchUserRatings() async {
     try {
       final response =
           await ApiService.postData('participante/criar', participationData);
-      print(response);
       _fetchEventsForUser();
     } catch (e) {
       print('Erro ao registrar participação: $e');
@@ -235,7 +228,6 @@ Future<void> _deleteComment(int commentId) async {
     try {
       final response =
           await ApiService.postData('comentario/criar', commentData);
-      print(response);
       await _fetchActivityDetails(widget.activityId);
       return response;
     } catch (e) {
@@ -268,8 +260,6 @@ Future<void> _rateComment(int commentId, int rating) async {
 
   try {
     final response = await ApiService.postData('classificacao/criar', rateData);
-    print(response);
-
     setState(() {
       var index = _comments!.indexWhere((comment) => comment['id'] == commentId);
       if (index != -1) {
@@ -390,9 +380,7 @@ Future<void> _confirmDeleteComment(int commentId) async {
     };
 
     try {
-      final response =
-          await ApiService.postData('classificacao/criar', rateData);
-      print(response);
+      final response = await ApiService.postData('classificacao/criar', rateData);
 
       setState(() {
         if (_activityDetails != null) {
@@ -479,8 +467,6 @@ Future<void> _sendReport(String motivo, int commentId) async {
 
   try {
     final response = await ApiService.postData('denuncia/criar', reportData);
-    print(response);
-
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Denúncia feita com sucesso.'),
