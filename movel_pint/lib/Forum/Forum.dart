@@ -50,8 +50,6 @@ class _HomePageState extends State<ForumPage> {
     try {
       print('Chamando API para buscar dados...');
       final data = await ApiService.listar('conteudo');
-      print("dados recebidos");
-      print('Dados recebidos da API: $data');
       if (data != null) {
         print('Data não é nulo');
         if (data is List) {

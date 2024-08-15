@@ -30,6 +30,7 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
   Map<int, String>? _userMap;
   late int _userId;
   bool _isLoading = true;
+  
 
   TextEditingController _commentController = TextEditingController();
 
@@ -42,9 +43,14 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
   @override
   void initState() {
     super.initState();
-    _loadUserId();
-    _fetchActivityDetails(widget.activityId);
-    _fetchEventsForUser();
+   _fetch();
+  }
+
+   void _fetch() async {
+    await _loadUserId();
+   await _fetchExistingReports();
+   await _fetchActivityDetails(widget.activityId);
+   await _fetchEventsForUser();
   }
 
     Future<void> _loadUserId() async {
@@ -73,8 +79,6 @@ Future<void> _fetchActivityDetails(int activityId) async {
     });
 
     final data = await ApiService.obter('conteudo', activityId);
-    print('Conteudo:\n');
-    print(data);
     if (data != null) {
       final users = await _fetchUsers();
       final userRatings = await _fetchUserRatings();
@@ -115,14 +119,6 @@ Future<Map<int, int>> _fetchUserRatings() async {
   try {
     final ratings = await ApiService.listar('classificacao', data: {'utilizador': _userId});
     final filteredRatings = ratings.where((rating) => rating['comentario'] != null).toList();
-    
-    print("\nRATINGS AQUI BROTHER\n");
-    print(Map.fromIterable(
-      filteredRatings,
-      key: (rating) => rating['comentario'],
-      value: (rating) => (rating['classificacao'] ?? 0).toInt(),
-    ));
-    
     return Map.fromIterable(
       filteredRatings,
       key: (rating) => rating['comentario'],
@@ -158,10 +154,7 @@ Future<Map<int, int>> _fetchUserRatings() async {
 
   Future<void> _fetchEventsForUser() async {
     try {
-    print("fetch _fetchEventsForUser");
       final participants = await ApiService.listar('participante', data: {'utilizador': _userId});
-      print('Participantes:\n');
-      print(participants);
       setState(() {
         _isParticipating = participants
             .any((participant) => participant['conteudo'] == widget.activityId);
@@ -417,6 +410,93 @@ void _shareContent() {
   Share.share('http://localhost:8000/conteudos/${widget.activityId}');
 }
 
+//REPORT_______________________________________________________________________________________________
+
+Future<dynamic> _fetchExistingReports() async {
+  try {
+    final response = await ApiService.listar('denuncia', data: {'utilizador': _userId});
+    return response;
+  } catch (e) {
+    print('Erro ao buscar denúncias: $e');
+    throw e;
+  }
+}
+
+
+void _showReportDialog(int commentId) async {
+  List<dynamic> existingReports = await _fetchExistingReports();
+  bool alreadyReported = existingReports.any((report) =>
+      report['comentario'] == commentId &&
+      report['denuncia_utilizador']['id'] == _userId);
+
+  if (alreadyReported) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Você já denunciou este comentário.'),
+      ),
+    );
+    return;
+  }
+
+  TextEditingController reportController = TextEditingController();
+
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text("Denunciar Comentário"),
+        content: TextField(
+          controller: reportController,
+          decoration: InputDecoration(hintText: "Motivo da denúncia"),
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: Text("Cancelar"),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          TextButton(
+            child: Text("Denunciar"),
+            onPressed: () {
+              _sendReport(reportController.text, commentId);
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
+
+
+Future<void> _sendReport(String motivo, int commentId) async {
+  Map<String, dynamic> reportData = {
+    'motivo': motivo,
+    'comentario': commentId,
+    'utilizador': _userId,
+  };
+
+  try {
+    final response = await ApiService.postData('denuncia/criar', reportData);
+    print(response);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Denúncia feita com sucesso.'),
+      ),
+    );
+  } catch (e) {
+    print('Erro ao enviar denúncia: $e');
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Erro ao enviar denúncia. Tente novamente.'),
+      ),
+    );
+  }
+}
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -657,69 +737,78 @@ void _shareContent() {
     );
   }
 
-  Widget _buildCommentItem(Map<String, dynamic> comment) {
-    int commentId = comment['id'];
-    var currentUserId = _userId;      
-    bool isCurrentUserComment = comment['utilizador'] == currentUserId;
-    String userName =
-        _userMap != null && _userMap!.containsKey(comment['utilizador'])
-            ? _userMap![comment['utilizador']]!
-            : 'Utilizador desconhecido';
-    int userRating = (_userRatings[commentId] ?? 0).toInt();
+Widget _buildCommentItem(Map<String, dynamic> comment) {
+  int commentId = comment['id'];
+  var currentUserId = _userId;
+  bool isCurrentUserComment = comment['utilizador'] == currentUserId;
+  String userName =
+      _userMap != null && _userMap!.containsKey(comment['utilizador'])
+          ? _userMap![comment['utilizador']]!
+          : 'Utilizador desconhecido';
+  int userRating = (_userRatings[commentId] ?? 0).toInt();
 
-    return Container(
-      padding: EdgeInsets.all(12),
-      margin: EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: Colors.grey[300],
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
+  return Container(
+    padding: EdgeInsets.all(12),
+    margin: EdgeInsets.only(bottom: 12),
+    decoration: BoxDecoration(
+      color: Colors.grey[300],
+      borderRadius: BorderRadius.circular(8),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: Text(
                 userName,
                 style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
               ),
-              Row(
-                children: List.generate(
-                  5,
-                  (index) => IconButton(
-                    icon: Icon(
-                      index < userRating ? Icons.star : Icons.star_border,
-                      color: Colors.yellow,
-                    ),
-                    onPressed: () {
-                      _rateComment(commentId, index + 1);
-                      print(commentId);
-                    },
-                  ),
-                ),
+            ),
+            if (!isCurrentUserComment)
+              IconButton(
+                icon: Icon(Icons.error),
+                onPressed: () => _showReportDialog(commentId),
               ),
-              if (isCurrentUserComment)
-                IconButton(
-                  icon: Icon(Icons.delete),
-                  onPressed: () => _confirmDeleteComment(commentId),
-                ),
-            ],
+            if (isCurrentUserComment)
+              IconButton(
+              icon: Icon(Icons.delete),
+              onPressed: () => _confirmDeleteComment(commentId),
+            ),
+          ],
+        ),
+        SizedBox(height: 4),
+        Text(
+          '${_formatDateTime(comment['data_criacao'])}',
+          style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
+        ),
+        SizedBox(height: 8),
+        Text(
+          comment['comentario'] ?? 'Comentário não disponível',
+          style: TextStyle(fontSize: 14),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: List.generate(
+            5,
+            (index) => IconButton(
+              icon: Icon(
+                index < userRating ? Icons.star : Icons.star_border,
+                color: Colors.yellow,
+              ),
+              onPressed: () {
+                _rateComment(commentId, index + 1);
+              },
+            ),
           ),
-          SizedBox(height: 4),
-          Text(
-            '${_formatDateTime(comment['data_criacao'])}',
-            style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
-          ),
-          SizedBox(height: 8),
-          Text(
-            comment['comentario'] ?? 'Comentário não disponível',
-            style: TextStyle(fontSize: 14),
-          ),
-        ],
-      ),
-    );
-  }
+        ),
+        
+      ],
+    ),
+  );
+}
+
 
   Widget _buildDetailItemWithLabel(String value,
       {bool isTitle = false, bool isDescription = false}) {
