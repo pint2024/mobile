@@ -9,6 +9,8 @@ import 'package:movel_pint/backend/auth_service.dart';
 import 'package:movel_pint/utils/constants.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
 import 'package:movel_pint/widgets/customAppBar.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 
 void main() {
   runApp(MaterialApp(home: CreateActivityPage()));
@@ -169,7 +171,13 @@ class _CreateActivityPageState extends State<CreateActivityPage> {
           child: Column(
             children: [
               Expanded(
-                child: GoogleMap(
+                child: FlutterMap(
+                  options: MapOptions(
+                    initialCenter: LatLng(41, 29),
+                    initialZoom: 8.0,
+                  )
+                ),
+                /*GoogleMap(
                   initialCameraPosition: CameraPosition(
                     target: LatLng(-23.550520, -46.633308),
                     zoom: 12,
@@ -189,7 +197,7 @@ class _CreateActivityPageState extends State<CreateActivityPage> {
                           ),
                         }
                       : {},
-                ),
+                ),*/
               ),
               ElevatedButton(
                 onPressed: () {
