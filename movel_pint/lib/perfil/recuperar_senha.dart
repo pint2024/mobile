@@ -114,7 +114,7 @@ class _RecuperarSenhaState extends State<RecuperarSenha> {
                                   AlwaysStoppedAnimation<Color>(Colors.white),
                             )
                           : Text(
-                              'enviar',
+                              'Enviar',
                               style: TextStyle(
                                 color: Colors.white,
                               ),

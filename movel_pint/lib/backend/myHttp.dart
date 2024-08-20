@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:movel_pint/backend/auth_service.dart';
 import 'package:movel_pint/utils/constants.dart';
 
-const String baseUrl = CONSTANTS.API_MOBILE_BASE_URL;
+const String baseUrl = CONSTANTS.API_MOBILE_CLOUD_URL;
 
 
 Future<dynamic> myHttp({

@@ -6,7 +6,7 @@ import 'package:movel_pint/utils/constants.dart';
 import 'package:http_parser/http_parser.dart';  // Adicione essa linha
 
 
-const String baseUrl = CONSTANTS.API_MOBILE_BASE_URL;
+const String baseUrl = CONSTANTS.API_MOBILE_CLOUD_URL;
 
 class ApiService {
 
