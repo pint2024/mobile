@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:movel_pint/atividade/mapa.dart';
 import 'package:movel_pint/backend/api_service.dart';
 import 'package:movel_pint/backend/auth_service.dart';
 import 'package:movel_pint/utils/constants.dart';
@@ -32,6 +33,10 @@ class _EventFormPageState extends State<EventFormPage> {
   String? _selectedSubtopic;
   int _selectedIndex = 2;
   late int _userId;
+
+  String? endereco; // Variável de instância para a latitude
+  String? latitude; // Variável de instância para a latitude
+  String? longitude; // Variável de instância para a longitude
 
   List<dynamic> _subtopics = [];
 
@@ -96,7 +101,9 @@ class _EventFormPageState extends State<EventFormPage> {
       Map<String, String> data = {
         'titulo': name,
         'descricao': description,
-        'endereco': location,
+        'endereco': endereco!,
+        'longitude': longitude!,
+        'latitude': latitude!,
         'data_evento': dateTime!.toIso8601String().toString(),
         'utilizador': _userId.toString(),  
         'subtopico': subtopic,
@@ -221,6 +228,26 @@ class _EventFormPageState extends State<EventFormPage> {
     return items;
   }
 
+    Future<void> _selectLocation() async {
+  final result = await showModalBottomSheet<Map<String, dynamic>>(
+    context: context,
+    builder: (BuildContext context) {
+      return Container(
+        height: 400,
+        child: const MapaSelect(),
+      );
+    },
+  );
+  if (result != null) {
+    setState(() {
+      latitude = result['latitude'].toString(); // Armazena a latitude
+      longitude = result['longitude'].toString(); // Armazena a longitude
+      endereco = result['address']; // Armazena o endereço
+      _enderecoController.text = endereco ?? ''; // Atualiza o TextField do endereço
+    });
+  }
+}
+
   @override  // construção da interface
   Widget build(BuildContext context) {
     return Scaffold(
@@ -276,18 +303,28 @@ class _EventFormPageState extends State<EventFormPage> {
                       },
                     ),
                     SizedBox(height: 10),
-                    TextFormField(
-                      controller: _enderecoController,
-                      decoration: InputDecoration(
-                        labelText: 'Local',
-                        border: OutlineInputBorder(),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Por favor, insira o local do evento';
-                        }
-                        return null;
-                      },
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            controller: _enderecoController,
+                            decoration: InputDecoration(
+                              labelText: 'Local',
+                              border: OutlineInputBorder(),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Por favor, insira o local da recomendação';
+                              }
+                              return null;
+                            },
+                            enabled: false,
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.map), onPressed: () => _selectLocation(),
+                        ),
+                      ],
                     ),
                     SizedBox(height: 10),
                     TextFormField(

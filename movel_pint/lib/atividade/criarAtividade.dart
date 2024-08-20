@@ -2,15 +2,16 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:image_picker/image_picker.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:movel_pint/Forum/Forum.dart';
+import 'package:movel_pint/atividade/mapa.dart';
 import 'package:movel_pint/backend/api_service.dart';
 import 'package:movel_pint/backend/auth_service.dart';
 import 'package:movel_pint/utils/constants.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
 import 'package:movel_pint/widgets/customAppBar.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong2/latlong.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart' as google_maps;
+import 'package:latlong2/latlong.dart' as latlong;
 
 void main() {
   runApp(MaterialApp(home: CreateActivityPage()));
@@ -35,7 +36,10 @@ class _CreateActivityPageState extends State<CreateActivityPage> {
   int _selectedIndex = 2;
   late int _userId;
 
-  LatLng? _selectedLocation;
+  
+  String? endereco; // Variável de instância para o endereço
+  String? latitude; // Variável de instância para a latitude
+  String? longitude; // Variável de instância para a longitude
 
   List<dynamic> _subtopics = [];
 
@@ -74,7 +78,6 @@ class _CreateActivityPageState extends State<CreateActivityPage> {
       }
 
       String name = _tituloController.text;
-      String location = _enderecoController.text;
       String description = _descricaoController.text;
       String subtopic = _selectedSubtopic!;
 
@@ -92,12 +95,16 @@ class _CreateActivityPageState extends State<CreateActivityPage> {
       Map<String, String> data = {
         'titulo': name,
         'descricao': description,
-        'endereco': location,
+        'endereco': endereco!,
+        'latitude': latitude!,
+        'longitude': longitude!,
         'data_evento': dateTime?.toIso8601String() ?? '',
         'utilizador': _userId.toString(),   
         'subtopico': subtopic,
         'tipo': CONSTANTS.valores['ATIVIDADE']!['ID'].toString(),
       };
+
+      print(data);
 
       try {
         final response = await ApiService.criarFormDataFile(
@@ -163,54 +170,26 @@ class _CreateActivityPageState extends State<CreateActivityPage> {
   }
 
   Future<void> _selectLocation() async {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return Container(
-          height: 400,
-          child: Column(
-            children: [
-              Expanded(
-                child: FlutterMap(
-                  options: MapOptions(
-                    initialCenter: LatLng(41, 29),
-                    initialZoom: 8.0,
-                  )
-                ),
-                /*GoogleMap(
-                  initialCameraPosition: CameraPosition(
-                    target: LatLng(-23.550520, -46.633308),
-                    zoom: 12,
-                  ),
-                  onTap: (LatLng location) {
-                    setState(() {
-                      _selectedLocation = location;
-                      _enderecoController.text = '${location.latitude}, ${location.longitude}';
-                    });
-                    Navigator.pop(context);
-                  },
-                  markers: _selectedLocation != null
-                      ? {
-                          Marker(
-                            markerId: MarkerId('selected'),
-                            position: _selectedLocation!,
-                          ),
-                        }
-                      : {},
-                ),*/
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: Text('Confirmar Localização'),
-              ),
-            ],
-          ),
-        );
-      },
-    );
+  final result = await showModalBottomSheet<Map<String, dynamic>>(
+    context: context,
+    builder: (BuildContext context) {
+      return Container(
+        height: 400,
+        child: const MapaSelect(),
+      );
+    },
+  );
+
+  if (result != null) {
+    setState(() {
+      latitude = result['latitude'].toString(); // Armazena a latitude
+      longitude = result['longitude'].toString(); // Armazena a longitude
+      endereco = result['address']; // Armazena o endereço
+      _enderecoController.text = endereco ?? ''; // Atualiza o TextField do endereço
+    });
   }
+}
+
 
   void _showSnackbar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -352,6 +331,7 @@ class _CreateActivityPageState extends State<CreateActivityPage> {
                               }
                               return null;
                             },
+                            enabled: false,  // Desativa o campo de texto
                           ),
                         ),
                         IconButton(

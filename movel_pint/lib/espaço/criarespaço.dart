@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';  // Importação do image_picker
+import 'package:movel_pint/atividade/mapa.dart';
 import 'package:movel_pint/backend/api_service.dart';
 import 'package:movel_pint/backend/auth_service.dart';
 import 'package:movel_pint/utils/constants.dart';
@@ -33,6 +34,10 @@ class _SpaceFormPageState extends State<SpaceFormPage> {
   int preco = 0;
   String? _selectedLocation;
   late int _userId;
+
+  String? endereco; // Variável de instância para a latitude
+  String? latitude; // Variável de instância para a latitude
+  String? longitude; // Variável de instância para a longitude
 
   List<dynamic> _subtopics = [];
 
@@ -88,7 +93,9 @@ class _SpaceFormPageState extends State<SpaceFormPage> {
         Map<String, String> data = {
           'titulo': name,
           'descricao': description,
-          'endereco': location,
+          'endereco': endereco!,
+          'latitude': latitude!,
+          'longitude': longitude!,
           'utilizador': _userId.toString(),
           'subtopico': subtopic,
           'tipo': CONSTANTS.valores['ESPACO']!['ID'].toString(),
@@ -242,6 +249,26 @@ class _SpaceFormPageState extends State<SpaceFormPage> {
     }
   }
 
+  Future<void> _selectLocation() async {
+  final result = await showModalBottomSheet<Map<String, dynamic>>(
+    context: context,
+    builder: (BuildContext context) {
+      return Container(
+        height: 400,
+        child: const MapaSelect(),
+      );
+    },
+  );
+  if (result != null) {
+    setState(() {
+      latitude = result['latitude'].toString(); // Armazena a latitude
+      longitude = result['longitude'].toString(); // Armazena a longitude
+      endereco = result['address']; // Armazena o endereço
+      _enderecoController.text = endereco ?? ''; // Atualiza o TextField do endereço
+    });
+  }
+}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -312,11 +339,12 @@ class _SpaceFormPageState extends State<SpaceFormPage> {
                               }
                               return null;
                             },
+                          enabled: false,
                           ),
                         ),
                         IconButton(
                           icon: Icon(Icons.map),
-                          onPressed: _openMapDialog,
+                          onPressed: _selectLocation,
                         ),
                       ],
                     ),

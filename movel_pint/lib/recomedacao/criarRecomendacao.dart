@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart'; // Adiciona a biblioteca image_picker
+import 'package:movel_pint/atividade/mapa.dart';
 import 'package:movel_pint/backend/api_service.dart';
 import 'package:movel_pint/backend/auth_service.dart';
 import 'package:movel_pint/utils/constants.dart';
@@ -36,6 +37,11 @@ class _RecomendationFormPageState extends State<RecomendationFormPage> {
   int preco = 0;
   String? _selectedLocation;
   late int _userId;
+
+  String? endereco; // Variável de instância para a latitude
+  String? latitude; // Variável de instância para a latitude
+  String? longitude; // Variável de instância para a longitude
+
 
   List<dynamic> _subtopics = [];
 
@@ -90,11 +96,13 @@ class _RecomendationFormPageState extends State<RecomendationFormPage> {
       Map<String, String> data = {
         'titulo': name,
         'descricao': description,
-        'endereco': location,
+        'endereco': endereco!,
+        'latitude': latitude!,
+        'longitude': longitude!,
         'utilizador': _userId.toString(), 
         'subtopico': subtopic,
         'tipo': CONSTANTS.valores['RECOMENDACAO']!['ID'].toString(),
-        'classificacao': _rating.toString(),
+'classificacao': _rating.toInt().toString(),
         'preco': preco.toString(),
       };
 
@@ -194,63 +202,25 @@ class _RecomendationFormPageState extends State<RecomendationFormPage> {
     return items;
   }
 
-  Future<void> _openMapDialog() async {
-    final selectedLocation = await showDialog<String>(
-      context: context,
-      builder: (BuildContext context) {
-        LatLng _initialPosition = LatLng(-15.7942, -47.8822); 
-        LatLng? _pickedLocation;
-
-        return AlertDialog(
-          title: Text('Escolha o Local no Mapa'),
-          content: Container(
-            width: double.infinity,
-            height: 400,
-            child: GoogleMap(
-              initialCameraPosition: CameraPosition(
-                target: _initialPosition,
-                zoom: 15,
-              ),
-              onTap: (LatLng location) {
-                _pickedLocation = location;
-              },
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); 
-              },
-              child: Text('Cancelar'),
-            ),
-            TextButton(
-              onPressed: () {
-                if (_pickedLocation != null) {
-                  Navigator.of(context).pop(
-                    '${_pickedLocation!.latitude}, ${_pickedLocation!.longitude}',
-                  ); 
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Por favor, selecione um local no mapa.'),
-                    ),
-                  );
-                }
-              },
-              child: Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
-
-    if (selectedLocation != null) {
-      setState(() {
-        _selectedLocation = selectedLocation;
-        _enderecoController.text = _selectedLocation!;
-      });
-    }
+    Future<void> _selectLocation() async {
+  final result = await showModalBottomSheet<Map<String, dynamic>>(
+    context: context,
+    builder: (BuildContext context) {
+      return Container(
+        height: 400,
+        child: const MapaSelect(),
+      );
+    },
+  );
+  if (result != null) {
+    setState(() {
+      latitude = result['latitude'].toString(); // Armazena a latitude
+      longitude = result['longitude'].toString(); // Armazena a longitude
+      endereco = result['address']; // Armazena o endereço
+      _enderecoController.text = endereco ?? ''; // Atualiza o TextField do endereço
+    });
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -322,10 +292,11 @@ class _RecomendationFormPageState extends State<RecomendationFormPage> {
                               }
                               return null;
                             },
+                            enabled: false,
                           ),
                         ),
                         IconButton(
-                          icon: Icon(Icons.map), onPressed: () => _openMapDialog(),
+                          icon: Icon(Icons.map), onPressed: () => _selectLocation(),
                         ),
                       ],
                     ),
