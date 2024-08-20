@@ -34,10 +34,10 @@ class ForumPage extends StatefulWidget {
 class _HomePageState extends State<ForumPage> {
   int _selectedIndex = 2;
   final PageController _pageController = PageController();
-  List<Map<String, dynamic>> _atividades = [];
-  List<Map<String, dynamic>> _eventos = [];
-  List<Map<String, dynamic>> _recomendacoes = [];
-  List<Map<String, dynamic>> _espacos = [];
+  List<dynamic> _atividades = [];
+  List<dynamic> _eventos = [];
+  List<dynamic> _recomendacoes = [];
+  List<dynamic> _espacos = [];
   bool _isLoading = true;
 
   @override
@@ -49,24 +49,17 @@ class _HomePageState extends State<ForumPage> {
   Future<void> _fetchConteudos() async {
     try {
       print('Chamando API para buscar dados...');
-      final data = await ApiService.listar('conteudo');
+      final data = await ApiService.listar('conteudo/listagem');
+      print(data);
       if (data != null) {
         print('Data não é nulo');
-        if (data is List) {
-          print('Data é uma lista');
-          setState(() {
-            _atividades = List<Map<String, dynamic>>.from(data).where((conteudo) => conteudo['tipo'] == 2).toList();
-            _eventos = List<Map<String, dynamic>>.from(data).where((conteudo) => conteudo['tipo'] == 1).toList();
-            _recomendacoes = List<Map<String, dynamic>>.from(data).where((conteudo) => conteudo['tipo'] == 3).toList();
-            _espacos = List<Map<String, dynamic>>.from(data).where((conteudo) => conteudo['tipo'] == 4).toList();
-            _isLoading = false; 
-          });
-        } else {
-          print('Data não é uma lista, é: ${data.runtimeType}');
-          setState(() {
-            _isLoading = false; 
-          });
-        }
+        setState(() {
+          _atividades = data[CONSTANTS.valores['ATIVIDADE']!['ID'].toString()];
+          _eventos = data[CONSTANTS.valores['EVENTO']!['ID'].toString()];
+          _recomendacoes = data[CONSTANTS.valores['RECOMENDACAO']!['ID'].toString()];
+          _espacos = data[CONSTANTS.valores['ESPACO']!['ID'].toString()];
+          _isLoading = false; 
+        });
       } else {
         print('Nenhum dado encontrado ou dado malformado');
         setState(() {
@@ -142,8 +135,10 @@ class _HomePageState extends State<ForumPage> {
     );
   }
 
-  Widget buildSection(String title, List<Map<String, dynamic>> conteudos, BuildContext context) {
+  Widget buildSection(String title, List<dynamic> conteudos, BuildContext context) {
     final ScrollController scrollController = ScrollController(); 
+
+    if (conteudos.isEmpty) return Container();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

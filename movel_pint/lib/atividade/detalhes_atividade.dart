@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:movel_pint/atividade/editarAtividade.dart';
 import 'package:movel_pint/atividade/slideralbuns.dart';
 import 'package:movel_pint/backend/auth_service.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
@@ -60,6 +61,15 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
         _isLoading = false;
       });
     }
+
+  void _navigateToAtividadeEditarPage() async {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EditActivityPage(atividade: _activityDetails!),
+      ),
+    );
+  }
 
   void _navigateToAlbumSliderPage() async {
     List<String> albumImages = await _fetchAlbums();
@@ -516,9 +526,20 @@ Future<void> _sendReport(String motivo, int commentId) async {
     );
   }
 
+
   Widget _buildActivityItem(Map<String, dynamic> item) {
-    bool isTypeValid = item['conteudo_tipo']['tipo'] == "Atividade" ||
-        item['conteudo_tipo']['tipo'] == "Evento";
+    bool isTypeValid = item['conteudo_tipo']['tipo'] == "Atividade" || item['conteudo_tipo']['tipo'] == "Evento";
+    bool isRevisao = false;
+    if (item['revisao_conteudo'].length > 0) {
+      for (var revisao in item['revisao_conteudo']) {
+        if (revisao['estado'] == 1) { // em analise
+          isRevisao = true;
+        }
+      }
+    } else {
+      isRevisao = true;
+    }
+
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -588,6 +609,16 @@ Future<void> _sendReport(String motivo, int commentId) async {
         _buildDetailItemWithLabel(
           item['endereco'] ?? 'Endereço não encontrado',
         ),
+        SizedBox(height: 8),
+        Wrap(
+          spacing: 8.0, // Espaçamento horizontal entre os chips
+          runSpacing: 0.0, // Espaçamento vertical entre as linhas de chips
+          children: [
+            buildChip(item['conteudo_tipo']['tipo']),
+            buildChip(item['conteudo_subtopico']['area']),
+            buildChip(item['conteudo_subtopico']['subtopico_topico']['topico']),
+          ],
+        ),
         SizedBox(height: 16),
         _buildDetailItemLabel('Descrição'),
         _buildDetailItemWithLabel(
@@ -614,6 +645,23 @@ Future<void> _sendReport(String motivo, int commentId) async {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
+            if (isRevisao) // Usando uma variável booleana para controlar a exibição
+              Column(
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.edit),
+                    onPressed: () {
+                      _navigateToAtividadeEditarPage();
+                    },
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    'Editar',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 12),
+                  ),
+                ],
+              ),
             Column(
               children: [
                 IconButton(
@@ -795,6 +843,22 @@ Widget _buildCommentItem(Map<String, dynamic> comment) {
   );
 }
 
+Widget buildChip(String label) {
+  return Chip(
+    label: Text(
+      label,
+      style: TextStyle(
+        color: Colors.white,
+        fontSize: 14, // Tamanho do texto menor
+      ),
+    ),
+    backgroundColor: Colors.blue,
+    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4), // Reduz o padding
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(16), // Bordas arredondadas
+    ),
+  );
+}
 
   Widget _buildDetailItemWithLabel(String value,
       {bool isTitle = false, bool isDescription = false}) {

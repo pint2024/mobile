@@ -347,7 +347,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               padding: EdgeInsets.symmetric(vertical: 12),
                             ),
                             child: const Text(
-                              'As minhas Atividades',
+                              'Atividades',
                               style: TextStyle(
                                 fontSize: 14,
                                 color: Colors.white,
@@ -398,7 +398,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               padding: EdgeInsets.symmetric(vertical: 12),
                             ),
                             child: const Text(
-                              'Atualizar o perfil',
+                              'Atualizar',
                               style: TextStyle(
                                 fontSize: 14,
                                 color: Colors.white,

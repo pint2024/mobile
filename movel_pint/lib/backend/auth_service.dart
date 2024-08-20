@@ -17,7 +17,7 @@ class AuthService {
     if (authToken != null) {
       return authToken;
     } else {
-      throw Exception('Token de autenticação não encontrado');
+      return "";
     }
   }
 }
