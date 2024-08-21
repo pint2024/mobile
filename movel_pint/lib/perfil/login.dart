@@ -8,10 +8,12 @@ import 'package:flutter/gestures.dart';
 import 'package:movel_pint/backend/auth_service.dart';
 import 'package:movel_pint/home/homepage.dart';
 import 'package:movel_pint/main.dart';
+import 'package:movel_pint/perfil/GoogleSignInButton.dart';
 import 'package:movel_pint/utils/user_preferences.dart';
 import 'recuperar_senha.dart'; 
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 void main() {
   runApp(LoginApp());
@@ -264,16 +266,7 @@ class _LoginPageState extends State<LoginPage> {
                                 border: Border.all(color: Colors.red, width: 2),
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              child: IconButton(
-                                icon: Icon(
-                                  Ionicons.logo_google,
-                                  color: Colors.red,
-                                  size: 30,
-                                ),
-                                onPressed: () {
-                                  _handleSignInWithGoogle(context);
-                                },
-                              ),
+                              child: GoogleSignInButton(),
                             ),
                             SizedBox(width: 20), 
                             Container(

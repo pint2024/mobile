@@ -9,12 +9,14 @@ import 'package:movel_pint/utils/user_preferences.dart';
 import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
 import 'package:movel_pint/widgets/customAppBar.dart';
 import 'package:movel_pint/home/homepage.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await UserPreferences().init();
   final userPreferences = UserPreferences();
   String? token = userPreferences.authToken;
+  await Firebase.initializeApp();
   runApp(MyApp(token: token));
 }
 

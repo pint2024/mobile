@@ -1,3 +1,4 @@
+// No início do arquivo
 buildscript {
     repositories {
         google()
@@ -5,11 +6,12 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.4.0' // Verifique a versão correta do Android Gradle Plugin
-        classpath 'com.google.gms:google-services:4.3.10' // ou a versão mais recente
+        classpath 'com.android.tools.build:gradle:7.4.0'
+        classpath 'com.google.gms:google-services:4.3.14' // ou a versão mais recente
     }
 }
 
+// No início do arquivo, fora de qualquer bloco
 plugins {
     id "com.android.application"
     id "kotlin-android"
@@ -54,9 +56,8 @@ android {
 
     defaultConfig {
         applicationId "com.example.movel_pint"
-        minSdkVersion 21
+        minSdkVersion 23
         targetSdkVersion 33
-        targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
@@ -68,7 +69,9 @@ android {
     }
 }
 
+// Adicione esta linha logo abaixo do bloco `android`
+apply plugin: 'com.google.gms.google-services'
+
 flutter {
     source '../..'
 }
-
