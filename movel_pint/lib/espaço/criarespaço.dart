@@ -105,6 +105,8 @@ class _SpaceFormPageState extends State<SpaceFormPage> {
 
         if (response != null) {
           _showSnackbar("Espaço criado com sucesso, pode a ver na página dos espaços");
+              Navigator.pop(context);
+
         } else {
           print("Erro ao criar o espaço: Resposta nula");
         }
@@ -112,6 +114,8 @@ class _SpaceFormPageState extends State<SpaceFormPage> {
     } catch (e) {
       print("Error creating Espaço: $e");
     }
+
+
   }
 
   Future<void> _getImage() async {

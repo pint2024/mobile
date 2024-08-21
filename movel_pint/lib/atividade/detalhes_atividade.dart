@@ -891,51 +891,59 @@ Widget buildChip(String label) {
     );
   }
 
-  Widget _buildCommentInput() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Container(
-          margin: EdgeInsets.only(bottom: 12),
-          padding: EdgeInsets.symmetric(horizontal: 12),
-          decoration: BoxDecoration(
-            color: Colors.grey[300],
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: TextField(
-            controller: _commentController,
-            decoration: InputDecoration(
-              hintText: 'Adicione um comentário',
-              border: InputBorder.none,
-            ),
-          ),
+ Widget _buildCommentInput() {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      Container(
+        margin: EdgeInsets.only(bottom: 12),
+        padding: EdgeInsets.symmetric(horizontal: 12),
+        decoration: BoxDecoration(
+          color: Colors.grey[300],
+          borderRadius: BorderRadius.circular(8),
         ),
-        ElevatedButton(
-          onPressed: () {
-            _postComment().then((_) {
-              setState(() {
-                _fetchActivityDetails(widget.activityId);
-                _commentController.clear();
-              });
+        child: TextField(
+          controller: _commentController,
+          decoration: InputDecoration(
+            hintText: 'Adicione um comentário',
+            border: InputBorder.none,
+          ),
+          onChanged: (text) {
+            setState(() {
+              // Força o rebuild para verificar se o campo está vazio ou não
             });
           },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.blue,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-          child: Text(
-            'Enviar',
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
+        ),
+      ),
+      ElevatedButton(
+        onPressed: _commentController.text.trim().isEmpty
+            ? null
+            : () {
+                _postComment().then((_) {
+                  setState(() {
+                    _fetchActivityDetails(widget.activityId);
+                    _commentController.clear();
+                  });
+                });
+              },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.blue,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
           ),
         ),
-      ],
-    );
-  }
+        child: Text(
+          'Enviar',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
 
   Widget _buildStarRating(int rating) {
     return Row(

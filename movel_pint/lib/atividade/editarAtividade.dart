@@ -114,6 +114,7 @@ class _EditActivityPageState extends State<EditActivityPage> {
         await ApiService.atualizar("conteudo", widget.atividade['id'], data: data);
 
         _showSnackbar("Atividade atualizada com sucesso");
+            Navigator.pop(context);
         
       } catch (e) {
         print("Error updating atividade: $e");

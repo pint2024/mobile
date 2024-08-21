@@ -115,6 +115,8 @@ class _EventFormPageState extends State<EventFormPage> {
 
         if (response != null) {
           _showSnackbar("Evento criado com sucesso, pode a ver na página dos Eventos");
+              Navigator.pop(context);
+
         } else {
           print("Erro ao criar atividade: Resposta nula");
         }

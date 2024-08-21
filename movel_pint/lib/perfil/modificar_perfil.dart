@@ -96,6 +96,7 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
         SnackBar(content: Text('Erro ao atualizar perfil: $e')),
       );
     }
+        Navigator.pop(context);
   }
 
   Future<void> _enviarImagemPerfil() async {

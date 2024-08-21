@@ -116,6 +116,7 @@ class _CreateActivityPageState extends State<CreateActivityPage> {
 
         if (response != null) {
           _showSnackbar("Atividade criada com sucesso");
+          Navigator.pop(context);
         } else {
           print("Erro ao criar atividade: Resposta nula");
         }
@@ -123,6 +124,7 @@ class _CreateActivityPageState extends State<CreateActivityPage> {
         print("Erro ao criar atividade: $e");
       }
     }
+        
   }
 
 

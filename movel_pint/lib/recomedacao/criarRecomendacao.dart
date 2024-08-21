@@ -113,6 +113,8 @@ class _RecomendationFormPageState extends State<RecomendationFormPage> {
           print(data);
           print('$name, $description, $location, $subtopic, $_rating, $preco');
           _showSnackbar("Recomendação criada com sucesso, pode a ver na página das recomendações");
+              Navigator.pop(context);
+
         } else {
           print("Erro ao criar a recomendação: Resposta nula");
         }

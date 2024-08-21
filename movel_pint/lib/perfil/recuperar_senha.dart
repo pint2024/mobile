@@ -79,22 +79,31 @@ class _RecuperarSenhaState extends State<RecuperarSenha> {
                   ),
                   SizedBox(height: 10),
                   TextFormField(
-                    controller: _emailController,
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
+                      controller: _emailController,
+                      keyboardType: TextInputType.emailAddress,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        labelText: 'Email',
+                        prefixIcon: Icon(Icons.person),
                       ),
-                      labelText: 'Email',
-                      prefixIcon: Icon(Icons.person),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Por favor, informe seu e-mail';
+                        }
+
+                        // Verifica se o e-mail está no formato correto
+                        String pattern = r'^[a-zA-Z]+@[a-zA-Z]+\.[a-zA-Z]{3}$';
+                        RegExp regex = RegExp(pattern);
+                        if (!regex.hasMatch(value)) {
+                          return 'Por favor, informe um e-mail válido no formato "letra@letra.com"';
+                        }
+
+                        return null;
+                      },
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Por favor, informe seu e-mail';
-                      }
-                      return null;
-                    },
-                  ),
+                      
                   SizedBox(height: 20),
                   Container(
                     width: double.infinity,
@@ -131,54 +140,57 @@ class _RecuperarSenhaState extends State<RecuperarSenha> {
   }
 
   Future<void> _handlePasswordRecovery(BuildContext context) async {
-    final email = _emailController.text.trim();
+  final email = _emailController.text.trim();
+
+  setState(() {
+    _isLoading = true;
+  });
+
+  var connectivityResult = await (Connectivity().checkConnectivity());
+  if (connectivityResult == ConnectivityResult.none) {
+    _showNoInternetDialog(context);
+    setState(() {
+      _isLoading = false;
+    });
+  } else {
+    final response = await ApiService.postData(
+        'autenticacao/forgot-password', {'email': email});
 
     setState(() {
-      _isLoading = true;
+      _isLoading = false;
     });
 
-    var connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult == ConnectivityResult.none) {
-      _showNoInternetDialog(context);
-      setState(() {
-        _isLoading = false;
-      });
+    if (response != null && response['success']) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Enviado'),
+            content: Text('Link de recuperação da palavra-passe foi enviado para o seu e-mail.'),
+            actions: <Widget>[
+              TextButton(
+                child: Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop(); // Fecha o diálogo
+                      Navigator.pop(context);
+
+                },
+              ),
+            ],
+          );
+        },
+      );
     } else {
-      final response = await ApiService.postData(
-          'autenticacao/forgot-password', {'email': email});
-
-      setState(() {
-        _isLoading = false;
-      });
-
-      if (response != null && response['success']) {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text('Enviado'),
-              content: Text('Link de recuperação da palavra-passe foi enviado para o seu e-mail.'),
-              actions: <Widget>[
-                TextButton(
-                  child: Text('OK'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            );
-          },
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text(response != null
-                  ? response['data']
-                  : 'Erro desconhecido.')),
-        );
-      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text(response != null
+                ? response['data']
+                : 'Erro desconhecido.')),
+      );
     }
   }
+}
+
 
   void _showNoInternetDialog(BuildContext context) {
     showDialog(
