@@ -93,8 +93,7 @@ class _RecuperarSenhaState extends State<RecuperarSenha> {
                           return 'Por favor, informe seu e-mail';
                         }
 
-                        // Verifica se o e-mail está no formato correto
-                        String pattern = r'^[a-zA-Z]+@[a-zA-Z]+\.[a-zA-Z]{3}$';
+                        String pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$';
                         RegExp regex = RegExp(pattern);
                         if (!regex.hasMatch(value)) {
                           return 'Por favor, informe um e-mail válido no formato "letra@letra.com"';
