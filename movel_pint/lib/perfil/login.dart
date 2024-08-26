@@ -343,6 +343,7 @@ void _showSnackBar(String message) {
   
 
   Future<void> _handleSignInWithGoogle(BuildContext context) async {
+    print("chegou");
     var connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult == ConnectivityResult.none) {
       _showNoInternetDialog(context);

@@ -18,6 +18,7 @@ void main() async {
   String? token = userPreferences.authToken;
   await Firebase.initializeApp();
   runApp(MyApp(token: token));
+  
 }
 
 class MyApp extends StatelessWidget {

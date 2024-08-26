@@ -285,8 +285,8 @@ class _ProfilePageState extends State<ProfilePage> {
                     _buildProfileItem(
                         Icons.location_city,
                         'Centro',
-                        _profileData != null
-                            ? _profileData!['utilizador_centro']['centro'] ??
+                        _profileData != null && _profileData?['utilizador_centro'] != null && _profileData?['utilizador_centro']?['centro'] != null
+                            ? _profileData?['utilizador_centro']?['centro'] ??
                                 'Centro não encontrado'
                             : 'Centro não encontrado'),
                     _buildProfileItem(

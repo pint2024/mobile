@@ -58,7 +58,7 @@ class ApiService {
     }
   }
 
-static Future<dynamic> criar(String endpoint, {Map<String, String> headers = const {}, dynamic data}) async {
+  static Future<dynamic> criar(String endpoint, {Map<String, String> headers = const {}, dynamic data}) async {
     final url = '$endpoint/criar';
     try {
       return await myHttp(url: url, method: "POST", headers: headers, data: jsonEncode(data));
@@ -66,6 +66,17 @@ static Future<dynamic> criar(String endpoint, {Map<String, String> headers = con
       throw Exception('Failed to connect to server: $e');
     }
   }
+
+  static Future<dynamic> externalLogin(String token) async {
+    final url = 'autenticacao/external-login';
+    try {
+      final Map<String, String> body = { 'token': token };
+      return await myHttp(url: url, method: "POST", data: body);
+    } catch (e) {
+      throw Exception('Falha na autenticação: ${e.toString()}');
+    }
+  }
+
 
   static Future<dynamic> criarFormDataFile(String endpoint, {required Map<String, String> data, required String fileKey, required Uint8List file}) async {
     var uri = Uri.parse('$baseUrl/$endpoint');

@@ -7,7 +7,7 @@ buildscript {
 
     dependencies {
         classpath 'com.android.tools.build:gradle:7.4.0'
-        classpath 'com.google.gms:google-services:4.3.14' // ou a versão mais recente
+        classpath 'com.google.gms:google-services:4.3.15'
     }
 }
 
@@ -69,9 +69,8 @@ android {
     }
 }
 
-// Adicione esta linha logo abaixo do bloco `android`
-apply plugin: 'com.google.gms.google-services'
-
 flutter {
     source '../..'
 }
+
+apply plugin: 'com.google.gms.google-services'

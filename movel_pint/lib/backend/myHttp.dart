@@ -34,6 +34,7 @@ Future<dynamic> myHttp({
     } else {
       throw Exception('Método HTTP não suportado: $method');
     }
+    print(response.statusCode);
 
     if (response.statusCode == 200) {
       dynamic responseData = json.decode(response.body);
