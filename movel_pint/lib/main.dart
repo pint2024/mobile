@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:movel_pint/atividade/criarAtividade.dart';
 import 'package:movel_pint/atividade/detalhes_atividade.dart';
+import 'package:movel_pint/backend/github_service.dart';
 import 'package:movel_pint/espaço/criarespaço.dart';
 import 'package:movel_pint/evento/criarEvento.dart';
 import 'package:movel_pint/perfil/login.dart';
@@ -10,14 +11,23 @@ import 'package:movel_pint/widgets/bottom_navigation_bar.dart';
 import 'package:movel_pint/widgets/customAppBar.dart';
 import 'package:movel_pint/home/homepage.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await UserPreferences().init();
   final userPreferences = UserPreferences();
-  String? token = userPreferences.authToken;
+  String? token = null;
   await Firebase.initializeApp();
-  runApp(MyApp(token: token));
+  
+  runApp(MultiProvider(
+      providers: [
+        Provider<GithubService>(
+          create: (_) => GithubService(),
+        ),
+      ],
+      child: MyApp(token: token),
+    ),);
   
 }
 

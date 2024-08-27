@@ -77,6 +77,16 @@ class ApiService {
     }
   }
 
+  static Future<dynamic> githubLogin(String? photoURL, String? displayName, String? email) async {
+    final url = 'autenticacao/github-login';
+    try {
+      final Map<String, String> body = { 'photoUrl': photoURL!, 'displayName': displayName!, 'email': email! };
+      return await myHttp(url: url, method: "POST", data: body);
+    } catch (e) {
+      throw Exception('Falha na autenticação: ${e.toString()}');
+    }
+  }
+
 
   static Future<dynamic> criarFormDataFile(String endpoint, {required Map<String, String> data, required String fileKey, required Uint8List file}) async {
     var uri = Uri.parse('$baseUrl/$endpoint');

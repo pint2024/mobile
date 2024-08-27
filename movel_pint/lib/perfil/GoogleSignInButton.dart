@@ -1,17 +1,21 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:movel_pint/backend/api_service.dart';
 import 'package:movel_pint/home/homepage.dart';
 import 'package:movel_pint/utils/user_preferences.dart';
 class GoogleSignInButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: () async {
-        await signInWithGoogle(context); // Pass context here
-      },
-      child: Text('Login com Google'),
+    return IconButton(
+        icon: Icon(
+          Ionicons.logo_google,
+          color: Colors.red,
+          size: 30,
+        ), onPressed: () async {
+          await signInWithGoogle(context); // Pass context here
+        },
     );
   }
 

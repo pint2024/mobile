@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
@@ -8,8 +9,10 @@ import 'package:flutter/gestures.dart';
 import 'package:movel_pint/backend/auth_service.dart';
 import 'package:movel_pint/home/homepage.dart';
 import 'package:movel_pint/main.dart';
+import 'package:movel_pint/perfil/GithubAuthService.dart';
 import 'package:movel_pint/perfil/GoogleSignInButton.dart';
 import 'package:movel_pint/utils/user_preferences.dart';
+import 'package:provider/provider.dart';
 import 'recuperar_senha.dart'; 
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -272,17 +275,17 @@ class _LoginPageState extends State<LoginPage> {
                             Container(
                               padding: EdgeInsets.all(8),
                               decoration: BoxDecoration(
-                                border: Border.all(color: Colors.blue, width: 2),
+                                border: Border.all(color: Colors.black, width: 2),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: IconButton(
                                 icon: Icon(
-                                  Ionicons.logo_facebook,
-                                  color: Colors.blue,
+                                  Ionicons.logo_github,
+                                  color: Colors.black,
                                   size: 30,
                                 ),
                                 onPressed: () {
-                                  _handleSignInWithFacebook(context);
+                                  _handleSignInWithGithub(context);
                                 },
                               ),
                             ),
@@ -342,19 +345,53 @@ void _showSnackBar(String message) {
 
   
 
-  Future<void> _handleSignInWithGoogle(BuildContext context) async {
-    print("chegou");
-    var connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult == ConnectivityResult.none) {
-      _showNoInternetDialog(context);
-    } else {
-      try {
-        GoogleSignIn googleSignIn = GoogleSignIn(scopes: ['email']);
-        GoogleSignInAccount? googleUser = await googleSignIn.signIn();
-      } catch (error) {
+    Future<void> _handleSignInWithGoogle(BuildContext context) async {
+      print("chegou");
+      var connectivityResult = await (Connectivity().checkConnectivity());
+      if (connectivityResult == ConnectivityResult.none) {
+        _showNoInternetDialog(context);
+      } else {
+        try {
+          GoogleSignIn googleSignIn = GoogleSignIn(scopes: ['email']);
+          GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+        } catch (error) {
+        }
       }
     }
-  }
+
+  Future<void> _handleSignInWithGithub(BuildContext context) async {
+      final FirebaseAuth _auth = FirebaseAuth.instance;
+          print("oi1");
+          print(_auth);
+
+      try {
+        GithubAuthProvider githubProvider = GithubAuthProvider();
+          print(githubProvider);
+        UserCredential userCredential = await _auth.signInWithProvider(githubProvider);
+          print(userCredential);
+        User? user = userCredential.user;
+          print(user);
+
+          dynamic response = await ApiService.githubLogin(user?.photoURL, user?.displayName, user?.email);
+          if (response?['token'] != null) {
+          final token = response?['token'];
+          if (token != null) {
+            UserPreferences().authToken = token;
+            Navigator.push(
+              context, // Use context here
+              MaterialPageRoute(builder: (context) => HomePageMain()),
+            );
+          }
+      } 
+      }catch (e) {
+          print("oi61");
+        print("Erro durante o login com GitHub: $e");
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Falha no login com GitHub')),
+        );
+      }
+    }
 
   Future<void> _handleSignInWithFacebook(BuildContext context) async {
     var connectivityResult = await (Connectivity().checkConnectivity());
