@@ -403,9 +403,9 @@ Future<void> _confirmDeleteComment(int commentId) async {
   }
 
 void _shareContent() {
-  Clipboard.setData(ClipboardData(text: 'http://localhost:8000/conteudos/${widget.activityId}'));
+  Clipboard.setData(ClipboardData(text: 'http://web-6grl.onrender.com/conteudos/${widget.activityId}'));
 
-  Share.share('http://localhost:8000/conteudos/${widget.activityId}');
+  Share.share('http://web-6grl.onrender.com/conteudos/${widget.activityId}');
 }
 
 //REPORT_______________________________________________________________________________________________
@@ -633,7 +633,7 @@ Future<void> _sendReport(String motivo, int commentId) async {
         SizedBox(height: 16),
         if (item['preco'] != null) ...[
           _buildDetailItemLabel('Preço'),
-          _buildDetailItemWithLabel('${item['preco']} €'),
+          _buildDetailItemWithLabel('${item['preco']}'),
           SizedBox(height: 16),
         ],
         _buildDetailItemLabel('Criado por'),
