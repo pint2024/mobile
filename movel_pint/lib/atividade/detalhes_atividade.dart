@@ -160,19 +160,6 @@ Future<Map<int, int>> _fetchUserRatings() async {
   Future<void> _fetchEventsForUser() async {
     try {
       final participants = await ApiService.listar('participante', data: {'utilizador': _userId, 'conteudo': widget.activityId});
-      bool found = false;
-
-      for (var participant in participants) {
-        print("Verificando participante: ${participant['conteudo']}");
-
-        if (participant['conteudo'] == widget.activityId  && participant['utilizador'] == _userId) {
-          print("Correspondência encontrada!");
-          found = true;
-          break; // Sai do loop se encontrar uma correspondência
-        }
-      }
-
-      print("Resultado final: $found");
       setState(() {
         _isParticipating = participants
             .any((participant) => participant['conteudo'] == widget.activityId && participant['utilizador'] == _userId);

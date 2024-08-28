@@ -15,7 +15,7 @@ class MinhasInscricoesPage extends StatefulWidget {
 
 class _MinhasInscricoesPageState extends State<MinhasInscricoesPage> {
   int _selectedIndex = 0; 
-  List<Map<String, dynamic>> _atividades = [];
+  List<dynamic> _atividades = [];
 
   @override
   void initState() {
@@ -27,21 +27,18 @@ class _MinhasInscricoesPageState extends State<MinhasInscricoesPage> {
     try {
       dynamic data = await AuthService.obter();
       int _userId = data['id'];
-      print("TA AQUI CAMPEAO $_userId");
-      final response =
-          await ApiService.listar('participante', data: {'utilizador': _userId}); 
-      final List<int> conteudoList =
-          response.map<int>((item) => item['conteudo'] as int).toList();
-      final List<Future<Map<String, dynamic>>> fetchTasks =
-          conteudoList.map((conteudoId) async {
-        final atividadeResponse =
-            await ApiService.obter('conteudo', conteudoId);
-        return atividadeResponse as Map<String, dynamic>;
+      final List<dynamic> atividades = await ApiService.listar('conteudo');
+      final List<dynamic> atividadesFiltradas = atividades.where((atividadeitem) {
+        final participanteConteudo = atividadeitem['participante_conteudo'];
+
+        if (participanteConteudo != null && participanteConteudo is List) {
+          return participanteConteudo.any((item) => item['utilizador'] == _userId);
+        }
+
+        return false;
       }).toList();
-      final List<Map<String, dynamic>> atividades =
-          await Future.wait(fetchTasks);
       setState(() {
-        _atividades = atividades;
+        _atividades = atividadesFiltradas;
       });
     } catch (e) {
       print('Erro ao conectar ao servidor: $e');
