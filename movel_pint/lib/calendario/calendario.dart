@@ -42,24 +42,26 @@ class _EventCalendarPageState extends State<CalendarScreen> {
 
   Future<void> _fetchEventsForUser() async {
     try {
-      final data = await ApiService.listar('participante');
+      final data = await ApiService.listar('conteudo/participando');
+
+      print("data");
+      print(data);
+      print("data");
 
       if (data != null && data is List<dynamic>) {
         Map<DateTime, List<Map<String, dynamic>>> events = {};
         for (var eventData in data) {
-          if (eventData['utilizador'] == _userId && (eventData['participante_conteudo']['tipo'] == 1 || eventData['participante_conteudo']['tipo'] == 2)) { 
-            DateTime eventDate = DateTime.parse(eventData['participante_conteudo']['data_evento']).toLocal();
-            DateTime eventDay = DateTime(eventDate.year, eventDate.month, eventDate.day);
-            if (!events.containsKey(eventDay)) {
-              events[eventDay] = [];
-            }
-            events[eventDay]!.add({
-              'id': eventData['conteudo'],
-              'titulo': eventData['participante_conteudo']['titulo'],
-              'hora': DateFormat.Hm().format(eventDate),
-              'descricao': eventData['participante_conteudo']['descricao'],
-            });
+          DateTime eventDate = DateTime.parse(eventData['data_evento']).toLocal();
+          DateTime eventDay = DateTime(eventDate.year, eventDate.month, eventDate.day);
+          if (!events.containsKey(eventDay)) {
+            events[eventDay] = [];
           }
+          events[eventDay]!.add({
+            'id': eventData['id'],
+            'titulo': eventData['titulo'],
+            'hora': DateFormat.Hm().format(eventDate),
+            'descricao': eventData['descricao'],
+          });
         }
         
         setState(() {

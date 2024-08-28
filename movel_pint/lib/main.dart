@@ -17,7 +17,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await UserPreferences().init();
   final userPreferences = UserPreferences();
-  String? token = null;
+  String? token = userPreferences.authToken;
   await Firebase.initializeApp();
   
   runApp(MultiProvider(
