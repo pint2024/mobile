@@ -12,11 +12,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: TodasRecomendacoes(),
+      home: TodasRecomendacoes(), // Aqui está correto, pois estamos referenciando uma instância da classe.
     );
   }
 }
 
+// Classe TodasRecomendacoes que é uma StatefulWidget
 class TodasRecomendacoes extends StatefulWidget {
   @override
   _RecomendacaoState createState() => _RecomendacaoState();
@@ -25,11 +26,14 @@ class TodasRecomendacoes extends StatefulWidget {
 class _RecomendacaoState extends State<TodasRecomendacoes> {
   int _selectedIndex = 2;
   PageController _pageController = PageController(initialPage: 0);
-  List<Map<String, dynamic>> _conteudos = []; 
-  List<Map<String, dynamic>> _filteredConteudos = []; 
-  bool _isLoading = true; 
-  String? idAtividade; 
-  String _selectedFilter = 'Mais recentes'; 
+  List<Map<String, dynamic>> _conteudos = [];
+  List<dynamic> _topicos = [];
+  List<Map<String, dynamic>> _filteredConteudos = [];
+  bool _isLoading = true;
+  String? idAtividade;
+  String _selectedFilter = 'Mais recentes';
+  String? _selectedClassificacao;
+  String? _selectedTopico;
 
   void _onItemTapped(int index) {
     setState(() {
@@ -62,8 +66,60 @@ class _RecomendacaoState extends State<TodasRecomendacoes> {
     });
   }
 
+  void _handleClassificacaoSelection(String? value) {
+    setState(() {
+      _selectedClassificacao = value;
+      _applyFilter();
+    });
+  }
+
+  void _handleTopicoSelection(String? value) {
+    setState(() {
+      _selectedTopico = value;
+      _applyFilter();
+    });
+  }
+
   void _applyFilter() {
     setState(() {
+      _filteredConteudos = List<Map<String, dynamic>>.from(_conteudos);
+
+      if (_selectedClassificacao != null) {
+        print("object classificacao ");
+        print(_selectedClassificacao);
+        print("object classificacaoa ");
+
+        // Define a lista de classificações que devem ser buscadas com base na classificação selecionada
+        List<int> _searchClass = [];
+
+        if (_selectedClassificacao == "Média") {
+          _searchClass = [3];
+        } else if (_selectedClassificacao == "Alta") {
+          _searchClass = [4, 5];
+        } else if (_selectedClassificacao == "Baixa") {
+          _searchClass = [1, 2];
+        } else {
+          _searchClass = [1, 2, 3, 4, 5];
+        }
+
+        // Filtra _filteredConteudos com base na lista _searchClass
+        _filteredConteudos = _filteredConteudos
+            .where((conteudo) => _searchClass.contains(conteudo['classificacao']))
+            .toList();
+      }
+
+      if (_selectedTopico != null) {
+        _filteredConteudos = _filteredConteudos
+            .where((conteudo) {
+              var conteudoSubtopico = conteudo['conteudo_subtopico'];
+              if (conteudoSubtopico != null) {
+                return conteudoSubtopico['area'] == _selectedTopico;
+              }
+              return false;
+            })
+            .toList(); 
+      }
+
       if (_selectedFilter == 'Mais recentes') {
         _filteredConteudos.sort((a, b) => b['data_criacao'].compareTo(a['data_criacao']));
       } else if (_selectedFilter == 'Mais antigas') {
@@ -80,42 +136,48 @@ class _RecomendacaoState extends State<TodasRecomendacoes> {
   void initState() {
     super.initState();
     _fetchConteudos();
+    _fetchTopicos();
+  }
+
+  Future<void> _fetchTopicos() async {
+    try {
+      final data = await ApiService.listar('subtopico/simples');
+      if (data != null) {
+          setState(() => _topicos = data);
+      } else {
+        setState(() => _isLoading = false);
+      }
+    } catch (e) {
+      setState(() => _isLoading = false);
+    }
   }
 
   Future<void> _fetchConteudos() async {
     try {
-      print('Chamando API para buscar dados...');
       final data = await ApiService.listar('conteudo');
-      print("dados recebidos");
-      print('Dados recebidos da API: $data');
       if (data != null) {
-        print('Data não é nulo');
         if (data is List) {
-          print('Data["data"] é uma lista');
           setState(() {
             _conteudos = List<Map<String, dynamic>>.from(data)
                 .where((conteudo) => conteudo['tipo'] == 3)
                 .toList();
             _filteredConteudos = List<Map<String, dynamic>>.from(_conteudos);
             _applyFilter();
-            _isLoading = false; 
+            _isLoading = false;
           });
         } else {
-          print('Data["data"] não é uma lista, é: ${data.runtimeType}');
           setState(() {
-            _isLoading = false; 
+            _isLoading = false;
           });
         }
       } else {
-        print('Nenhum dado encontrado ou dado malformado');
         setState(() {
-          _isLoading = false; 
+          _isLoading = false;
         });
       }
     } catch (e) {
-      print('Erro ao carregar conteúdos: $e');
       setState(() {
-        _isLoading = false; 
+        _isLoading = false;
       });
     }
   }
@@ -137,9 +199,14 @@ class _RecomendacaoState extends State<TodasRecomendacoes> {
       nextPage: _nextPage,
       previousPage: _previousPage,
       handleFilterSelection: _handleFilterSelection,
-      conteudos: _filteredConteudos, 
-      isLoading: _isLoading, 
-      onCardTap: _onCardTap, 
+      handleClassificacaoSelection: _handleClassificacaoSelection,
+      handleTopicoSelection: _handleTopicoSelection,
+      selectedClassificacao: _selectedClassificacao,
+      selectedTopico: _selectedTopico,
+      conteudos: _filteredConteudos,
+      isLoading: _isLoading,
+      onCardTap: _onCardTap,
+      topicos: _topicos,
     );
   }
 }
@@ -151,9 +218,14 @@ class VerRecomendacoes extends StatelessWidget {
   final VoidCallback nextPage;
   final VoidCallback previousPage;
   final Function(String) handleFilterSelection;
-  final List<Map<String, dynamic>> conteudos; 
-  final bool isLoading; 
-  final Function(String) onCardTap; 
+  final Function(String?) handleClassificacaoSelection;
+  final Function(String?) handleTopicoSelection;
+  final String? selectedClassificacao;
+  final String? selectedTopico;
+  final List<Map<String, dynamic>> conteudos;
+  final bool isLoading;
+  final Function(String) onCardTap;
+  final List<dynamic> topicos;
 
   const VerRecomendacoes({
     required this.selectedIndex,
@@ -162,9 +234,14 @@ class VerRecomendacoes extends StatelessWidget {
     required this.nextPage,
     required this.previousPage,
     required this.handleFilterSelection,
-    required this.conteudos, 
-    required this.isLoading, 
-    required this.onCardTap, 
+    required this.handleClassificacaoSelection,
+    required this.handleTopicoSelection,
+    required this.selectedClassificacao,
+    required this.selectedTopico,
+    required this.conteudos,
+    required this.isLoading,
+    required this.onCardTap,
+    required this.topicos,
   });
 
   @override
@@ -173,7 +250,7 @@ class VerRecomendacoes extends StatelessWidget {
     return Scaffold(
       appBar: CustomAppBar(),
       body: isLoading
-          ? Center(child: CircularProgressIndicator()) 
+          ? Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
               child: Center(
                 child: Column(
@@ -195,7 +272,8 @@ class VerRecomendacoes extends StatelessWidget {
                             onSelected: (String value) {
                               handleFilterSelection(value);
                             },
-                            itemBuilder: (BuildContext context) => const <PopupMenuEntry<String>>[
+                            itemBuilder: (BuildContext context) =>
+                                const <PopupMenuEntry<String>>[
                               PopupMenuItem<String>(
                                 value: 'Mais recentes',
                                 child: Text('Mais recentes'),
@@ -216,6 +294,41 @@ class VerRecomendacoes extends StatelessWidget {
                           ),
                         ],
                       ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        DropdownButton<String>(
+                          hint: Text("Classificação"),
+                          value: selectedClassificacao,
+                          onChanged: (String? newValue) {
+                            handleClassificacaoSelection(newValue);
+                          },
+                          items: <String>[
+                            'Alta',
+                            'Média',
+                            'Baixa',
+                          ].map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                        ),
+                        DropdownButton<String>(
+                          hint: Text("Tópico"),
+                          value: selectedTopico,
+                          onChanged: (String? newValue) {
+                            handleTopicoSelection(newValue);
+                          },
+                          items: topicos.map<DropdownMenuItem<String>>((dynamic topico) {
+                            return DropdownMenuItem<String>(
+                              value: topico['area'] as String?, // Use a chave 'area' para obter o valor desejado
+                              child: Text(topico['area'] as String),
+                            );
+                          }).toList(),
+                        ),
+                      ],
                     ),
                     conteudos.isNotEmpty
                         ? Column(
